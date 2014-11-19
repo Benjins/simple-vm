@@ -14,30 +14,30 @@ void VM::Execute(unsigned char* code, int instructionCount){
 		unsigned char instruction = code[i];
 
 		switch (instruction){
-			case Instruction::INT_ADD:{
+			case INT_ADD:{
 				short a = Pop();
 				short b = Pop();
 				Push(a + b);
 			}break;
 
-			case Instruction::INT_MUL:{
+			case INT_MUL:{
 				short a = Pop();
 				short b = Pop();
 				Push(a * b);
 			}break;
 
-			case Instruction::INT_INV:{
+			case INT_INV:{
 				short a = Pop();
 				Push(a * -1);
 			}break;
 
-			case Instruction::INT_LIT:{
+			case INT_LIT:{
 				i++; //Get the next symbol in the byte code
 				short a = code[i];
 				Push(a);
 			}break;
 
-			case Instruction::INT_DLIT:{
+			case INT_DLIT:{
 				i++; //Get the next symbol in the byte code
 				short a = code[i];
 				i++;
@@ -46,12 +46,12 @@ void VM::Execute(unsigned char* code, int instructionCount){
 				Push(c);
 			}break;
 
-			case Instruction::PRINT:{
+			case PRINT:{
 				short a = Pop();
 				cout << a << endl;
 			}break;
 
-			case Instruction::READ:{
+			case READ:{
 				short a;
 				cin >> a;
 				Push(a);
