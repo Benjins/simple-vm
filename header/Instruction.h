@@ -11,4 +11,15 @@ enum Instruction{
 	READ
 };
 
+
+/*
+Possible future instructions:
+-float operations
+-return values
+-division/subtraction
+-ifs
+-subroutines
+-declarations
+*/
+
 #endif

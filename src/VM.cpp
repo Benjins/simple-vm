@@ -39,10 +39,10 @@ void VM::Execute(unsigned char* code, int instructionCount){
 
 			case Instruction::INT_DLIT:{
 				i++; //Get the next symbol in the byte code
-				unsigned char a = code[i];
+				short a = code[i];
 				i++;
-				unsigned char b = code[i];
-				short c = (a << 8) || b;
+				short b = code[i];
+				short c = (a << 8) + b;
 				Push(c);
 			}break;
 
