@@ -2,13 +2,13 @@
 #define INSTRUCTION_H
 
 enum Instruction{
-	INT_ADD,
-	INT_MUL,
-	INT_INV,
-	INT_LIT,
-	INT_DLIT,
-	PRINT,
-	READ
+	INT_ADD = 1,
+	INT_MUL = 2,
+	INT_INV = 3,
+	INT_LIT = 4,
+	INT_DLIT = 5,
+	PRINT = 6,
+	READ = 7
 };
 
 

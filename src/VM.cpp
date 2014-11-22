@@ -8,6 +8,20 @@ VM::VM(){
 	stackSize = 0;
 }
 
+void VM::Execute(string code){
+	int count = code.size();
+
+	unsigned char* byteCode = new unsigned char[count];
+
+	for(int i = 0; i < count; i++){
+		byteCode[i] = (unsigned char)code[i];
+	}
+
+	Execute(byteCode, count);
+
+	delete byteCode;
+}
+
 void VM::Execute(unsigned char* code, int instructionCount){
 
 	for(int i = 0; i < instructionCount; i++){

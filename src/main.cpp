@@ -40,11 +40,17 @@ int main(){
 	assert(tokens[3] == "+");
 	assert(tokens[4] == "3");
 	assert(tokens[5] == ")");
+	string byteCode = ShuntingYard(tokens);
+
+	VM x;
+	x.Execute(byteCode);
 
 	code = "PRINT(242 + 3  *(413+5224) + READ())";
 	tokens = Tokenize(code);
+	byteCode = ShuntingYard(tokens);
+	x.Execute(byteCode);
 	for(int i = 0; i < tokens.size(); i++){
-		cout << tokens[i] << "%" << endl;
+		//cout << tokens[i] << "." << endl;
 	}
 
     return 0;
