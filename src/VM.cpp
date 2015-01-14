@@ -70,6 +70,49 @@ void VM::Execute(unsigned char* code, int instructionCount){
 				cin >> a;
 				Push(a);
 			}break;
+			
+			case L_THAN:{
+				short a = Pop();
+				short b = Pop();
+				short res = a > b? 1 : 0;
+				Push(res);
+			}break;
+			
+			case G_THAN:{
+				short a = Pop();
+				short b = Pop();
+				short res = a < b? 1 : 0;
+				Push(res);
+			}break;
+			
+			case BOOL_AND:{
+				short a = Pop();
+				short b = Pop();
+				short res = (a > 0 && b > 0)? 1 : 0;
+				Push(res);
+			}break;
+			
+			case BOOL_OR:{
+				short a = Pop();
+				short b = Pop();
+				short res = (a > 0 || b > 0)? 1 : 0;
+				Push(res);
+			}break;
+			
+			case COMPARE:{
+				short a = Pop();
+				short b = Pop();
+				short res = (a == b)? 1 : 0;
+				Push(res);
+			}break;
+			
+			case BRANCH:{
+				short a = Pop();
+				short b = Pop();
+				if(b == 0){
+					i = a-1;
+				}
+			}break;
 
 			default:
 				cout << "\nInvalid instruction at instruction " << i << endl;
@@ -77,6 +120,12 @@ void VM::Execute(unsigned char* code, int instructionCount){
 		}
 	}
 }
+
+/*,
+	ASSIGN = 12,
+	COMPARE = 13,
+	BRANCH = 14
+*/
 
 void VM::Push(short value){
 	if(stackSize < MAX_STACK){

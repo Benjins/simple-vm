@@ -8,7 +8,7 @@ using std::cout; using std::endl;
 
 int main(){
 
-	string code = "PRINT(READ()+READ());PRINT(READ());";
+	string code = "if(READ() > 3){PRINT(0);}PRINT(1);";
 	vector<string> tokens = NewTokenize(code);
 	
 	vector<unsigned char> byteCode = NewShuntingYard(tokens);
@@ -17,10 +17,12 @@ int main(){
 	x.Execute(&byteCode[0], byteCode.size());
 	
 	/*
-	for(auto iter = tokens.begin(); iter != tokens.end(); iter++){
-		cout << "|" << *iter << "|\n";
+	for(int i = 0; i < byteCode.size(); i++){
+		cout << "|" << (int)byteCode[i] << "|\n";
 	}
 	*/
+	
+
 	
     return 0;
 }

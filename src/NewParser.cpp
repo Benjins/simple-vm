@@ -7,7 +7,7 @@
 using std::cout;
 
 vector<string> NewTokenize(const string& code){
-	const string operators = "(),+*-/={};:";
+	const string operators = "(),+*-/=><|&{};:";
 	const string numbers = "0123456789.";
 	string memoryString = "";
 	char currChar = ' ';
@@ -75,7 +75,8 @@ vector<unsigned char> NewShuntingYard(vector<string> tokens){
 	vector<unsigned char> byteCode;
 	StringStack operatorStack;
 	const string numbers = "0123456789.";
-	const string operators = "+-*";
+	const string operators = "+-*><|&";
+	int branchIndex = 0;
 
 	for(int i = 0; i < tokens.size(); i++){
 		string token = tokens[i];
@@ -119,6 +120,22 @@ vector<unsigned char> NewShuntingYard(vector<string> tokens){
 					byteCode.push_back(Compile(operatorStack.Pop()));
 			}
 			operatorStack.Push(token);
+		}
+		else if(token == ":"){
+			//Some kind of assignment
+		}
+		else if(token == "if"){
+			
+		}
+		else if(token == "{"){
+			byteCode.push_back(INT_LIT);
+			byteCode.push_back(0);
+			branchIndex = byteCode.size() - 1;
+			byteCode.push_back(BRANCH);
+		}
+		else if(token == "}"){
+			byteCode[branchIndex] = byteCode.size();
+			
 		}
 		else if(token == ";"){
 			while(operatorStack.stackSize > 0){

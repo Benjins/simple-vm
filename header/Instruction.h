@@ -8,7 +8,14 @@ enum Instruction{
 	INT_LIT = 4,
 	INT_DLIT = 5,
 	PRINT = 6,
-	READ = 7
+	READ = 7,
+	L_THAN = 8,
+	G_THAN = 9,
+	BOOL_AND = 10,
+	BOOL_OR = 11,
+	ASSIGN = 12,
+	COMPARE = 13,
+	BRANCH = 14
 };
 
 

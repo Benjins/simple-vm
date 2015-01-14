@@ -255,6 +255,21 @@ unsigned char Compile(string token){
 	if(token == "+"){
 		return INT_ADD;
 	}
+	if(token == "="){
+		return COMPARE;
+	}
+	if(token == "<"){
+		return L_THAN;
+	}
+	if(token == ">"){
+		return G_THAN;
+	}
+	if(token == "|"){
+		return BOOL_OR;
+	}
+	if(token == "&"){
+		return BOOL_AND;
+	}
 
 	cout << "\nError: tried to compile unfamiliar token.\n";
 	return '\0';
