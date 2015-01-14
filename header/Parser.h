@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-#define MAX_STACK_SIZE 1024
+#define MAX_STACK_SIZE 512
 
 using std::string; using std::vector;
 
@@ -25,11 +25,15 @@ static void ReadFromFile(string& readInto, string fileName);
 
 vector<string> Tokenize(const string& code);
 
+vector<string> NewTokenize(const string& code);
+
 string ShuntingYard(vector<string> tokens);
+
+vector<unsigned char> NewShuntingYard(vector<string> tokens);
 
 string MakeIntLiteral(int number);
 
-string Compile(string token);
+unsigned char Compile(string token);
 
 bool IsAFunctionToken(string token);
 

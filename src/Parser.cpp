@@ -239,38 +239,23 @@ string MakeIntLiteral(int number){
 	}
 }
 
-string Compile(string token){
+unsigned char Compile(string token){
 	if(token == "PRINT"){
-		char code[2];
-		code[0] = PRINT;
-		code[1] = 0;
-		return string(code);
+		return PRINT;
 	}
 	if(token == "READ"){
-		char code[2];
-		code[0] = READ;
-		code[1] = 0;
-		return string(code);
+		return READ;
 	}
 	if(token == "*"){
-		char code[2];
-		code[0] = INT_MUL;
-		code[1] = 0;
-		return string(code);
+		return INT_MUL;
 	}
 	if(token == "-"){
-		char code[2];
-		code[0] = INT_INV;
-		code[1] = 0;
-		return string(code);
+		INT_INV;
 	}
 	if(token == "+"){
-		char code[2];
-		code[0] = INT_ADD;
-		code[1] = 0;
-		return string(code);
+		return INT_ADD;
 	}
 
 	cout << "\nError: tried to compile unfamiliar token.\n";
-	return "";
+	return '\0';
 }
