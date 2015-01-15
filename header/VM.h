@@ -7,6 +7,8 @@ using std::string;
 
 #define MAX_STACK 1024
 
+#define REGISTER_COUNT 16
+
 struct VM{
 
 	VM();
@@ -18,6 +20,8 @@ struct VM{
 protected:
 	short stack[MAX_STACK];
 	short stackSize;
+	
+	short registers[REGISTER_COUNT];
 
 	void Push(short value);
 	short Pop();

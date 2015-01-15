@@ -15,7 +15,9 @@ enum Instruction{
 	BOOL_OR = 11,
 	ASSIGN = 12,
 	COMPARE = 13,
-	BRANCH = 14
+	BRANCH = 14,
+	LOAD_REG = 15,
+	SAVE_REG = 16,
 };
 
 

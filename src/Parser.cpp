@@ -182,11 +182,16 @@ bool IsAFunctionToken(string token){
 }
 
 int OperatorPrecedence(string token){
-	if(token == "+"){
-		return 1;
-	}
-	if(token == "*"){
-		return 2;
+	int precedence[8] = {3,3,4,2,2,2,1,1};
+	
+	//cout << "OpPrec\n";
+	
+	string ops = "+-*=><|&";
+	
+	int index = ops.find(token);
+	if(index != string::npos){
+		//cout << "Operator: " << token << ", precedence: " << precedence[index] << endl;
+		return precedence[index];
 	}
 
 	cout << "\nWarning: Called OperatorPrecedence on non-operator.\n";
@@ -271,6 +276,6 @@ unsigned char Compile(string token){
 		return BOOL_AND;
 	}
 
-	cout << "\nError: tried to compile unfamiliar token.\n";
+	cout << "\nError: tried to compile unfamiliar token: '" << token << "'\n";
 	return '\0';
 }

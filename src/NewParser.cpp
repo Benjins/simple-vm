@@ -75,7 +75,7 @@ vector<unsigned char> NewShuntingYard(vector<string> tokens){
 	vector<unsigned char> byteCode;
 	StringStack operatorStack;
 	const string numbers = "0123456789.";
-	const string operators = "+-*><|&";
+	const string operators = "+-*><|&=";
 	int branchIndex = 0;
 
 	for(int i = 0; i < tokens.size(); i++){
@@ -113,9 +113,9 @@ vector<unsigned char> NewShuntingYard(vector<string> tokens){
 			}
 			
 		}
-		else if(__operators.find(token) != string::npos){
+		else if(operators.find(token) != string::npos){
 			while(operatorStack.stackSize > 0 
-				&& __operators.find(operatorStack.Peek()) != string::npos 
+				&& operators.find(operatorStack.Peek()) != string::npos 
 				&& OperatorPrecedence(operatorStack.Peek()) > OperatorPrecedence(token)){
 					byteCode.push_back(Compile(operatorStack.Pop()));
 			}

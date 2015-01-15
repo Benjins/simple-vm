@@ -8,7 +8,7 @@ using std::cout; using std::endl;
 
 int main(){
 
-	string code = "if(READ() > 3){if(READ() > 5){PRINT(0);}}PRINT(1);";
+	string code = "if(2 = 2 & 1 = 1 & 1 < 2 & 4 > 3){PRINT(2);}PRINT(0);";
 	vector<string> tokens = NewTokenize(code);
 	
 	vector<unsigned char> byteCode = NewShuntingYard(tokens);
