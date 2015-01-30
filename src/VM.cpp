@@ -29,6 +29,7 @@ void VM::Execute(unsigned char* code, int instructionCount){
 
 		switch (instruction){
 			case INT_ADD:{
+				//cout << "Add\n";
 				short a = Pop();
 				short b = Pop();
 				Push(a + b);
@@ -46,6 +47,7 @@ void VM::Execute(unsigned char* code, int instructionCount){
 			}break;
 
 			case INT_LIT:{
+				//cout << "Literal\n";
 				i++; //Get the next symbol in the byte code
 				short a = code[i];
 				Push(a);
@@ -61,6 +63,7 @@ void VM::Execute(unsigned char* code, int instructionCount){
 			}break;
 
 			case PRINT:{
+				//cout << "PRINT\n";
 				short a = Pop();
 				cout << a << endl;
 			}break;
@@ -107,6 +110,7 @@ void VM::Execute(unsigned char* code, int instructionCount){
 			}break;
 			
 			case BRANCH:{
+				//cout << "BRANCH\n";
 				short a = Pop();
 				short b = Pop();
 				if(b == 0){
@@ -115,6 +119,7 @@ void VM::Execute(unsigned char* code, int instructionCount){
 			}break;
 
 			case LOAD_REG:{
+				//cout << "LOAD\n";
 				short a = Pop();
 				if(a >= 0 && a < REGISTER_COUNT){
 					Push(registers[a]);
@@ -126,6 +131,7 @@ void VM::Execute(unsigned char* code, int instructionCount){
 			}break;
 
 			case SAVE_REG:{
+				//cout << "SAVE\n";
 				short a = Pop();
 				short b = Pop();
 
@@ -133,7 +139,7 @@ void VM::Execute(unsigned char* code, int instructionCount){
 					registers[b] = a;
 				}
 				else{
-					cout << "Error: Tried to load a register of value: " << b << endl;
+					cout << "Error: Tried to save to a register of value: " << b << endl;
 				}
 			}break;
 

@@ -23,7 +23,7 @@ struct Stack{
 			values[stackSize] = str;
 		}
 		else{
-			cout << "\nError: String Stack overflow.\n";
+			cout << "\nError: Stack overflow.\n";
 		}
 	}
 
@@ -34,7 +34,7 @@ struct Stack{
 			return ret;
 		}
 		else{
-			cout << "\nError: String Stack overflow.\n";
+			cout << "\nError: Stack underflow.\n";
 		}
 	}
 

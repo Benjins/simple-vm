@@ -71,6 +71,7 @@ vector<unsigned char> NewShuntingYard(vector<string> tokens){
 	Stack<string> operatorStack;
 	Stack<string> branchingStack;
 	Stack<int> branchIndexStack;
+	Stack<int> whileIndexStack;
 
 	const string numbers = "0123456789.";
 	const string operators = "+-*><|&=";
@@ -78,7 +79,10 @@ vector<unsigned char> NewShuntingYard(vector<string> tokens){
 
 	for(int i = 0; i < tokens.size(); i++){
 		string token = tokens[i];
-		if(numbers.find(token[0]) != string::npos){
+		if(token.size() == 0){
+			continue;
+		}
+		else if(numbers.find(token[0]) != string::npos){
 			byteCode.push_back(INT_LIT);
 			byteCode.push_back(atoi(token.c_str()));
 		}
@@ -106,8 +110,9 @@ vector<unsigned char> NewShuntingYard(vector<string> tokens){
 			}
 
 			operatorStack.Pop();
-			if(operatorStack.stackSize > 0 && IsAFunctionToken(operatorStack.Peek())){
-				byteCode.push_back(Compile(operatorStack.Pop()));
+			if(operatorStack.stackSize > 0 && operators.find(operatorStack.Peek()) == string::npos){
+				string op = operatorStack.Pop();
+				byteCode.push_back(Compile(op));
 			}	
 		}
 		else if(operators.find(token) != string::npos){
@@ -122,18 +127,30 @@ vector<unsigned char> NewShuntingYard(vector<string> tokens){
 			//Some kind of assignment
 		}
 		else if(token == "if" || token == "while"){
-			//branchingStack.Push(token);
+			branchingStack.Push(token);
+
+			if(token == "while"){
+				whileIndexStack.Push(byteCode.size() - 1);
+			}
 		}
 		else if(token == "{"){
 			byteCode.push_back(INT_LIT);
 			byteCode.push_back(0);
 			branchIndexStack.Push(byteCode.size() - 1);
-			//branchIndex = byteCode.size() - 1;
 			byteCode.push_back(BRANCH);
 		}
 		else if(token == "}"){
-			byteCode[branchIndexStack.Pop()] = byteCode.size();
-			
+			string branchingType = branchingStack.Pop();
+			int index = branchIndexStack.Pop();
+			if(branchingType == "while"){
+				byteCode.push_back(INT_LIT);
+				byteCode.push_back(0);
+				byteCode.push_back(INT_LIT);
+				int idx = whileIndexStack.Pop();
+				byteCode.push_back(idx+1);
+				byteCode.push_back(BRANCH);
+			}
+			byteCode[index] = byteCode.size();
 		}
 		else if(token == ";"){
 			while(operatorStack.stackSize > 0){
