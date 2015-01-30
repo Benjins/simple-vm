@@ -85,7 +85,7 @@ vector<unsigned char> NewShuntingYard(vector<string> tokens){
 			byteCode.push_back(atoi(token.c_str()));
 		}
 		else if(token == ","){
-			while(operatorStack.Peek() != ")"){
+			while(operatorStack.Peek() != "("){
 				string op = operatorStack.Pop();
 				byteCode.push_back(Compile(op));
 				if(operatorStack.stackSize == 0){

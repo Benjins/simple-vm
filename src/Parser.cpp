@@ -245,12 +245,6 @@ string MakeIntLiteral(int number){
 }
 
 unsigned char Compile(string token){
-	if(token == "PRINT"){
-		return PRINT;
-	}
-	if(token == "READ"){
-		return READ;
-	}
 	if(token == "*"){
 		return INT_MUL;
 	}
@@ -274,6 +268,18 @@ unsigned char Compile(string token){
 	}
 	if(token == "&"){
 		return BOOL_AND;
+	}
+	if(token == "PRINT"){
+		return PRINT;
+	}
+	if(token == "READ"){
+		return READ;
+	}
+	if(token == "LOAD"){
+		return LOAD_REG;
+	}
+	if(token == "SAVE"){
+		return SAVE_REG;
 	}
 
 	cout << "\nError: tried to compile unfamiliar token: '" << token << "'\n";

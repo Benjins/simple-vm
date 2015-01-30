@@ -114,6 +114,29 @@ void VM::Execute(unsigned char* code, int instructionCount){
 				}
 			}break;
 
+			case LOAD_REG:{
+				short a = Pop();
+				if(a >= 0 && a < REGISTER_COUNT){
+					Push(registers[a]);
+				}
+				else{
+					cout << "Error: Tried to load a register of value: " << a << endl;
+					Push(0);
+				}
+			}break;
+
+			case SAVE_REG:{
+				short a = Pop();
+				short b = Pop();
+
+				if(b >= 0 && b < REGISTER_COUNT){
+					registers[b] = a;
+				}
+				else{
+					cout << "Error: Tried to load a register of value: " << b << endl;
+				}
+			}break;
+
 			default:
 				cout << "\nInvalid instruction at instruction " << i << endl;
 				break;
