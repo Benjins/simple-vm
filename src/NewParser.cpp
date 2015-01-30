@@ -66,14 +66,12 @@ vector<string> NewTokenize(const string& code){
 	return tokens;
 }
 
-
-
-
-
-
 vector<unsigned char> NewShuntingYard(vector<string> tokens){
 	vector<unsigned char> byteCode;
-	StringStack operatorStack;
+	Stack<string> operatorStack;
+	Stack<string> branchingStack;
+	Stack<int> branchIndexStack;
+
 	const string numbers = "0123456789.";
 	const string operators = "+-*><|&=";
 	int branchIndex = 0;
@@ -110,8 +108,7 @@ vector<unsigned char> NewShuntingYard(vector<string> tokens){
 			operatorStack.Pop();
 			if(operatorStack.stackSize > 0 && IsAFunctionToken(operatorStack.Peek())){
 				byteCode.push_back(Compile(operatorStack.Pop()));
-			}
-			
+			}	
 		}
 		else if(operators.find(token) != string::npos){
 			while(operatorStack.stackSize > 0 
@@ -124,17 +121,18 @@ vector<unsigned char> NewShuntingYard(vector<string> tokens){
 		else if(token == ":"){
 			//Some kind of assignment
 		}
-		else if(token == "if"){
-			
+		else if(token == "if" || token == "while"){
+			//branchingStack.Push(token);
 		}
 		else if(token == "{"){
 			byteCode.push_back(INT_LIT);
 			byteCode.push_back(0);
-			branchIndex = byteCode.size() - 1;
+			branchIndexStack.Push(byteCode.size() - 1);
+			//branchIndex = byteCode.size() - 1;
 			byteCode.push_back(BRANCH);
 		}
 		else if(token == "}"){
-			byteCode[branchIndex] = byteCode.size();
+			byteCode[branchIndexStack.Pop()] = byteCode.size();
 			
 		}
 		else if(token == ";"){

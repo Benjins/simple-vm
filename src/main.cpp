@@ -8,7 +8,7 @@ using std::cout; using std::endl;
 
 int main(){
 
-	string code = "SAVE(0,READ());PRINT(LOAD(0));PRINT(2*LOAD(0));";
+	string code = "if(1){ PRINT(1); if(0){ PRINT(2); if(1){PRINT(3);  } } }PRINT(4); ";
 	vector<string> tokens = NewTokenize(code);
 	
 	vector<unsigned char> byteCode = NewShuntingYard(tokens);

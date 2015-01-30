@@ -104,8 +104,10 @@ vector<string> Tokenize(const string& code){
 
 string ShuntingYard(vector<string> tokens){
 	stringstream byteCode;
-	StringStack operatorStack;
-
+	Stack<string> operatorStack;
+	Stack<string> branchingStack;
+	Stack<int> branchIndexStack;
+	
 	for(int i = 0; i < tokens.size(); i++){
 
 		string token = tokens[i];
@@ -196,34 +198,6 @@ int OperatorPrecedence(string token){
 
 	cout << "\nWarning: Called OperatorPrecedence on non-operator.\n";
 	return -1;
-}
-
-StringStack::StringStack(){
-	stackSize = 0;
-}
-
-void StringStack::Push(string str){
-	if(stackSize < MAX_STACK_SIZE){
-		stackSize++;
-		values[stackSize] = str;
-	}
-	else{
-		cout << "\nError: String Stack overflow.\n";
-	}
-}
-string StringStack::Pop(){
-	if(stackSize > 0){
-		string ret = values[stackSize];
-		stackSize--;
-		return ret;
-	}
-	else{
-		cout << "\nError: String Stack overflow.\n";
-	}
-}
-
-string StringStack::Peek() const{
-	return values[stackSize];
 }
 
 string MakeIntLiteral(int number){

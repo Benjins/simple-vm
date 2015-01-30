@@ -8,15 +8,39 @@
 
 using std::string; using std::vector;
 
-struct StringStack{
-	string values[MAX_STACK_SIZE];
+template<typename T>
+struct Stack{
+	T values[MAX_STACK_SIZE];
 	int stackSize;
 
-	StringStack();
+	Stack(){
+		stackSize = 0;
+	}
 
-	void Push(string str);
-	string Pop();
-	string Peek() const;
+	void Push(T str){
+		if(stackSize < MAX_STACK_SIZE){
+			stackSize++;
+			values[stackSize] = str;
+		}
+		else{
+			cout << "\nError: String Stack overflow.\n";
+		}
+	}
+
+	T Pop(){
+		if(stackSize > 0){
+			T ret = values[stackSize];
+			stackSize--;
+			return ret;
+		}
+		else{
+			cout << "\nError: String Stack overflow.\n";
+		}
+	}
+
+	T Peek() const{
+		return values[stackSize];
+	}
 };
 
 string ParseByteCode(string fileName);

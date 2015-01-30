@@ -144,12 +144,6 @@ void VM::Execute(unsigned char* code, int instructionCount){
 	}
 }
 
-/*,
-	ASSIGN = 12,
-	COMPARE = 13,
-	BRANCH = 14
-*/
-
 void VM::Push(short value){
 	if(stackSize < MAX_STACK){
 		stackSize++;
