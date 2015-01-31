@@ -9,13 +9,24 @@ using std::cout; using std::endl;
 int main(){
 
 	
-	//string code = "PRINT(READ() + 1);";
-	string code = "SAVE(0,0);\
-				  while(LOAD(0) < 100){\
-				      PRINT(LOAD(0));\
-				      SAVE(0, LOAD(0) + 1);\
+	//string code = "PRINT(READ()/4);";
+
+	string code = "SAVE(0,1);\
+				  SAVE(1, READ());\
+				  SAVE(2, 0);\
+				  while(LOAD(0) < LOAD(1)){\
+					 if( LOAD(0) * (LOAD(1) / LOAD(0)) = LOAD(1)){\
+						SAVE(2, LOAD(2) + 1);\
+					 }\
+				     SAVE(0, LOAD(0) + 1);\
 				  }\
-				  PRINT(LOAD(0));";
+				  if(LOAD(2) > 1){\
+					PRINT(0);\
+				  }\
+				  if(LOAD(2) = 1){\
+					PRINT(1);\
+				  }";
+
 	vector<string> tokens = NewTokenize(code);
 	
 	vector<unsigned char> byteCode = NewShuntingYard(tokens);

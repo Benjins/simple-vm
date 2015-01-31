@@ -18,6 +18,7 @@ enum Instruction{
 	BRANCH = 14,
 	LOAD_REG = 15,
 	SAVE_REG = 16,
+	INT_DIV = 17,
 };
 
 
@@ -26,7 +27,6 @@ Possible future instructions:
 -float operations
 -return values
 -division/subtraction
--ifs
 -subroutines
 -declarations
 */

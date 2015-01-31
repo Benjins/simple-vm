@@ -41,6 +41,12 @@ void VM::Execute(unsigned char* code, int instructionCount){
 				Push(a * b);
 			}break;
 
+			case INT_DIV:{
+				short a = Pop();
+				short b = Pop();
+				Push(b / a);
+			}break;
+
 			case INT_INV:{
 				short a = Pop();
 				Push(a * -1);

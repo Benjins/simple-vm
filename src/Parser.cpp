@@ -184,11 +184,11 @@ bool IsAFunctionToken(string token){
 }
 
 int OperatorPrecedence(string token){
-	int precedence[8] = {3,3,4,2,2,2,1,1};
+	int precedence[9] = {3,3,4,4,2,2,2,1,1};
 	
 	//cout << "OpPrec\n";
 	
-	string ops = "+-*=><|&";
+	string ops = "+-*/=><|&";
 	
 	int index = ops.find(token);
 	if(index != string::npos){
@@ -218,9 +218,13 @@ string MakeIntLiteral(int number){
 	}
 }
 
+//TODO: Make this return vector<char> for more complicated operations
 unsigned char Compile(string token){
 	if(token == "*"){
 		return INT_MUL;
+	}
+	if(token == "/"){
+		return INT_DIV;
 	}
 	if(token == "-"){
 		INT_INV;
