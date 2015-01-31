@@ -83,8 +83,16 @@ vector<unsigned char> NewShuntingYard(vector<string> tokens){
 			continue;
 		}
 		else if(numbers.find(token[0]) != string::npos){
-			byteCode.push_back(INT_LIT);
-			byteCode.push_back(atoi(token.c_str()));
+			int num = atoi(token.c_str());
+			if(num < 255){
+				byteCode.push_back(INT_LIT);
+				byteCode.push_back((unsigned char)num);
+			}
+			else{
+				byteCode.push_back(INT_DLIT);
+				byteCode.push_back(num >> 8);
+				byteCode.push_back((unsigned char)num);
+			}
 		}
 		else if(token == ","){
 			while(operatorStack.Peek() != "("){

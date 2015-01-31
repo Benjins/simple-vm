@@ -10,7 +10,12 @@ int main(){
 
 	
 	//string code = "PRINT(READ() + 1);";
-	string code = "SAVE(0,0);while(LOAD(0) < 10){PRINT(LOAD(0));SAVE(0, LOAD(0) + READ());}PRINT(LOAD(0));";
+	string code = "SAVE(0,0);\
+				  while(LOAD(0) < 100){\
+				      PRINT(LOAD(0));\
+				      SAVE(0, LOAD(0) + 1);\
+				  }\
+				  PRINT(LOAD(0));";
 	vector<string> tokens = NewTokenize(code);
 	
 	vector<unsigned char> byteCode = NewShuntingYard(tokens);
