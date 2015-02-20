@@ -227,7 +227,7 @@ unsigned char Compile(string token){
 		return INT_DIV;
 	}
 	if(token == "-"){
-		INT_INV;
+		return INT_SUB;
 	}
 	if(token == "+"){
 		return INT_ADD;

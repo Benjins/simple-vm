@@ -4,7 +4,7 @@
 enum Instruction{
 	INT_ADD = 1,
 	INT_MUL = 2,
-	INT_INV = 3,
+	INT_SUB = 3,
 	INT_LIT = 4,
 	INT_DLIT = 5,
 	PRINT = 6,

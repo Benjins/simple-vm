@@ -7,36 +7,8 @@
 using std::cout; using std::endl;
 
 int main(){
-
 	
-	//string code = "PRINT(READ()/4);";
-
 	/*
-	string code = "SAVE(0,1);\
-				  SAVE(1, READ());\
-				  SAVE(2, 0);\
-				  while(LOAD(0) < LOAD(1)){\
-					 if( LOAD(0) * (LOAD(1) / LOAD(0)) = LOAD(1)){\
-						SAVE(2, LOAD(2) + 1);\
-					 }\
-				     SAVE(0, LOAD(0) + 1);\
-				  }\
-				  if(LOAD(2) > 1){\
-					PRINT(0);\
-				  }\
-				  if(LOAD(2) = 1){\
-					PRINT(1);\
-				  }"; */
-
-	/*
-	string code = "var x : READ();\
-				   var y : 0;\
-				   while(y < x){\
-				      PRINT(y);\
-					  y : y + 1;\
-				   }";*/
-
-	
 	string code =	 "var factor : 1;                                   \
 					  var number : READ();                              \
 					  var factorCount : 0;                              \
@@ -49,14 +21,16 @@ int main(){
 						 factor : factor + 1;                           \
 					  }                                                 \
 																		\
-					  if(factorCount > 1){                              \
+					  if(factorCount > 1 | factorCount = 0){			\
 						PRINT(0);                                       \
 					  }                                                 \
 																		\
 					  if(factorCount = 1){                              \
 						PRINT(1);                                       \
 					  }"; 
-				   
+				   */
+
+	string code = "var z : 1; while(z > 0){var x : READ(); z : z - x;  PRINT(z);}";
 
 	vector<string> tokens = NewTokenize(code);
 	
