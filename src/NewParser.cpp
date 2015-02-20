@@ -200,11 +200,9 @@ vector<unsigned char> NewShuntingYard(vector<string> tokens){
 		}
 		else if(varReg.find(token) != varReg.end()){
 			if(tokens[i + 1] == ":"){
-				cout << "Assignment.\n";
 				assignment = varReg.find(token)->second;
 			}
 			else{
-				cout << "Retrieval.\n";
 				byteCode.push_back(INT_LIT);
 				byteCode.push_back(varReg.find(token)->second);
 				byteCode.push_back(LOAD_REG);

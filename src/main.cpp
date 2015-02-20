@@ -37,21 +37,25 @@ int main(){
 				   }";*/
 
 	
-	string code = "var x : 1;\
-				  var y : READ();\
-				  var z : 0;\
-				  while(x < y){\
-					 if( x * (y / x) = y){\
-					     z : z + 1;\
-					 }\
-					 x : x + 1;\
-				  }\
-				  if(z > 1){\
-					PRINT(0);\
-				  }\
-				  if(z = 1){\
-					PRINT(1);\
-				  }"; 
+	string code =	 "var factor : 1;                                   \
+					  var number : READ();                              \
+					  var factorCount : 0;                              \
+																		\
+					  while(factor < number){                           \
+						 if( factor * (number / factor) = number){      \
+							 factorCount : factorCount + 1;             \
+						 }                                              \
+																		\
+						 factor : factor + 1;                           \
+					  }                                                 \
+																		\
+					  if(factorCount > 1){                              \
+						PRINT(0);                                       \
+					  }                                                 \
+																		\
+					  if(factorCount = 1){                              \
+						PRINT(1);                                       \
+					  }"; 
 				   
 
 	vector<string> tokens = NewTokenize(code);
