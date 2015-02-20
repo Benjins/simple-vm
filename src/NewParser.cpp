@@ -1,10 +1,11 @@
 #include "../header/Parser.h"
 #include "../header/Instruction.h"
 #include <fstream>
+#include <unordered_map>
 #include <iostream>
 #include <sstream>
 
-using std::cout;
+using std::cout; using std::unordered_map;
 
 vector<string> NewTokenize(const string& code){
 	const string operators = "(),+*-/=><|&{};:";
@@ -72,16 +73,35 @@ vector<unsigned char> NewShuntingYard(vector<string> tokens){
 	Stack<string> branchingStack;
 	Stack<int> branchIndexStack;
 	Stack<int> whileIndexStack;
+	int assignment = -1;
+
+	unordered_map<string, int> varReg;
 
 	const string numbers = "0123456789.";
 	const string operators = "+-*><|&=/";
 	int branchIndex = 0;
+
+	int varCount = 0;
 
 	for(int i = 0; i < tokens.size(); i++){
 		string token = tokens[i];
 		//cout << "token: |" << token << "|\n";
 		if(token.size() == 0){
 			continue;
+		}
+		else if(token == "var"){
+			i++;
+			string varName = tokens[i];
+			auto regIdx = varReg.find(varName);
+			if(regIdx != varReg.end()){
+				cout << "\nVariable " << varName << " already defined.\n";
+			}
+			else{
+				std::pair<string, int> regVal(varName, varCount);
+				varReg.insert(regVal);
+				assignment = varCount;
+				varCount++;
+			}
 		}
 		else if(numbers.find(token[0]) != string::npos){
 			int num = atoi(token.c_str());
@@ -133,7 +153,9 @@ vector<unsigned char> NewShuntingYard(vector<string> tokens){
 			operatorStack.Push(token);
 		}
 		else if(token == ":"){
-			//Some kind of assignment
+			byteCode.push_back(INT_LIT);
+			byteCode.push_back(assignment);
+			assignment = -2;
 		}
 		else if(token == "if" || token == "while"){
 			branchingStack.Push(token);
@@ -170,6 +192,22 @@ vector<unsigned char> NewShuntingYard(vector<string> tokens){
 				}
 
 				byteCode.push_back(Compile(op));
+			}
+			if(assignment == -2){
+				byteCode.push_back(SAVE_REG);
+			}
+			assignment = -1;
+		}
+		else if(varReg.find(token) != varReg.end()){
+			if(tokens[i + 1] == ":"){
+				cout << "Assignment.\n";
+				assignment = varReg.find(token)->second;
+			}
+			else{
+				cout << "Retrieval.\n";
+				byteCode.push_back(INT_LIT);
+				byteCode.push_back(varReg.find(token)->second);
+				byteCode.push_back(LOAD_REG);
 			}
 		}
 		else{

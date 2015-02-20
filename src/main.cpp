@@ -11,6 +11,7 @@ int main(){
 	
 	//string code = "PRINT(READ()/4);";
 
+	/*
 	string code = "SAVE(0,1);\
 				  SAVE(1, READ());\
 				  SAVE(2, 0);\
@@ -25,7 +26,33 @@ int main(){
 				  }\
 				  if(LOAD(2) = 1){\
 					PRINT(1);\
-				  }";
+				  }"; */
+
+	/*
+	string code = "var x : READ();\
+				   var y : 0;\
+				   while(y < x){\
+				      PRINT(y);\
+					  y : y + 1;\
+				   }";*/
+
+	
+	string code = "var x : 1;\
+				  var y : READ();\
+				  var z : 0;\
+				  while(x < y){\
+					 if( x * (y / x) = y){\
+					     z : z + 1;\
+					 }\
+					 x : x + 1;\
+				  }\
+				  if(z > 1){\
+					PRINT(0);\
+				  }\
+				  if(z = 1){\
+					PRINT(1);\
+				  }"; 
+				   
 
 	vector<string> tokens = NewTokenize(code);
 	
