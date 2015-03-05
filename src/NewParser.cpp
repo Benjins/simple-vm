@@ -133,7 +133,7 @@ vector<unsigned char> NewShuntingYard(vector<string> tokens){
 					}
 				}
 				
-				for(int paramIdx = 0; paramIdx < paramCount; paramIdx++){
+				for(int paramIdx = paramCount - 1; paramIdx >= 0; paramIdx--){
 					byteCode.push_back(INT_LIT);
 					byteCode.push_back(paramIdx);
 					byteCode.push_back(PARAM);
@@ -182,6 +182,9 @@ vector<unsigned char> NewShuntingYard(vector<string> tokens){
 				funcCallInfoIdxs.Push(byteCode.size());
 				byteCode.push_back(STK_FRAME); //Stack frame?
 				byteCode.push_back(INT_LIT);
+				byteCode.push_back(varCount);
+				byteCode.push_back(INT_ADD);
+				byteCode.push_back(INT_LIT);
 				byteCode.push_back(253); //Return Addr?
 			}
 			operatorStack.Push(token);
@@ -204,11 +207,9 @@ vector<unsigned char> NewShuntingYard(vector<string> tokens){
 
 				byteCode.push_back(INT_LIT);
 				byteCode.push_back(funcAddr);
-				byteCode.push_back(INT_LIT);
-				byteCode.push_back(varCount);
 				byteCode.push_back(CALL);
 
-				byteCode[infoIdx + 2] = byteCode.size(); //Return addr?
+				byteCode[infoIdx + 5] = byteCode.size(); //Return addr?
 				cout << "ByteCode size: " << byteCode.size() << std::endl;
 			}
 			else if(operatorStack.stackSize > 0 && operatorStack.Peek() != "(" && operators.find(operatorStack.Peek()) == string::npos){

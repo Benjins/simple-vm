@@ -154,8 +154,8 @@ void VM::Execute(unsigned char* code, int instructionCount, int entryPoint){
 			}break;
 
 			case CALL:{
-				short varCount = Pop();
-				stackFrame = stackFrame + varCount;
+				//short varCount = Pop();
+				//stackFrame = stackFrame + varCount; //Need to modify stack frame passed to func?
 				short addr = Pop();
 				i = addr-1;
 			}break;
@@ -167,8 +167,8 @@ void VM::Execute(unsigned char* code, int instructionCount, int entryPoint){
 				Push(value);
 
 				i = retAddr-1;
-				stackFrame = prevStackFrame;
 				cout << "currentStackFrame: " << stackFrame << "  prevStackFrame: " << prevStackFrame << endl;
+				stackFrame = prevStackFrame;
 			}break;
 
 			case STK_FRAME:{
