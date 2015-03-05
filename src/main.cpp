@@ -30,7 +30,22 @@ int main(){
 					  }"; 
 				   */
 
-	string code = "var z : 1; while(z > 0){var x : READ(); z : z - x;  PRINT(z);}";
+	//string code = "var z : 1; while(z > 0){var x : READ(); z : z - x;  PRINT(z);}";
+
+	
+	string code = "def MultAdd(a,b,c){\
+		var prodOne : a * b;\
+		var prodTwo : a * c;\
+		return(prodOne + prodTwo);\
+	}\
+	\
+	def main(){\
+		var input : READ();\
+		var inputTwo : READ();\
+		var inputThree : READ();\
+		PRINT(MultAdd(input, inputTwo, inputThree));\
+	}";
+	
 
 	vector<string> tokens = NewTokenize(code);
 	
@@ -42,13 +57,12 @@ int main(){
 	}
 
 	VM x;
-	x.Execute(&byteCode[0], byteCode.size());
+	x.Execute(&byteCode[0], byteCode.size(), 37);
 	
-	/*
 	for(int i = 0; i < byteCode.size(); i++){
-		cout << "|" << (int)byteCode[i] << "|\n";
+		//cout << i << ": |" << (int)byteCode[i] << "|\n";
 	}
-	*/
+	
 	
 
 	

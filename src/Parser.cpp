@@ -259,6 +259,9 @@ unsigned char Compile(string token){
 	if(token == "SAVE"){
 		return SAVE_REG;
 	}
+	if(token == "return"){
+		return RETURN;
+	}
 
 	cout << "\nError: tried to compile unfamiliar token: '" << token << "'\n";
 	return '\0';

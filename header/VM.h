@@ -14,12 +14,14 @@ struct VM{
 	VM();
 
 	//Execute bytecode, given the start of instruction, and the count
-	void Execute(unsigned char* code, int instructionCount);
+	void Execute(unsigned char* code, int instructionCount, int entryPoint = 0);
 	void Execute(string code);
 
 protected:
 	short stack[MAX_STACK];
 	short stackSize;
+
+	short stackFrame;
 	
 	short registers[REGISTER_COUNT];
 

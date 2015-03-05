@@ -76,18 +76,70 @@ vector<unsigned char> NewShuntingYard(vector<string> tokens){
 	int assignment = -1;
 
 	unordered_map<string, int> varReg;
+	unordered_map<string, int> paramNames;
+
+	unordered_map<string, int> funcPointers;
+	bool funcDef = false;
+	int braceCount = 0;
+	Stack<int> funcCallInfoIdxs;
 
 	const string numbers = "0123456789.";
 	const string operators = "+-*><|&=/";
 	int branchIndex = 0;
 
 	int varCount = 0;
+	int prevVarCount = 0;
 
 	for(int i = 0; i < tokens.size(); i++){
 		string token = tokens[i];
 		//cout << "token: |" << token << "|\n";
 		if(token.size() == 0){
+			cout << "\nEmpty token, compiler error.\n";
 			continue;
+		}
+		else if(token == "def"){
+			if(funcDef){
+				cout << "\nError: Trying to define a function inside a function body.\n";
+			}
+			else{
+				funcDef = true;
+				paramNames.clear();
+				braceCount = 0;
+				i++;
+				string funcName = tokens[i];
+				if(funcName == "main"){
+					cout << "Main entry point: " << byteCode.size() << std::endl;
+				}
+				std::pair<string, int> funcPtr(funcName, byteCode.size());
+				cout << "Function " << funcPtr.first << " at instruction " << funcPtr.second << std::endl;
+				funcPointers.insert(funcPtr);
+
+				int paramCount = 0;
+				i++;
+				if(tokens[i] != "("){
+					cout << "\nError: Expected a '(' after 'def " << funcName << "'.\n";
+				}
+
+				i++;
+				while(tokens[i] != ")"){
+					std::pair<string, int> param(tokens[i],paramCount);
+					paramNames.insert(param);
+					paramCount++;
+					varCount++;
+
+					i++;
+					if(tokens[i] == ","){
+						i++;
+					}
+				}
+				
+				for(int paramIdx = 0; paramIdx < paramCount; paramIdx++){
+					byteCode.push_back(INT_LIT);
+					byteCode.push_back(paramIdx);
+					byteCode.push_back(PARAM);
+				}
+
+			}
 		}
 		else if(token == "var"){
 			i++;
@@ -126,6 +178,12 @@ vector<unsigned char> NewShuntingYard(vector<string> tokens){
 			}
 		}
 		else if(token == "("){
+			if(operatorStack.stackSize > 0 && funcPointers.find(operatorStack.Peek()) != funcPointers.end()){
+				funcCallInfoIdxs.Push(byteCode.size());
+				byteCode.push_back(STK_FRAME); //Stack frame?
+				byteCode.push_back(INT_LIT);
+				byteCode.push_back(253); //Return Addr?
+			}
 			operatorStack.Push(token);
 		}
 		else if(token == ")"){
@@ -139,10 +197,28 @@ vector<unsigned char> NewShuntingYard(vector<string> tokens){
 			}
 
 			operatorStack.Pop();
-			if(operatorStack.stackSize > 0 && operatorStack.Peek() != "(" && operators.find(operatorStack.Peek()) == string::npos){
+			if(operatorStack.stackSize > 0 && funcPointers.find(operatorStack.Peek()) != funcPointers.end()){
+				int infoIdx = funcCallInfoIdxs.Pop();
+				string funcName = operatorStack.Pop();
+				int funcAddr = funcPointers.find(funcName)->second;
+
+				byteCode.push_back(INT_LIT);
+				byteCode.push_back(funcAddr);
+				byteCode.push_back(INT_LIT);
+				byteCode.push_back(varCount);
+				byteCode.push_back(CALL);
+
+				byteCode[infoIdx + 2] = byteCode.size(); //Return addr?
+				cout << "ByteCode size: " << byteCode.size() << std::endl;
+			}
+			else if(operatorStack.stackSize > 0 && operatorStack.Peek() != "(" && operators.find(operatorStack.Peek()) == string::npos){
+				//byteCode.erase(byteCode.begin() + infoIdx, byteCode.begin() + infoIdx + 3);
 				string op = operatorStack.Pop();
 				byteCode.push_back(Compile(op));
-			}	
+			}
+			else{
+				//byteCode.erase(byteCode.begin() + infoIdx, byteCode.begin() + infoIdx + 3);
+			}
 		}
 		else if(operators.find(token) != string::npos){
 			while(operatorStack.stackSize > 0 
@@ -165,23 +241,39 @@ vector<unsigned char> NewShuntingYard(vector<string> tokens){
 			}
 		}
 		else if(token == "{"){
-			byteCode.push_back(INT_LIT);
-			byteCode.push_back(0);
-			branchIndexStack.Push(byteCode.size() - 1);
-			byteCode.push_back(BRANCH);
-		}
-		else if(token == "}"){
-			string branchingType = branchingStack.Pop();
-			int index = branchIndexStack.Pop();
-			if(branchingType == "while"){
+			if(funcDef){
+				braceCount++;
+			}
+			if(!funcDef || braceCount != 1){
 				byteCode.push_back(INT_LIT);
 				byteCode.push_back(0);
-				byteCode.push_back(INT_LIT);
-				int idx = whileIndexStack.Pop();
-				byteCode.push_back(idx+1);
+				branchIndexStack.Push(byteCode.size() - 1);
 				byteCode.push_back(BRANCH);
 			}
-			byteCode[index] = byteCode.size();
+		}
+		else if(token == "}"){
+			if(!funcDef || braceCount > 1){
+				string branchingType = branchingStack.Pop();
+				int index = branchIndexStack.Pop();
+				if(branchingType == "while"){
+					byteCode.push_back(INT_LIT);
+					byteCode.push_back(0);
+					byteCode.push_back(INT_LIT);
+					int idx = whileIndexStack.Pop();
+					byteCode.push_back(idx+1);
+					byteCode.push_back(BRANCH);
+				}
+				byteCode[index] = byteCode.size();
+			}
+
+			if(funcDef){
+				braceCount--;
+				if(braceCount == 0){
+					funcDef = false;
+					varCount = prevVarCount;
+				}
+			}
+			
 		}
 		else if(token == ";"){
 			while(operatorStack.stackSize > 0){
@@ -207,6 +299,11 @@ vector<unsigned char> NewShuntingYard(vector<string> tokens){
 				byteCode.push_back(varReg.find(token)->second);
 				byteCode.push_back(LOAD_REG);
 			}
+		}
+		else if(paramNames.find(token) != paramNames.end()){
+			byteCode.push_back(INT_LIT);
+			byteCode.push_back(paramNames.find(token)->second);
+			byteCode.push_back(LOAD_REG);
 		}
 		else{
 			operatorStack.Push(token);

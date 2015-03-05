@@ -22,10 +22,13 @@ void VM::Execute(string code){
 	delete byteCode;
 }
 
-void VM::Execute(unsigned char* code, int instructionCount){
+void VM::Execute(unsigned char* code, int instructionCount, int entryPoint){
+	stackFrame = 0;
 
-	for(int i = 0; i < instructionCount; i++){
+	for(int i = entryPoint; i < instructionCount; i++){
 		unsigned char instruction = code[i];
+
+		//cout << "Exceute order " << (int)instruction << " at instruction " << i << endl;
 
 		switch (instruction){
 			case INT_ADD:{
@@ -129,7 +132,7 @@ void VM::Execute(unsigned char* code, int instructionCount){
 				//cout << "LOAD\n";
 				short a = Pop();
 				if(a >= 0 && a < REGISTER_COUNT){
-					Push(registers[a]);
+					Push(registers[a + stackFrame]);
 				}
 				else{
 					cout << "Error: Tried to load a register of value: " << a << endl;
@@ -143,17 +146,50 @@ void VM::Execute(unsigned char* code, int instructionCount){
 				short b = Pop();
 
 				if(b >= 0 && b < REGISTER_COUNT){
-					registers[b] = a;
+					registers[b] = a + stackFrame;
 				}
 				else{
 					cout << "Error: Tried to save to a register of value: " << b << endl;
 				}
 			}break;
 
+			case CALL:{
+				short varCount = Pop();
+				stackFrame = stackFrame + varCount;
+				short addr = Pop();
+				i = addr-1;
+			}break;
+
+			case RETURN:{
+				short value = Pop();
+				short retAddr = Pop();
+				short prevStackFrame = Pop();
+				Push(value);
+
+				i = retAddr-1;
+				stackFrame = prevStackFrame;
+				cout << "currentStackFrame: " << stackFrame << "  prevStackFrame: " << prevStackFrame << endl;
+			}break;
+
+			case STK_FRAME:{
+				Push(stackFrame);
+			}break;
+
+			case PARAM:{
+				short a = Pop();
+				short b = Pop();
+
+				if(a >= 0 && a < REGISTER_COUNT){
+					registers[a] = b + stackFrame;
+				}
+			}break;
+
 			default:
-				cout << "\nInvalid instruction at instruction " << i << endl;
+				cout << "\nInvalid instruction " << stack[i] << " at instruction " << i << endl;
 				break;
 		}
+
+
 	}
 }
 

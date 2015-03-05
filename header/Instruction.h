@@ -19,6 +19,10 @@ enum Instruction{
 	LOAD_REG = 15,
 	SAVE_REG = 16,
 	INT_DIV = 17,
+	CALL = 18,
+	RETURN = 19,
+	STK_FRAME = 20,
+	PARAM = 21
 };
 
 
