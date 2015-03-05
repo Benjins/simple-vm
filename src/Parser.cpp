@@ -8,10 +8,6 @@ using std::ifstream; using std::cout; using std::endl; using std::cin;
 using std::stringstream;
 
 string ParseByteCode(string fileName){
-	string fileContents;
-	ReadFromFile(fileContents, fileName);
-
-	return ShuntingYard(Tokenize(fileContents));
 
 	return "";
 }

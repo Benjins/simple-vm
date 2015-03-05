@@ -8,6 +8,8 @@
 
 using std::string; using std::vector;
 
+struct VM;
+
 template<typename T>
 struct Stack{
 	T values[MAX_STACK_SIZE];
@@ -53,7 +55,7 @@ vector<string> NewTokenize(const string& code);
 
 string ShuntingYard(vector<string> tokens);
 
-vector<unsigned char> NewShuntingYard(vector<string> tokens);
+vector<unsigned char> NewShuntingYard(vector<string> tokens, VM& vm);
 
 string MakeIntLiteral(int number);
 

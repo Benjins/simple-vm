@@ -22,6 +22,16 @@ void VM::Execute(string code){
 	delete byteCode;
 }
 
+void VM::Execute(unsigned char* code, int instructionCount, const string& entry){
+	auto funcPair = funcPointers.find(entry);
+	if(funcPair == funcPointers.end()){
+		cout << "\nError: Could not find entry point: " << entry << endl;
+	}
+	else{
+		Execute(code, instructionCount, funcPair->second);
+	}
+}
+
 void VM::Execute(unsigned char* code, int instructionCount, int entryPoint){
 	stackFrame = 0;
 
@@ -167,7 +177,7 @@ void VM::Execute(unsigned char* code, int instructionCount, int entryPoint){
 				Push(value);
 
 				i = retAddr-1;
-				cout << "currentStackFrame: " << stackFrame << "  prevStackFrame: " << prevStackFrame << endl;
+				//cout << "currentStackFrame: " << stackFrame << "  prevStackFrame: " << prevStackFrame << endl;
 				stackFrame = prevStackFrame;
 			}break;
 

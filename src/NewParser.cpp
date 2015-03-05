@@ -1,4 +1,5 @@
 #include "../header/Parser.h"
+#include "../header/VM.h"
 #include "../header/Instruction.h"
 #include <fstream>
 #include <unordered_map>
@@ -67,7 +68,7 @@ vector<string> NewTokenize(const string& code){
 	return tokens;
 }
 
-vector<unsigned char> NewShuntingYard(vector<string> tokens){
+vector<unsigned char> NewShuntingYard(vector<string> tokens, VM& vm){
 	vector<unsigned char> byteCode;
 	Stack<string> operatorStack;
 	Stack<string> branchingStack;
@@ -78,7 +79,6 @@ vector<unsigned char> NewShuntingYard(vector<string> tokens){
 	unordered_map<string, int> varReg;
 	unordered_map<string, int> paramNames;
 
-	unordered_map<string, int> funcPointers;
 	bool funcDef = false;
 	int braceCount = 0;
 	Stack<int> funcCallInfoIdxs;
@@ -112,7 +112,7 @@ vector<unsigned char> NewShuntingYard(vector<string> tokens){
 				}
 				std::pair<string, int> funcPtr(funcName, byteCode.size());
 				cout << "Function " << funcPtr.first << " at instruction " << funcPtr.second << std::endl;
-				funcPointers.insert(funcPtr);
+				vm.funcPointers.insert(funcPtr);
 
 				int paramCount = 0;
 				i++;
@@ -178,7 +178,7 @@ vector<unsigned char> NewShuntingYard(vector<string> tokens){
 			}
 		}
 		else if(token == "("){
-			if(operatorStack.stackSize > 0 && funcPointers.find(operatorStack.Peek()) != funcPointers.end()){
+			if(operatorStack.stackSize > 0 && vm.funcPointers.find(operatorStack.Peek()) != vm.funcPointers.end()){
 				funcCallInfoIdxs.Push(byteCode.size());
 				byteCode.push_back(STK_FRAME); //Stack frame?
 				byteCode.push_back(INT_LIT);
@@ -200,10 +200,10 @@ vector<unsigned char> NewShuntingYard(vector<string> tokens){
 			}
 
 			operatorStack.Pop();
-			if(operatorStack.stackSize > 0 && funcPointers.find(operatorStack.Peek()) != funcPointers.end()){
+			if(operatorStack.stackSize > 0 && vm.funcPointers.find(operatorStack.Peek()) != vm.funcPointers.end()){
 				int infoIdx = funcCallInfoIdxs.Pop();
 				string funcName = operatorStack.Pop();
-				int funcAddr = funcPointers.find(funcName)->second;
+				int funcAddr = vm.funcPointers.find(funcName)->second;
 
 				byteCode.push_back(INT_LIT);
 				byteCode.push_back(funcAddr);

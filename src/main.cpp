@@ -33,31 +33,43 @@ int main(){
 	//string code = "var z : 1; while(z > 0){var x : READ(); z : z - x;  PRINT(z);}";
 
 	
-	string code = "def MultAdd(a,b,c){\
+	string code = "\
+				  def Factorial(n){\
+					if(n > 1){\
+					return(n*Factorial(n-1));\
+					}\
+					return(1);\
+				  }\
+	def MultAdd(a,b,c){\
 		var prodOne : a * b;\
 		var prodTwo : a * c;\
 		return(prodOne + prodTwo);\
 	}\
 	\
 	def main(){\
-		var input : READ();\
-		var inputTwo : READ();\
-		var inputThree : READ();\
-		PRINT(MultAdd(input, inputTwo, inputThree));\
+	var input : 1;\
+		while(input > 0){\
+			input : READ();\
+			PRINT(Factorial(input));\
+			PRINT(input);\
+		}\
 	}";
+
+	//For some reason, input is being set back to un-initialised, but recursion does work.
 	
+	VM x;
 
 	vector<string> tokens = NewTokenize(code);
 	
-	vector<unsigned char> byteCode = NewShuntingYard(tokens);
+	vector<unsigned char> byteCode = NewShuntingYard(tokens, x);
 	
 	for(int i = 0; i < byteCode.size(); i++){
 		int val = byteCode[i];
 		//cout << val << endl;
 	}
 
-	VM x;
-	x.Execute(&byteCode[0], byteCode.size(), 37);
+	
+	x.Execute(&byteCode[0], byteCode.size(), "main");
 	
 	for(int i = 0; i < byteCode.size(); i++){
 		//cout << i << ": |" << (int)byteCode[i] << "|\n";
