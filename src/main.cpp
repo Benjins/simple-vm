@@ -34,12 +34,12 @@ int main(){
 
 	
 	string code = "\
-				  def Summation(n){\
-					if(n > 0){\
-					return(n+Summation(n-1));\
-					}\
-					return(0);\
-				  }\
+	def Summation(n){\
+		if(n > 0){\
+			return(n+Summation(n-1));\
+		}\
+		return(0);\
+	}\
 	def MultAdd(a,b,c){\
 		var prodOne : a * b;\
 		var prodTwo : a * c;\
@@ -47,9 +47,9 @@ int main(){
 	}\
 	\
 	def main(){\
-	var output: 2;\
-	var input : 1;\
-	var midput : 2;\
+		var output: 2;\
+		var input : 1;\
+		var midput : 2;\
 		while(input > 0){\
 			output : READ();\
 			input  : READ();\
