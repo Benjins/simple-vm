@@ -182,9 +182,6 @@ vector<unsigned char> NewShuntingYard(vector<string> tokens, VM& vm){
 				funcCallInfoIdxs.Push(byteCode.size());
 				byteCode.push_back(STK_FRAME); //Stack frame?
 				byteCode.push_back(INT_LIT);
-				byteCode.push_back(varCount);
-				byteCode.push_back(INT_ADD);
-				byteCode.push_back(INT_LIT);
 				byteCode.push_back(253); //Return Addr?
 			}
 			operatorStack.Push(token);
@@ -206,10 +203,12 @@ vector<unsigned char> NewShuntingYard(vector<string> tokens, VM& vm){
 				int funcAddr = vm.funcPointers.find(funcName)->second;
 
 				byteCode.push_back(INT_LIT);
+				byteCode.push_back(varCount);
+				byteCode.push_back(INT_LIT);
 				byteCode.push_back(funcAddr);
 				byteCode.push_back(CALL);
 
-				byteCode[infoIdx + 5] = byteCode.size(); //Return addr?
+				byteCode[infoIdx + 2] = byteCode.size(); //Return addr?
 				cout << "ByteCode size: " << byteCode.size() << std::endl;
 			}
 			else if(operatorStack.stackSize > 0 && operatorStack.Peek() != "(" && operators.find(operatorStack.Peek()) == string::npos){

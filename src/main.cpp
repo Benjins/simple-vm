@@ -47,11 +47,12 @@ int main(){
 	}\
 	\
 	def main(){\
+	var output: 2;\
 	var input : 1;\
+	var midput : 2;\
 		while(input > 0){\
 			input : READ();\
 			PRINT(Factorial(input));\
-			PRINT(input);\
 		}\
 	}";
 

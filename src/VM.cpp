@@ -167,6 +167,9 @@ void VM::Execute(unsigned char* code, int instructionCount, int entryPoint){
 				//short varCount = Pop();
 				//stackFrame = stackFrame + varCount; //Need to modify stack frame passed to func?
 				short addr = Pop();
+				short varCt = Pop();
+				//cout << "Old stack frame before call: " << stackFrame << " after call: " << (stackFrame + varCt) << endl;
+				//stackFrame = stackFrame + varCt;
 				i = addr-1;
 			}break;
 
