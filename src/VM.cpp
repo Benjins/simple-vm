@@ -156,7 +156,7 @@ void VM::Execute(unsigned char* code, int instructionCount, int entryPoint){
 				short b = Pop();
 
 				if(b >= 0 && b < REGISTER_COUNT){
-					registers[b] = a + stackFrame;
+					registers[b + stackFrame] = a;
 				}
 				else{
 					cout << "Error: Tried to save to a register of value: " << b << endl;
@@ -169,7 +169,7 @@ void VM::Execute(unsigned char* code, int instructionCount, int entryPoint){
 				short addr = Pop();
 				short varCt = Pop();
 				//cout << "Old stack frame before call: " << stackFrame << " after call: " << (stackFrame + varCt) << endl;
-				//stackFrame = stackFrame + varCt;
+				stackFrame = stackFrame + varCt;
 				i = addr-1;
 			}break;
 
@@ -191,9 +191,8 @@ void VM::Execute(unsigned char* code, int instructionCount, int entryPoint){
 			case PARAM:{
 				short a = Pop();
 				short b = Pop();
-
 				if(a >= 0 && a < REGISTER_COUNT){
-					registers[a] = b + stackFrame;
+					registers[a + stackFrame] = b;
 				}
 			}break;
 

@@ -34,11 +34,11 @@ int main(){
 
 	
 	string code = "\
-				  def Factorial(n){\
-					if(n > 1){\
-					return(n*Factorial(n-1));\
+				  def Summation(n){\
+					if(n > 0){\
+					return(n+Summation(n-1));\
 					}\
-					return(1);\
+					return(0);\
 				  }\
 	def MultAdd(a,b,c){\
 		var prodOne : a * b;\
@@ -51,8 +51,10 @@ int main(){
 	var input : 1;\
 	var midput : 2;\
 		while(input > 0){\
-			input : READ();\
-			PRINT(Factorial(input));\
+			output : READ();\
+			input  : READ();\
+			midput : READ();\
+			PRINT(Summation(MultAdd(Summation(output),input,midput)));\
 		}\
 	}";
 
