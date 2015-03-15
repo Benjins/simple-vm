@@ -1,8 +1,8 @@
 language: cpp
 
 compiler:
-  - clang
-  - gcc
+  - clang++
+  - g++
 
 before_install:
   # g++4.8.1
@@ -23,4 +23,4 @@ install:
   - if [ "$CXX" == "clang++" ]; then sudo apt-get install --allow-unauthenticated -qq clang-3.4; fi
   - if [ "$CXX" == "clang++" ]; then export CXX="clang++-3.4"; fi
   
-script: g++ --version && make
+script: make
