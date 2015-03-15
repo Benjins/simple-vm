@@ -188,3 +188,4 @@ FakesAssemblies/
 
 #Misc
 simple-vm/*
+!simple-vm/simple-vm.vcxproj

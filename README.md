@@ -2,6 +2,7 @@ simple-vm
 =========
 
 [![Build Status](https://travis-ci.org/Benjins/simple-vm.svg?branch=master)](https://travis-ci.org/Benjins/simple-vm)
+[![Windows Build status](https://ci.appveyor.com/api/projects/status/cetu5e3ufk4fm50j?svg=true)](https://ci.appveyor.com/project/Benjins/simple-vm)
 
 A simple, stack-based VM in C++.
 
