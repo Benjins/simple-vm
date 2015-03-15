@@ -99,13 +99,15 @@ int main(){
 		//cout << val << endl;
 	}
 	
-	x.Execute(&byteCode[0], byteCode.size(), "main");
-	
-	for(int i = 0; i < byteCode.size(); i++){
-		//cout << i << ": |" << (int)byteCode[i] << "|\n";
-	}
-	
-	
+	//x.Execute(&byteCode[0], byteCode.size(), "main");
+
+#if TESTING
+	bool allPass = true;
+
+	return allPass ? 0 : 1;
+#else
+
+#endif
 
 	
     return 0;
