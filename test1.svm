@@ -40,4 +40,6 @@ def main(){
 		PRINT(IsPrime(input));
 		PRINT(Summation(input));
 	}
+	
+	RETURN(0);
 }

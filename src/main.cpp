@@ -24,11 +24,17 @@ int main(int argc, char** argv){
 	*/
 
 	x.CompileAndLoadCode("test1.svm");
+	x.SaveByteCode("test1.svb");
+	x.LoadByteCode("test1.svb");
+	//x.Execute("main");
+
 
 #if 1 //TESTING
 	bool allPass = true;
 
 	x.CompileAndLoadCode("test2.svm");
+	x.SaveByteCode("test2.svb");
+	x.LoadByteCode("test2.svb");
 
 	allPass &= (x.Execute("main") == 5);
 	allPass &= (x.Execute("testOne") == 1);

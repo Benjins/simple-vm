@@ -33,9 +33,99 @@ void VM::CompileAndLoadCode(const string& fileName){
 
 }
 
-void VM::SaveByteCode(const string& fileName){}
+void VM::SaveByteCode(const string& fileName){
+	ofstream fileOut;
+	fileOut.open(fileName, std::ios::out | ofstream::binary);
+	if(!fileOut.good()){
+		cout << "Trouble opening file " << fileName << " for output.\n";
+		return;
+	}
 
-void VM::LoadByteCode(const string& fileName){}
+	char buffer[4] = {'S', 'V', 'B', '\0'};
+	fileOut.write(buffer, 4);
+
+	int version = VERSION_INT;
+	fileOut.write((char*)&version, 4);
+
+	int length = byteCodeLoaded.size();
+	fileOut.write((char*)&length, 4);
+
+	fileOut.write((char*)byteCodeLoaded.data(), length);
+
+	int numFuncs = funcPointers.size();
+	fileOut.write((char*)&numFuncs, 4);
+
+	for(auto iter = funcPointers.begin(); iter != funcPointers.end(); iter++){
+		int entryPoint = iter->second;
+		fileOut.write((char*)&entryPoint, 4);
+
+		int strLength = iter->first.size() + 1;
+		fileOut.write((char*)&strLength, 4);
+
+		fileOut.write(iter->first.c_str(), strLength);
+	}
+
+	fileOut.close();
+}
+
+void VM::LoadByteCode(const string& fileName){
+	ifstream fileIn;
+	fileIn.open(fileName, std::ios::in | ofstream::binary);
+	if(!fileIn.good()){
+		cout << "Trouble opening file " << fileName << " for output.\n";
+		return;
+	}
+
+	char buffer[4];
+	fileIn.read(buffer, 4);
+
+	if(strcmp(buffer, "SVB") != 0){
+		cout << "\nWarning: File " << fileName << " may not be an SVB file.\n";
+	}
+
+	fileIn.read(buffer, 4);
+
+	if(VERSION_INT < *(int*)buffer){
+		cout << "\nWarning: File " << fileName << " is a higher version.  It may not work as intended\n";
+	}
+
+	fileIn.read(buffer, 4);
+	int length = *(int*)buffer;
+
+	char* codeBuffer = new char[length];
+	fileIn.read(codeBuffer, length);
+	unsigned char* codeBufferCast = (unsigned char*)codeBuffer;
+	byteCodeLoaded.resize(length);
+	for(int i = 0; i < length; i++){
+		byteCodeLoaded[i] = codeBufferCast[i];
+	}
+
+	funcPointers.clear();
+
+	fileIn.read(buffer, 4);
+	int numFuncs = *(int*)buffer;
+
+	for(int i = 0; i < numFuncs; i++){
+		fileIn.read(buffer, 4);
+		int entryPoint = *(int*)buffer;
+
+		fileIn.read(buffer, 4);
+		int strLength = *(int*)buffer;
+
+		char* strData = new char[strLength];
+		fileIn.read(strData, strLength);
+		string funcName = string(strData);
+
+		std::pair<string, int> funcPtr(funcName, entryPoint);
+		funcPointers.insert(funcPtr);
+
+		delete[] strData;
+	}
+
+
+	delete[] codeBuffer;
+
+}
 
 int VM::Execute(string funcName){
 	return Execute(&byteCodeLoaded[0], byteCodeLoaded.size(), funcName);

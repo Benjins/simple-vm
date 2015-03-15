@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <vector>
 
+#define VERSION_INT 100
 
 /*
 File formats and specs for svm and svb files.
@@ -16,6 +17,14 @@ SVB:
  - 4 bytes: Version in integer format (100 for 1.0.0, 110 for 1.1.0, 111 for 1.1.1, etc.)
  - 4 bytes: length of code to follow
  - Code in bytecode format, length specified by header
+
+ - 4 bytes: number of functions defined
+ - [Number of functions] of FuncPair struct
+    - FuncPair struct: 
+		- 4 bytes entry point value in code
+		- 4 bytes length of string (including null terminator)
+		- [Length of string and null terminator] bytes containing the value of the string
+
 
 */
 
