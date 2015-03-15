@@ -15,15 +15,18 @@ void VM::CompileAndLoadCode(const string& fileName){
 	fileIn.open(fileName);
 
 	if(!fileIn.good()){
-		//Handle error
+		cout << "\nError opening file: " << fileName << endl;
+		return;
 	}
 
 	string code = "";
 	while(!fileIn.eof()){
 		string line;
-		
-		code += line;
+		getline(fileIn, line, '\n');
+		code = code + line + "\n";
 	}
+
+	byteCodeLoaded = NewShuntingYard(NewTokenize(code), *this);
 
 }
 
@@ -31,21 +34,22 @@ void VM::SaveByteCode(const string& fileName){}
 
 void VM::LoadByteCode(const string& fileName){}
 
-void VM::Execute(string funcName){
-	Execute(&byteCodeLoaded[0], byteCodeLoaded.size(), funcName);
+int VM::Execute(string funcName){
+	return Execute(&byteCodeLoaded[0], byteCodeLoaded.size(), funcName);
 }
 
-void VM::Execute(unsigned char* code, int instructionCount, const string& entry){
+int VM::Execute(unsigned char* code, int instructionCount, const string& entry){
 	auto funcPair = funcPointers.find(entry);
 	if(funcPair == funcPointers.end()){
 		cout << "\nError: Could not find entry point: " << entry << endl;
+		return -1;
 	}
 	else{
-		Execute(code, instructionCount, funcPair->second);
+		return Execute(code, instructionCount, funcPair->second);
 	}
 }
 
-void VM::Execute(unsigned char* code, int instructionCount, int entryPoint){
+int VM::Execute(unsigned char* code, int instructionCount, int entryPoint){
 	stackFrame = 0;
 
 	for(int i = entryPoint; i < instructionCount; i++){
@@ -209,6 +213,11 @@ void VM::Execute(unsigned char* code, int instructionCount, int entryPoint){
 				}
 			}break;
 
+			case RETURN_FINAL:{
+				short a = Pop();
+				return a;
+			}break;
+
 			default:
 				cout << "\nInvalid instruction " << stack[i] << " at instruction " << i << endl;
 				break;
@@ -216,6 +225,8 @@ void VM::Execute(unsigned char* code, int instructionCount, int entryPoint){
 
 
 	}
+
+	return -1;
 }
 
 void VM::Push(short value){

@@ -34,16 +34,16 @@ struct VM{
 	void LoadByteCode(const string& fileName);
 
 	//Execute bytecode, given the start of instruction, and the count
-	void Execute(unsigned char* code, int instructionCount, int entryPoint = 0);
-	void Execute(unsigned char* code, int instructionCount, const string& entry);
-	void Execute(string funcName);
+	int Execute(unsigned char* code, int instructionCount, int entryPoint = 0);
+	int Execute(unsigned char* code, int instructionCount, const string& entry);
+	int Execute(string funcName);
 
 	unordered_map<string, int> funcPointers;
+	vector<unsigned char> byteCodeLoaded;
+
 protected:
 	short stack[MAX_STACK];
 	short stackSize;
-	vector<unsigned char> byteCodeLoaded;
-	
 
 	short stackFrame;
 	

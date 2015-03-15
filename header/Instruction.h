@@ -22,7 +22,8 @@ enum Instruction{
 	CALL = 18,
 	RETURN = 19,
 	STK_FRAME = 20,
-	PARAM = 21
+	PARAM = 21,
+	RETURN_FINAL = 22
 };
 
 
