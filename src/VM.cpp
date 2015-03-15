@@ -2,6 +2,7 @@
 #include "../header/Instruction.h"
 #include "../header/Parser.h"
 #include <iostream>
+#include <cstring>
 #include <fstream>
 
 using std::cout; using std::cin; using std::endl; using std::ifstream; using std::ofstream; using std::getline;
