@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <iostream>
 #include <sstream>
+#include <cstdlib>
 
 using std::cout; using std::unordered_map;
 

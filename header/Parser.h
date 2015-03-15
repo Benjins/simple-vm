@@ -3,10 +3,11 @@
 
 #include <string>
 #include <vector>
+#include <iostream>
 
 #define MAX_STACK_SIZE 512
 
-using std::string; using std::vector;
+using std::string; using std::vector; using std::cout;
 
 struct VM;
 

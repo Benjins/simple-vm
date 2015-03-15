@@ -98,74 +98,9 @@ vector<string> Tokenize(const string& code){
 	return tokenizedCode;
 }
 
+//Deprecated
 string ShuntingYard(vector<string> tokens){
-	stringstream byteCode;
-	Stack<string> operatorStack;
-	Stack<string> branchingStack;
-	Stack<int> branchIndexStack;
-	
-	for(int i = 0; i < tokens.size(); i++){
-
-		string token = tokens[i];
-		if(__digits.find(token[0]) != string::npos){
-			byteCode << MakeIntLiteral(atoi(token.c_str()));
-		}
-		else if(token == ","){
-			while(operatorStack.Peek() != ")"){
-				string op = operatorStack.Pop();
-				byteCode << Compile(op);
-				if(operatorStack.stackSize == 0){
-					cout << "\nError: Mismatched parentheses.\n";
-					break;
-				}
-			}
-		}
-		else if(token == "("){
-			operatorStack.Push(token);
-		}
-		else if(token == ")"){
-			while(operatorStack.Peek() != "("){
-				string op = operatorStack.Pop();
-				byteCode << Compile(op);
-				if(operatorStack.stackSize == 0){
-					cout << "\nError: Mismatched parentheses.\n";
-					break;
-				}
-			}
-
-			operatorStack.Pop();
-			if(operatorStack.stackSize > 0 && IsAFunctionToken(operatorStack.Peek())){
-				byteCode << Compile(operatorStack.Pop());
-			}
-			
-		}
-		else if(__operators.find(token) != string::npos){
-			while(operatorStack.stackSize > 0 
-				&& __operators.find(operatorStack.Peek()) != string::npos 
-				&& OperatorPrecedence(operatorStack.Peek()) > OperatorPrecedence(token)){
-					byteCode << Compile(operatorStack.Pop());
-			}
-			operatorStack.Push(token);
-		}
-		else{
-			operatorStack.Push(token);
-		}
-	}
-
-	while(operatorStack.stackSize > 0){
-		string op = operatorStack.Pop();
-
-		if(op == ")" || op == "("){
-			cout << "\nError: mismatched parentheses.\n";
-		}
-
-		byteCode << Compile(op);
-	}
-
-	string code;
-	byteCode >> code;
-
-	return code;
+	return "";
 }
 
 bool IsAFunctionToken(string token){
