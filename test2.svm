@@ -33,7 +33,7 @@ def testThree(){
 
 def main(){
 	var input : 3;
-	var next : input*input+3-4*(6-3)+4;
+	var next : 4+input*input+3-4*(6-3);
 	var final : next;
 	
 	if(2 = 2 & 3 > 1){

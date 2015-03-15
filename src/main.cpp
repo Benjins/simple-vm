@@ -24,8 +24,6 @@ int main(int argc, char** argv){
 	*/
 
 	x.CompileAndLoadCode("test1.svm");
-	
-	//cout << "Returned: " << x.Execute("main") << endl;
 
 #if 1 //TESTING
 	bool allPass = true;

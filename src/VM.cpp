@@ -19,6 +19,9 @@ void VM::CompileAndLoadCode(const string& fileName){
 		return;
 	}
 
+	byteCodeLoaded.clear();
+	funcPointers.clear();
+
 	string code = "";
 	while(!fileIn.eof()){
 		string line;
@@ -50,6 +53,7 @@ int VM::Execute(unsigned char* code, int instructionCount, const string& entry){
 }
 
 int VM::Execute(unsigned char* code, int instructionCount, int entryPoint){
+	stackSize = 0;
 	stackFrame = 0;
 
 	for(int i = entryPoint; i < instructionCount; i++){
