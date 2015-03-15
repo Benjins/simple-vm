@@ -1,6 +1,8 @@
 simple-vm
 =========
 
+[![Build Status](https://travis-ci.org/Benjins/simple-vm.svg?branch=master)](https://travis-ci.org/Benjins/simple-vm)
+
 A simple, stack-based VM in C++.
 
 ---------
