@@ -1,25 +1,38 @@
 #include "../header/VM.h"
 #include "../header/Instruction.h"
+#include "../header/Parser.h"
 #include <iostream>
+#include <fstream>
 
-using std::cout; using std::cin; using std::endl;
+using std::cout; using std::cin; using std::endl; using std::ifstream; using std::ofstream; using std::getline;
 
 VM::VM(){
 	stackSize = 0;
 }
 
-void VM::Execute(string code){
-	int count = code.size();
+void VM::CompileAndLoadCode(const string& fileName){
+	ifstream fileIn;
+	fileIn.open(fileName);
 
-	unsigned char* byteCode = new unsigned char[count];
-
-	for(int i = 0; i < count; i++){
-		byteCode[i] = (unsigned char)code[i];
+	if(!fileIn.good()){
+		//Handle error
 	}
 
-	Execute(byteCode, count);
+	string code = "";
+	while(!fileIn.eof()){
+		string line;
+		
+		code += line;
+	}
 
-	delete byteCode;
+}
+
+void VM::SaveByteCode(const string& fileName){}
+
+void VM::LoadByteCode(const string& fileName){}
+
+void VM::Execute(string funcName){
+	Execute(&byteCodeLoaded[0], byteCodeLoaded.size(), funcName);
 }
 
 void VM::Execute(unsigned char* code, int instructionCount, const string& entry){
@@ -223,5 +236,6 @@ short VM::Pop(){
 	}
 	else{
 		cout << "\nError: Stack Underflow on VM.\n";
+		return 0;
 	}
 }

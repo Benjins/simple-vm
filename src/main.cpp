@@ -32,27 +32,27 @@ int main(){
 
 	//string code = "var z : 1; while(z > 0){var x : READ(); z : z - x;  PRINT(z);}";
 
-	
-	string code = "\
-	def IsPrime(number){\
+	/*
+	string code = "                                        \
+	def IsPrime(number){                                 \
 		var factor : 1;                                   \
 		var factorCount : 0;                              \
-														\
+													   	  \
 		while(factor < number){                           \
 			if( factor * (number / factor) = number){      \
 				factorCount : factorCount + 1;             \
 			}                                              \
-														\
+														   \
 			factor : factor + 1;                           \
 		}                                                 \
-														\
-		if(factorCount > 1 | factorCount = 0){			\
-			return(0);                                       \
+														   \
+		if(factorCount > 1 | factorCount = 0){			   \
+			return(0);                                     \
 		}                                                 \
-														\
+														  \
 		if(factorCount = 1){                              \
-			return(1);                                     \
-		}                                                \
+			return(1);                                    \
+		}                                                 \
 	}\
 	def Summation(n){\
 		if(n > 0){\
@@ -76,7 +76,15 @@ int main(){
 			PRINT(IsPrime(input));\
 			PRINT(Summation(input));\
 		}\
-	}";
+	}";*/
+
+	string code = " def main(){\
+						var input : 1;\
+						while(input > 0){\
+							input  : READ();\
+							PRINT();\
+						}\
+					}";
 
 	//For some reason, input is being set back to un-initialised, but recursion does work.
 	

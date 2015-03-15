@@ -3,8 +3,23 @@
 
 #include <string>
 #include <unordered_map>
+#include <vector>
 
-using std::string; using std::unordered_map;
+
+/*
+File formats and specs for svm and svb files.
+
+SVM: Standard text file, only ASCII encoding for now.
+
+SVB: 
+ - 4 bytes: "SVB\0"
+ - 4 bytes: Version in integer format (100 for 1.0.0, 110 for 1.1.0, 111 for 1.1.1, etc.)
+ - 4 bytes: length of code to follow
+ - Code in bytecode format, length specified by header
+
+*/
+
+using std::string; using std::unordered_map; using std::vector;
 
 #define MAX_STACK 512
 
@@ -14,16 +29,20 @@ struct VM{
 
 	VM();
 
+	void CompileAndLoadCode(const string& fileName);
+	void SaveByteCode(const string& fileName);
+	void LoadByteCode(const string& fileName);
+
 	//Execute bytecode, given the start of instruction, and the count
 	void Execute(unsigned char* code, int instructionCount, int entryPoint = 0);
 	void Execute(unsigned char* code, int instructionCount, const string& entry);
-	void Execute(string code);
+	void Execute(string funcName);
 
 	unordered_map<string, int> funcPointers;
 protected:
 	short stack[MAX_STACK];
 	short stackSize;
-
+	vector<unsigned char> byteCodeLoaded;
 	
 
 	short stackFrame;
