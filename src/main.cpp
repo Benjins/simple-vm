@@ -34,6 +34,26 @@ int main(){
 
 	
 	string code = "\
+	def IsPrime(number){\
+		var factor : 1;                                   \
+		var factorCount : 0;                              \
+														\
+		while(factor < number){                           \
+			if( factor * (number / factor) = number){      \
+				factorCount : factorCount + 1;             \
+			}                                              \
+														\
+			factor : factor + 1;                           \
+		}                                                 \
+														\
+		if(factorCount > 1 | factorCount = 0){			\
+			return(0);                                       \
+		}                                                 \
+														\
+		if(factorCount = 1){                              \
+			return(1);                                     \
+		}                                                \
+	}\
 	def Summation(n){\
 		if(n > 0){\
 			return(n+Summation(n-1));\
@@ -46,15 +66,15 @@ int main(){
 		return(prodOne + prodTwo);\
 	}\
 	\
+	def SumMultAddSum(x,y,z){\
+	    return(Summation(MultAdd(Summation(x),y,z)));\
+	}\
 	def main(){\
-		var output: 2;\
 		var input : 1;\
-		var midput : 2;\
 		while(input > 0){\
-			output : READ();\
 			input  : READ();\
-			midput : READ();\
-			PRINT(Summation(MultAdd(Summation(output),input,midput)));\
+			PRINT(IsPrime(input));\
+			PRINT(Summation(input));\
 		}\
 	}";
 
@@ -70,7 +90,6 @@ int main(){
 		int val = byteCode[i];
 		//cout << val << endl;
 	}
-
 	
 	x.Execute(&byteCode[0], byteCode.size(), "main");
 	

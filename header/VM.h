@@ -6,9 +6,9 @@
 
 using std::string; using std::unordered_map;
 
-#define MAX_STACK 1024
+#define MAX_STACK 512
 
-#define REGISTER_COUNT 16
+#define REGISTER_COUNT 1024
 
 struct VM{
 
