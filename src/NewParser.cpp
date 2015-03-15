@@ -109,10 +109,10 @@ vector<unsigned char> NewShuntingYard(vector<string> tokens, VM& vm){
 				i++;
 				string funcName = tokens[i];
 				if(funcName == "main"){
-					cout << "Main entry point: " << byteCode.size() << std::endl;
+					//cout << "Main entry point: " << byteCode.size() << std::endl;
 				}
 				std::pair<string, int> funcPtr(funcName, byteCode.size());
-				cout << "Function " << funcPtr.first << " at instruction " << funcPtr.second << std::endl;
+				//cout << "Function " << funcPtr.first << " at instruction " << funcPtr.second << std::endl;
 				vm.funcPointers.insert(funcPtr);
 
 				int paramCount = 0;
@@ -210,7 +210,7 @@ vector<unsigned char> NewShuntingYard(vector<string> tokens, VM& vm){
 				byteCode.push_back(CALL);
 
 				byteCode[infoIdx + 2] = byteCode.size(); //Return addr?
-				cout << "ByteCode size: " << byteCode.size() << std::endl;
+				//cout << "ByteCode size: " << byteCode.size() << std::endl;
 			}
 			else if(operatorStack.stackSize > 0 && operatorStack.Peek() != "(" && operators.find(operatorStack.Peek()) == string::npos){
 				//byteCode.erase(byteCode.begin() + infoIdx, byteCode.begin() + infoIdx + 3);

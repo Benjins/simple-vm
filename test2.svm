@@ -1,0 +1,47 @@
+def IsPrime(number){                                 
+	var factor : 1;                                   
+	var factorCount : 0;                              
+													  
+	while(factor < number){                           
+		if( factor * (number / factor) = number){      
+			factorCount : factorCount + 1;             
+		}                                              
+													   
+		factor : factor + 1;                           
+	}                                                 
+													   
+	if(factorCount > 1 | factorCount = 0){			   
+		return(0);                                     
+	}                                                 
+													  
+	if(factorCount = 1){                              
+		return(1);                                   
+	}                                                 
+}
+
+def testOne(){
+	RETURN(IsPrime(17));
+}
+
+def testTwo(){
+	RETURN(IsPrime(37));
+}
+
+def testThree(){
+	RETURN(IsPrime(91));
+}
+
+def main(){
+	var input : 3;
+	var next : input*input+3-4*(6-3)+4;
+	var final : next;
+	
+	if(2 = 2 & 3 > 1){
+		final : final + 1;
+	}
+	if(2 > 3){
+		final : final - 1;
+	}
+	
+	RETURN(final);
+}

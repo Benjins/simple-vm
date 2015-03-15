@@ -8,8 +8,6 @@ using std::cout; using std::endl;
 
 int main(int argc, char** argv){
 
-	cout << argv[0] << endl;
-
 	string code1 = " def main(){\
 						var input : READ();\
 						RETURN(input * 2 + 3);\
@@ -27,10 +25,17 @@ int main(int argc, char** argv){
 
 	x.CompileAndLoadCode("test1.svm");
 	
-	cout << "Returned: " << x.Execute("main") << endl;
+	//cout << "Returned: " << x.Execute("main") << endl;
 
-#if TESTING
+#if 1 //TESTING
 	bool allPass = true;
+
+	x.CompileAndLoadCode("test2.svm");
+
+	allPass &= (x.Execute("main") == 5);
+	allPass &= (x.Execute("testOne") == 1);
+	allPass &= (x.Execute("testTwo") == 1);
+	allPass &= (x.Execute("testThree") == 0);
 
 	return allPass ? 0 : 1;
 #else
