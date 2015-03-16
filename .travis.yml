@@ -23,3 +23,13 @@ install:
   - if [ "$CXX" == "clang++" ]; then export CXX="clang++-3.4"; fi
   
 script: make build && make test && ./simplevm-test
+
+ secure: "Iqkk6B8HCcZ0L/RswzGTxEw0u4RueobQrgpbfFXhbu55rroxMaIPVM2PYmKREDlNqBBiIVgaWQHMme7W6A5eFko9lBD+oVk2BhoJaVOsATZ6aRdFnrzZJ3/+kw+VqLMrhDsOqm3zdJ7BSNSFAJubmaYeSUgt9WEQj1E9sfS8wm4="
+
+env:
+  global:
+    - "FTP_USER=bnsmith"
+
+after_success:
+	 - "zip simple-vm_unix simplevm_linux simplevm_mac"
+     - "curl --ftp-create-dirs -T simple-vm_unix -u $FTP_USER:$FTP_PASSWORD sftp://login.ccs.neu.edu/.www/personal-projects/deployment/simple-vm/"
