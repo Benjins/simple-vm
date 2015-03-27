@@ -115,11 +115,11 @@ bool IsAFunctionToken(string token){
 }
 
 int OperatorPrecedence(string token){
-	int precedence[9] = {3,3,4,4,2,2,2,1,1};
+	int precedence[] = {3,3,4,4,2,2,2,1,1,0};
 	
 	//cout << "OpPrec\n";
 	
-	string ops = "+-*/=><|&";
+	string ops = "+-*/=><|&:";
 	
 	int index = ops.find(token);
 	if(index != string::npos){

@@ -9,6 +9,86 @@
 
 using std::cout; using std::unordered_map;
 
+vector<string> JustShuntingYard(vector<string>& tokens){
+	const string operators = "+*-/=><|&:";
+	const string numbers = "0123456789.";
+
+	unordered_map<string,int> variables;
+
+	vector<string> shuntedTokens;
+
+	bool funcDef = false;
+
+	Stack<string> operatorStack;
+
+	for(int i = 0; i < tokens.size(); i++){
+		string token = tokens[i];
+		if(token == "def"){
+			funcDef = true;
+			shuntedTokens.push_back(token);
+		}
+		else if(funcDef){
+			shuntedTokens.push_back(token);
+			if(token == "{"){
+				funcDef = false;
+			}
+		}
+		else if(numbers.find(token[0]) != string::npos){
+			shuntedTokens.push_back(token);
+		}
+		else if(token == "{" || token == "}"){
+			shuntedTokens.push_back(token);
+		}
+		else if(token == "var"){
+			shuntedTokens.push_back(token);
+			variables.insert(std::pair<string,int>(tokens[i+1],1));
+		}
+		else if(variables.find(token) != variables.end()){
+			shuntedTokens.push_back(token);
+		}
+		else if(token == "("){
+			operatorStack.Push(token);
+		}
+		else if(token == "("){
+			
+		}
+		else if(token == ")"){
+			while(operatorStack.Peek() != "("){
+				shuntedTokens.push_back(operatorStack.Pop());
+			}
+
+			operatorStack.Pop();
+
+			if(operatorStack.stackSize > 0 && operators.find(operatorStack.Peek()) == string::npos && operatorStack.Peek() != "("){
+				shuntedTokens.push_back(operatorStack.Pop());
+			}
+		}
+		else if(token == ","){
+			while(operatorStack.Peek() != "("){
+				shuntedTokens.push_back(operatorStack.Pop());
+			}
+		}
+		else if(token == ";"){
+			while(operatorStack.stackSize > 0){
+				shuntedTokens.push_back(operatorStack.Pop());
+			}
+		}
+		else if(operators.find(token) != string::npos){
+			while(operatorStack.stackSize > 0 
+				&& operators.find(operatorStack.Peek()) != string::npos 
+				&& OperatorPrecedence(operatorStack.Peek()) > OperatorPrecedence(token)){
+					shuntedTokens.push_back(operatorStack.Pop());
+			}
+			operatorStack.Push(token);
+		}
+		else{
+			operatorStack.Push(token);
+		}
+	}
+
+	return shuntedTokens;
+}
+
 vector<string> NewTokenize(const string& code){
 	const string operators = "(),+*-/=><|&{};:";
 	const string numbers = "0123456789.";

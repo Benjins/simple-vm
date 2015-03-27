@@ -66,6 +66,9 @@ void Builtin::AddByteCode(VM& vm){
 	else if(funcName == "READ"){
 		vm.byteCodeLoaded.push_back(READ);
 	}
+	else if(funcName == "return"){
+		vm.byteCodeLoaded.push_back(RETURN);
+	}
 }
 
 int Assignment::Evaluate(){
@@ -138,6 +141,11 @@ int FuncDef::Evaluate(){
 }
 
 void FuncDef::AddByteCode(VM& vm){
+	for(int paramIdx = paramNames.size() - 1; paramIdx >= 0; paramIdx--){
+		vm.byteCodeLoaded.push_back(INT_LIT);
+		vm.byteCodeLoaded.push_back(paramIdx);
+		vm.byteCodeLoaded.push_back(PARAM);
+	}
 	for(int i = 0; i < numStatements; i++){
 		statements[i]->AddByteCode(vm);
 	}

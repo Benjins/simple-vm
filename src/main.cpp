@@ -9,8 +9,16 @@ using std::cout; using std::endl;
 
 int main(int argc, char** argv){
 
-	string code1 = " def main(){\
+	string code1 = " def add(nix){\
+				   var v : nix*2;\
+				   if(v = 0){\
+					  return(0);\
+				   }\
+				   return(v+4*READ());\
+				   }\
+				   def main(){\
 						var input : READ();\
+						var output : add(2)*3+1+4*4/5;\
 						RETURN(input * 2 + 3);\
 					}";
 
@@ -29,6 +37,12 @@ int main(int argc, char** argv){
 	x.LoadByteCode("test1.svb");
 	//x.Execute("main");
 
+	vector<string> tokens = NewTokenize(code1);
+	vector<string> shuntedTokens = JustShuntingYard(tokens);
+
+	for(int i = 0; i < shuntedTokens.size(); i++){
+		//cout << shuntedTokens[i] << "\n";
+	}
 
 #if 1 //TESTING
 	bool allPass = true;
@@ -44,15 +58,28 @@ int main(int argc, char** argv){
 	//allPass &= (x.Execute("testTwo") == 1);
 	//allPass &= (x.Execute("testThree") == 0);
 
+	AST y;
+
+	FuncDef* defAdd = new FuncDef();
+	defAdd->name = "add";
+	defAdd->paramNames.push_back("num");
+	defAdd->AddStatement(new Builtin("return"));
+	Variable* numVar = new Variable();
+	numVar->reg = 0;
+	Operator* op = new Operator("+");
+	op->left = numVar;
+	op->right = new Literal(7);
+	((FuncCall*)(defAdd->statements[0]))->AddParameter(op);
+	y.defs.push_back(defAdd);
+
 	FuncDef* def = new FuncDef();
 	def->name = "main";
-	AST y;
 	y.defs.push_back(def);
 	def->AddStatement(new Builtin("PRINT"));
-	Operator* mult = new Operator("*");
-	mult->left = new Builtin("READ");
-	mult->right = new Literal(12);
-	((FuncCall*)(def->statements[0]))->AddParameter(mult);
+	FuncCall* call = new FuncCall();
+	call->funcName = "add";
+	call->AddParameter(new Builtin("READ"));
+	((FuncCall*)(def->statements[0]))->AddParameter(call);
 
 	y.GenerateByteCode(x);
 	//x.Execute("main");

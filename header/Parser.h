@@ -11,6 +11,8 @@ using std::string; using std::vector; using std::cout;
 
 struct VM;
 
+vector<string> JustShuntingYard(vector<string>& tokens);
+
 template<typename T>
 struct Stack{
 	T values[MAX_STACK_SIZE];
