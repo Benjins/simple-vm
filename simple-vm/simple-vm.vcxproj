@@ -114,12 +114,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\AST.cpp" />
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\NewParser.cpp" />
     <ClCompile Include="..\src\Parser.cpp" />
     <ClCompile Include="..\src\VM.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\header\AST.h" />
     <ClInclude Include="..\header\Instruction.h" />
     <ClInclude Include="..\header\Parser.h" />
     <ClInclude Include="..\header\VM.h" />

@@ -7,6 +7,7 @@ enum Instruction{
 	INT_SUB = 3,
 	INT_LIT = 4,
 	INT_DLIT = 5,
+	INT_QLIT = 23,
 	PRINT = 6,
 	READ = 7,
 	L_THAN = 8,
