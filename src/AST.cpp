@@ -193,7 +193,6 @@ void Assignment::AddByteCode(VM& vm){
 	Literal(reg).AddByteCode(vm);
 	val->AddByteCode(vm);
 	vm.byteCodeLoaded.push_back(SAVE_REG);
-	cout << "Addbytecode for assignment " << reg << std::endl;
 }
 
 int Literal::Evaluate(){
@@ -229,7 +228,6 @@ int Variable::Evaluate(){
 void Variable::AddByteCode(VM& vm){
 	Literal(reg).AddByteCode(vm);
 	vm.byteCodeLoaded.push_back(LOAD_REG);
-	cout << "Addbytecode for register " << reg << std::endl;
 }
 
 int Operator::Evaluate(){

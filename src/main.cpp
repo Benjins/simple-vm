@@ -25,6 +25,16 @@ int main(int argc, char** argv){
 					   }\
 					   return(total);\
 				   }\
+				   def FactorialLoopTest(){\
+					   var num : 5;\
+					   var total : 1;\
+					   var counter : 1;\
+					   while(counter < num+1){\
+							total : total * counter;\
+							counter : counter + 1;\
+					   }\
+					   RETURN(total);\
+				   }\
 				   def main(){\
 						var input : 1;\
 						while(input > 0){\
@@ -51,11 +61,6 @@ int main(int argc, char** argv){
 	x.byteCodeLoaded= byteCode;
 	*/
 
-	//x.CompileAndLoadCode("test1.svm");
-	//x.SaveByteCode("test1.svb");
-	//x.LoadByteCode("test1.svb");
-	//x.Execute("main");
-
 	vector<string> tokens = NewTokenize(code1);
 	vector<string> shuntedTokens = JustShuntingYard(tokens);
 
@@ -68,21 +73,21 @@ int main(int argc, char** argv){
 
 
 
-	//x.CompileAndLoadCode("test2.svm");
-	//x.SaveByteCode("test2.svb");
-	//x.LoadByteCode("test2.svb");
+	x.CompileAndLoadCode("test2.svm");
+	x.SaveByteCode("test2.svb");
+	x.LoadByteCode("test2.svb");
 
 	//allPass &= (x.Execute("main") == 5);
-	//allPass &= (x.Execute("testOne") == 1);
-	//allPass &= (x.Execute("testTwo") == 1);
-	//allPass &= (x.Execute("testThree") == 0);
+	allPass &= (x.Execute("testOne") == 1);
+	allPass &= (x.Execute("testTwo") == 1);
+	allPass &= (x.Execute("testThree") == 0);
 
 	VM b;
 	AST y;
 	y.GenerateFromShuntedTokens(shuntedTokens, b);
 
 	y.GenerateByteCode(b);
-	b.Execute("main");
+	//allPass &= (b.Execute("FactorialLoopTest") == 120);
 
 	for(int i = 0; i < b.byteCodeLoaded.size(); i++){
 		//cout << "Instr " << i << ": " << (int)b.byteCodeLoaded[i] << endl;
@@ -90,6 +95,7 @@ int main(int argc, char** argv){
 
 	//cout << "\nMain entry:" << b.funcPointers["main"] << endl;
 
+	cout << (allPass ? "allPass" : "some failed.") << endl;
 	return allPass ? 0 : 1;
 #else
 
