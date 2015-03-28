@@ -2,6 +2,7 @@
 #define AST_H
 
 #include <string>
+#include <cstring>
 #include "Parser.h"
 
 using std::string;
