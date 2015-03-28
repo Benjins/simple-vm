@@ -9,6 +9,7 @@ using std::cout; using std::endl;
 
 int main(int argc, char** argv){
 
+	/*
 	string code1 = " def add(nix){\
 				   var v : nix*2;\
 				   if(v = 0){\
@@ -21,6 +22,11 @@ int main(int argc, char** argv){
 						var output : add(2)*3+1+4*4/5;\
 						RETURN(input * 2 + 3);\
 					}";
+	*/
+
+	string code1 = "def main(){\
+						PRINT(1+READ()*2);\
+				    }";
 
 	//For some reason, input is being set back to un-initialised, but recursion does work.
 	
@@ -58,31 +64,12 @@ int main(int argc, char** argv){
 	//allPass &= (x.Execute("testTwo") == 1);
 	//allPass &= (x.Execute("testThree") == 0);
 
+	VM b;
 	AST y;
+	y.GenerateFromShuntedTokens(shuntedTokens, b);
 
-	FuncDef* defAdd = new FuncDef();
-	defAdd->name = "add";
-	defAdd->paramNames.push_back("num");
-	defAdd->AddStatement(new Builtin("return"));
-	Variable* numVar = new Variable();
-	numVar->reg = 0;
-	Operator* op = new Operator("+");
-	op->left = numVar;
-	op->right = new Literal(7);
-	((FuncCall*)(defAdd->statements[0]))->AddParameter(op);
-	y.defs.push_back(defAdd);
-
-	FuncDef* def = new FuncDef();
-	def->name = "main";
-	y.defs.push_back(def);
-	def->AddStatement(new Builtin("PRINT"));
-	FuncCall* call = new FuncCall();
-	call->funcName = "add";
-	call->AddParameter(new Builtin("READ"));
-	((FuncCall*)(def->statements[0]))->AddParameter(call);
-
-	y.GenerateByteCode(x);
-	//x.Execute("main");
+	y.GenerateByteCode(b);
+	b.Execute("main");
 
 	for(int i = 0; i < x.byteCodeLoaded.size(); i++){
 		//cout << "Instr: " << (int)x.byteCodeLoaded[i] << endl;

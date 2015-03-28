@@ -6,14 +6,14 @@
 
 using std::string;
 
-struct VM; struct FuncDef; struct Value;
+struct VM; struct FuncDef; struct Value; struct Statement;
 
-Value* CompileTokenToAST(const string& token);
+Statement* CompileTokenToAST(const string& token);
 
 struct AST{
 	vector<FuncDef*> defs;
 
-	void GenerateFromTokens(const vector<string>& tokens);
+	void GenerateFromShuntedTokens(const vector<string>& tokens, VM& vm);
 	void GenerateByteCode(VM& vm);
 };
 
@@ -22,37 +22,39 @@ struct Expression{
 	virtual void AddByteCode(VM& vm) = 0;
 };
 
-struct Value : public Expression{
+struct Statement : public Expression{
 	virtual int Evaluate() = 0;
 	virtual void AddByteCode(VM& vm) = 0;
 	virtual int NumParams() = 0;
 };
 
-struct Statement : public Value{
+struct Value : public Statement{
 	virtual int Evaluate() = 0;
 	virtual void AddByteCode(VM& vm) = 0;
 	virtual int NumParams() = 0;
 };
 
-struct FuncCall : public Statement{
+struct FuncCall : public Value{
 	string funcName;
 	Value** parameterVals;
 	int numParams;
+	int currParams;
 	int varCount;
 
 	FuncCall(){
 		funcName = "";
 		parameterVals = NULL;
+		currParams = 0;
 		numParams = 0;
 	}
 
 	void AddParameter(Value* newVal){
-		Value** newParameterVals = new Value*[++numParams];
+		Value** newParameterVals = new Value*[++currParams];
 		if(parameterVals != NULL){
-			memcpy(newParameterVals, parameterVals, sizeof(Value*) * (numParams - 1));
+			memcpy(newParameterVals, parameterVals, sizeof(Value*) * (currParams - 1));
 			delete[] parameterVals;
 		}
-		newParameterVals[numParams - 1] = newVal;
+		newParameterVals[currParams - 1] = newVal;
 		parameterVals = newParameterVals;
 	}
 
@@ -67,19 +69,35 @@ struct Builtin : public FuncCall{
 
 	Builtin(const string& name){
 		funcName = name;
+
+		if(funcName == "PRINT"){
+			numParams = 1;
+		}
+		else if(funcName == "READ"){
+			numParams = 0;
+		}
 	}
 
 	virtual int Evaluate();
 	virtual void AddByteCode(VM& vm);
+	virtual int NumParams(){
+		if(funcName == "PRINT"){
+			return 1;
+		}
+		else if(funcName == "READ"){
+			return 0;
+		}
+	} 
 };
 
-struct Assignment : public Statement{
+struct Assignment : public Value{
 	int reg;
 
 	Value* val;
 
 	virtual int Evaluate();
 	virtual void AddByteCode(VM& vm);
+	virtual int NumParams(){return 1;}
 };
 
 struct Literal : public Value{

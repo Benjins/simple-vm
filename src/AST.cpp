@@ -2,18 +2,126 @@
 #include "../header/Instruction.h"
 #include "../header/VM.h"
 
-Value* CompileTokenToAST(const string& token){
+Statement* CompileTokenToAST(const string& token){
 	const string operators = "+-*><|&=/";
 	if(operators.find(token) != string::npos){
-		return new Operator(token);
+		return (Statement*)(new Operator(token));
 	}
 	else{
-		return new Builtin(token);
+		return (Statement*)(new Builtin(token));
 	}
 }
 
-void AST::GenerateFromTokens(const vector<string>& tokens){
+void AST::GenerateFromShuntedTokens(const vector<string>& tokens, VM& vm){
+	unordered_map<string, int> varRegs;
+	unordered_map<string, int> funcArity;
+	int varCount = 0;
 
+	const string operators = "+-*><|&=/";
+	const string numbers = "0123456789";
+
+	Stack<Scope*> scopes;
+	Stack<Value*> values;
+
+	for(int i = 0; i < tokens.size(); i++){
+		string token = tokens[i];
+
+		if(numbers.find(token[0]) != string::npos){
+			values.Push(new Literal(atoi(token.c_str())));
+		}
+		else if(operators.find(token) != string::npos){
+			Operator* op = new Operator(token);
+			op->right = values.Pop();
+			op->left = values.Pop();
+			values.Push(op);
+		}
+		else if(token == "def"){
+			string funcName = tokens[i+1];
+			i += 3;
+
+			FuncDef* currDef = new FuncDef();
+			currDef->name = funcName;
+
+			while(tokens[i] != ")"){
+				if(token != ","){
+					currDef->paramNames.push_back(token);
+				}
+			}
+
+			i++; // Skip '{'
+
+			funcArity.insert(std::pair<string, int>(funcName, currDef->paramNames.size()));
+			scopes.Push(currDef);
+		}
+		else if(token == "var"){
+			varRegs.insert(std::pair<string, int>(tokens[i+1], varCount));
+			varCount++;
+		}
+		else if(token == "PRINT" || token == "READ" || token == "return" || token == "RETURN"){
+			Builtin* builtin = new Builtin(token);
+			for(int i = 0; i < builtin->NumParams(); i++){
+				builtin->AddParameter(values.Pop());
+			}
+
+			values.Push(builtin);
+		}
+		else if(funcArity.find(token) != funcArity.end()){
+			FuncCall* func = new FuncCall();
+			for(int i = 0; i < funcArity[token]; i++){
+				func->AddParameter(values.Pop());
+			}
+
+			values.Push(func);
+		}
+		else if(varRegs.find(token) != varRegs.end()){
+			Variable* var = new Variable();
+			var->reg = varRegs[token];
+			values.Push(var);
+		}
+		else if(token == ":"){
+			Assignment* assmt = new Assignment();
+			assmt->val = values.Pop();
+			Variable* reg = (Variable*)values.Pop(); 
+			assmt->reg = reg->reg;
+
+			values.Push(assmt);
+		}
+		else if(token == ";"){
+			scopes.Peek()->AddStatement(values.Pop());
+		}
+		else if(token == "{"){
+			scopes.Push(new Scope());
+		}
+		else if(token == "if"){
+			IfStatement* ifStmt = new IfStatement();
+			ifStmt->test = values.Pop();
+			scopes.Push(ifStmt);
+			i++; //capture the {
+		}
+		else if(token == "while"){
+			WhileStatement* whileStmt = new WhileStatement();
+			whileStmt->test = values.Pop();
+			scopes.Push(whileStmt);
+			i++; //capture the {
+		}
+		else if(token == "}"){
+			Scope* scp = scopes.Pop();
+			if(scopes.stackSize > 0){
+				scopes.Peek()->AddStatement(scp);
+			}
+			else{
+				FuncDef* def = dynamic_cast<FuncDef*>(scp);
+				if(def == NULL){
+					cout << "\nError: Top-level scope is not a function.\n";
+				}
+				else{
+					defs.push_back(def);
+					varRegs.clear();
+					varCount = 0;
+				}
+			}
+		}
+	}
 }
 
 void AST::GenerateByteCode(VM& vm){
@@ -21,6 +129,7 @@ void AST::GenerateByteCode(VM& vm){
 	vm.byteCodeLoaded.clear();
 	for(int i = 0; i < defs.size(); i++){
 		vm.funcPointers.insert(std::pair<string, int>(defs[i]->name, vm.byteCodeLoaded.size()));
+		FuncDef* def = defs[i];
 		defs[i]->AddByteCode(vm);
 	}
 }

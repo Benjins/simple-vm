@@ -72,6 +72,8 @@ vector<string> JustShuntingYard(vector<string>& tokens){
 			while(operatorStack.stackSize > 0){
 				shuntedTokens.push_back(operatorStack.Pop());
 			}
+
+			shuntedTokens.push_back(";");
 		}
 		else if(operators.find(token) != string::npos){
 			while(operatorStack.stackSize > 0 
