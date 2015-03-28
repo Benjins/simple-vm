@@ -16,24 +16,32 @@ int main(int argc, char** argv){
 					   }\
 					   return(num * (Factorial(num-1)));\
 				   }\
+				   def FactorialLoop(num){\
+					   var total : 1;\
+					   var counter : 1;\
+					   while(counter < num+1){\
+							total : total * counter;\
+							counter : counter + 1;\
+					   }\
+					   return(total);\
+				   }\
 				   def main(){\
 						var input : 1;\
 						while(input > 0){\
 							input : READ();\
-							PRINT(Factorial(input));\
+							PRINT(FactorialLoop(input));\
 						}\
 					}";
 
+	
 	/*
 	string code1 = "def MultAdd(a,b,c){\
 						return(a*b+a*c);\
 				   }\
 				   def main(){\
 						PRINT(MultAdd(READ(), READ(), READ()));\
-				    }";
-					*/
-
-	//For some reason, input is being set back to un-initialised, but recursion does work.
+				    }";*/
+					
 	
 	VM x;
 
