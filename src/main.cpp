@@ -9,24 +9,29 @@ using std::cout; using std::endl;
 
 int main(int argc, char** argv){
 
-	/*
-	string code1 = " def add(nix){\
-				   var v : nix*2;\
-				   if(v = 0){\
-					  return(0);\
-				   }\
-				   return(v+4*READ());\
+	
+	string code1 = "def Factorial(num){\
+					   if(num < 2){\
+							return(1);\
+					   }\
+					   return(num * (Factorial(num-1)));\
 				   }\
 				   def main(){\
-						var input : READ();\
-						var output : add(2)*3+1+4*4/5;\
-						RETURN(input * 2 + 3);\
+						var input : 1;\
+						while(input > 0){\
+							input : READ();\
+							PRINT(Factorial(input));\
+						}\
 					}";
-	*/
 
-	string code1 = "def main(){\
-						PRINT(1+READ()*2);\
+	/*
+	string code1 = "def MultAdd(a,b,c){\
+						return(a*b+a*c);\
+				   }\
+				   def main(){\
+						PRINT(MultAdd(READ(), READ(), READ()));\
 				    }";
+					*/
 
 	//For some reason, input is being set back to un-initialised, but recursion does work.
 	
@@ -38,9 +43,9 @@ int main(int argc, char** argv){
 	x.byteCodeLoaded= byteCode;
 	*/
 
-	x.CompileAndLoadCode("test1.svm");
-	x.SaveByteCode("test1.svb");
-	x.LoadByteCode("test1.svb");
+	//x.CompileAndLoadCode("test1.svm");
+	//x.SaveByteCode("test1.svb");
+	//x.LoadByteCode("test1.svb");
 	//x.Execute("main");
 
 	vector<string> tokens = NewTokenize(code1);
@@ -55,9 +60,9 @@ int main(int argc, char** argv){
 
 
 
-	x.CompileAndLoadCode("test2.svm");
-	x.SaveByteCode("test2.svb");
-	x.LoadByteCode("test2.svb");
+	//x.CompileAndLoadCode("test2.svm");
+	//x.SaveByteCode("test2.svb");
+	//x.LoadByteCode("test2.svb");
 
 	//allPass &= (x.Execute("main") == 5);
 	//allPass &= (x.Execute("testOne") == 1);
@@ -71,9 +76,11 @@ int main(int argc, char** argv){
 	y.GenerateByteCode(b);
 	b.Execute("main");
 
-	for(int i = 0; i < x.byteCodeLoaded.size(); i++){
-		//cout << "Instr: " << (int)x.byteCodeLoaded[i] << endl;
+	for(int i = 0; i < b.byteCodeLoaded.size(); i++){
+		//cout << "Instr " << i << ": " << (int)b.byteCodeLoaded[i] << endl;
 	}
+
+	//cout << "\nMain entry:" << b.funcPointers["main"] << endl;
 
 	return allPass ? 0 : 1;
 #else

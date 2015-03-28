@@ -26,11 +26,16 @@ vector<string> JustShuntingYard(vector<string>& tokens){
 		if(token == "def"){
 			funcDef = true;
 			shuntedTokens.push_back(token);
+			i++;
+			shuntedTokens.push_back(tokens[i]);
 		}
 		else if(funcDef){
 			shuntedTokens.push_back(token);
 			if(token == "{"){
 				funcDef = false;
+			}
+			else if(token != "," && token != "(" && token != ")"){
+				variables.insert(std::pair<string,int>(token, 1));
 			}
 		}
 		else if(numbers.find(token[0]) != string::npos){

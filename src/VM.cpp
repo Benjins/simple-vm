@@ -242,7 +242,6 @@ int VM::Execute(unsigned char* code, int instructionCount, int entryPoint){
 			}break;
 			
 			case BRANCH:{
-				//cout << "BRANCH\n";
 				short a = Pop();
 				short b = Pop();
 				if(b == 0){

@@ -43,9 +43,12 @@ void AST::GenerateFromShuntedTokens(const vector<string>& tokens, VM& vm){
 			currDef->name = funcName;
 
 			while(tokens[i] != ")"){
-				if(token != ","){
-					currDef->paramNames.push_back(token);
+				if(tokens[i] != ","){
+					currDef->paramNames.push_back(tokens[i]);
+					varRegs.insert(std::pair<string, int>(tokens[i], varCount));
+					varCount++;
 				}
+				i++;
 			}
 
 			i++; // Skip '{'
@@ -59,7 +62,7 @@ void AST::GenerateFromShuntedTokens(const vector<string>& tokens, VM& vm){
 		}
 		else if(token == "PRINT" || token == "READ" || token == "return" || token == "RETURN"){
 			Builtin* builtin = new Builtin(token);
-			for(int i = 0; i < builtin->NumParams(); i++){
+			for(int i = 0; i < builtin->numParams; i++){
 				builtin->AddParameter(values.Pop());
 			}
 
@@ -67,6 +70,8 @@ void AST::GenerateFromShuntedTokens(const vector<string>& tokens, VM& vm){
 		}
 		else if(funcArity.find(token) != funcArity.end()){
 			FuncCall* func = new FuncCall();
+			func->funcName = token;
+			func->numParams = funcArity[token];
 			for(int i = 0; i < funcArity[token]; i++){
 				func->AddParameter(values.Pop());
 			}
@@ -187,7 +192,8 @@ int Assignment::Evaluate(){
 void Assignment::AddByteCode(VM& vm){
 	Literal(reg).AddByteCode(vm);
 	val->AddByteCode(vm);
-	vm.byteCodeLoaded.push_back(LOAD_REG);
+	vm.byteCodeLoaded.push_back(SAVE_REG);
+	cout << "Addbytecode for assignment " << reg << std::endl;
 }
 
 int Literal::Evaluate(){
@@ -223,6 +229,7 @@ int Variable::Evaluate(){
 void Variable::AddByteCode(VM& vm){
 	Literal(reg).AddByteCode(vm);
 	vm.byteCodeLoaded.push_back(LOAD_REG);
+	cout << "Addbytecode for register " << reg << std::endl;
 }
 
 int Operator::Evaluate(){
@@ -265,11 +272,10 @@ int IfStatement::Evaluate(){
 }
 
 void IfStatement::AddByteCode(VM& vm){
-	int jumpAddrIdx = vm.byteCodeLoaded.size();
-
-	vm.byteCodeLoaded.push_back(INT_LIT);
-	vm.byteCodeLoaded.push_back(253);
 	test->AddByteCode(vm);
+	vm.byteCodeLoaded.push_back(INT_LIT);
+	int jumpAddrIdx = vm.byteCodeLoaded.size();
+	vm.byteCodeLoaded.push_back(253);
 	vm.byteCodeLoaded.push_back(BRANCH);
 
 	for(int i = 0; i < numStatements; i++){
@@ -284,11 +290,12 @@ int WhileStatement::Evaluate(){
 }
 
 void WhileStatement::AddByteCode(VM& vm){
-	int jumpAddrIdx = vm.byteCodeLoaded.size();
+	int recurAddrIdx = vm.byteCodeLoaded.size();
 
-	vm.byteCodeLoaded.push_back(INT_LIT);
-	vm.byteCodeLoaded.push_back(253);
 	test->AddByteCode(vm);
+	vm.byteCodeLoaded.push_back(INT_LIT);
+	int jumpAddrIdx = vm.byteCodeLoaded.size();
+	vm.byteCodeLoaded.push_back(253);
 	vm.byteCodeLoaded.push_back(BRANCH);
 
 	for(int i = 0; i < numStatements; i++){
@@ -296,9 +303,9 @@ void WhileStatement::AddByteCode(VM& vm){
 	}
 
 	vm.byteCodeLoaded.push_back(INT_LIT);
-	vm.byteCodeLoaded.push_back(jumpAddrIdx);
-	vm.byteCodeLoaded.push_back(INT_LIT);
 	vm.byteCodeLoaded.push_back(0);
+	vm.byteCodeLoaded.push_back(INT_LIT);
+	vm.byteCodeLoaded.push_back(recurAddrIdx);
 	vm.byteCodeLoaded.push_back(BRANCH);
 
 	vm.byteCodeLoaded[jumpAddrIdx] = vm.byteCodeLoaded.size();

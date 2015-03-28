@@ -69,12 +69,19 @@ struct Builtin : public FuncCall{
 
 	Builtin(const string& name){
 		funcName = name;
+		currParams = 0;
 
 		if(funcName == "PRINT"){
 			numParams = 1;
 		}
 		else if(funcName == "READ"){
 			numParams = 0;
+		}
+		else if(funcName == "return"){
+			numParams = 1;
+		}
+		else if(funcName == "RETURN"){
+			numParams = 1;
 		}
 	}
 
