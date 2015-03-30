@@ -39,7 +39,7 @@ script:
 
 env:
   global:
-    - "FTP_USER=user"
+    - "FTP_USER=bnsmith"
     - secure: "Iqkk6B8HCcZ0L/RswzGTxEw0u4RueobQrgpbfFXhbu55rroxMaIPVM2PYmKREDlNqBBiIVgaWQHMme7W6A5eFko9lBD+oVk2BhoJaVOsATZ6aRdFnrzZJ3/+kw+VqLMrhDsOqm3zdJ7BSNSFAJubmaYeSUgt9WEQj1E9sfS8wm4="
   
 after_success:
