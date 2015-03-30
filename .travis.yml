@@ -41,6 +41,7 @@ env:
   global:
     - "FTP_USER=bnsmith"
     - secure: "Iqkk6B8HCcZ0L/RswzGTxEw0u4RueobQrgpbfFXhbu55rroxMaIPVM2PYmKREDlNqBBiIVgaWQHMme7W6A5eFko9lBD+oVk2BhoJaVOsATZ6aRdFnrzZJ3/+kw+VqLMrhDsOqm3zdJ7BSNSFAJubmaYeSUgt9WEQj1E9sfS8wm4="
+    - secure: "PYtEaHI9TIMsGuALWDDA8qpdbZynA4aJnNWlSeb7sovIC3S34bYwVn6DQl/q/dkE8+IzWCAOvmfjUoQFGPqqtQTc85lSxfl8CfH1CKnXOFb2zttQxAzC7+/6MMBI0e0qI0xGlzKZW7/UMf2JRvIACTiFY3Rsh1B0e0RyvLwSKXE="
   
 after_success:
    - if [ "$CXX" == "g++" ]; then zip simple-vm_linux.zip simple-vm_linux; fi
@@ -51,4 +52,4 @@ after_success:
    - lcov --directory . --capture --output-file coverage.info # capture coverage info
    - lcov --remove coverage.info 'tests/*' '/usr/*' --output-file coverage.info # filter out system and test code
    - lcov --list coverage.info # debug before upload
-   - coveralls-lcov --repo-token <your coveralls repo token> coverage.info # uploa
+   - coveralls-lcov --repo-token COV_TOKEN coverage.info # uploa
