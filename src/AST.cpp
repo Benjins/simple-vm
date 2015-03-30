@@ -183,6 +183,9 @@ void Builtin::AddByteCode(VM& vm){
 	else if(funcName == "return"){
 		vm.byteCodeLoaded.push_back(RETURN);
 	}
+	else if(funcName == "RETURN"){
+		vm.byteCodeLoaded.push_back(RETURN_FINAL);
+	}
 }
 
 int Assignment::Evaluate(){

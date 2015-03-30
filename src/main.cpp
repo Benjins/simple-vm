@@ -87,7 +87,7 @@ int main(int argc, char** argv){
 	y.GenerateFromShuntedTokens(shuntedTokens, b);
 
 	y.GenerateByteCode(b);
-	//allPass &= (b.Execute("FactorialLoopTest") == 120);
+	allPass &= (b.Execute("FactorialLoopTest") == 120);
 
 	for(int i = 0; i < b.byteCodeLoaded.size(); i++){
 		//cout << "Instr " << i << ": " << (int)b.byteCodeLoaded[i] << endl;
