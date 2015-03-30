@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['simple_2dvm_3a_20a_20simple_2c_20stack_2dbased_20vm_2e',['simple-vm: A simple, stack-based VM.',['../index.html',1,'']]],
   ['save_5freg',['SAVE_REG',['../Instruction_8h.html#acbd603b5f7c788a74eade8d4837ba684a680191521825b7dcd5d2affaac458a46',1,'Instruction.h']]],
   ['savebytecode',['SaveByteCode',['../structVM.html#a8afd21319f02f88ec1a171cad4fa2d7f',1,'VM']]],
   ['scope',['Scope',['../structScope.html',1,'Scope'],['../structScope.html#a17c806f9852bb4454ed5709564945373',1,'Scope::Scope()']]],

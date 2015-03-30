@@ -1,0 +1,18 @@
+/**
+\mainpage simple-vm: A simple, stack-based VM.
+
+This is the documentation for simple-vm, CC-BY Benji Smith.  For license info, see LICENSE.
+
+Quick use:
+------------------
+
+Run `make build` to output the necessary executables:  
+
+* `svm` : Compile an SVM source code file into an SVB bytecode file.
+    
+* `svb` : Run compiled bytecode from an SVB file.  
+
+Contributing:
+------------------
+Fork this on [Github](https://github.com/benjins/simple-vm).
+*/
