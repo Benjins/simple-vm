@@ -31,6 +31,22 @@ def testThree(){
 	RETURN(IsPrime(91));
 }
 
+def testFour(){
+
+	var factor : 2;
+	factor : factor + 1;
+	
+	if(1 < 3 & 2 > 1){
+		factor : factor - 1;
+	}
+	
+	if(IsPrime(91) | IsPrime(117)){
+		factor : 0;
+	}
+
+	RETURN(factor * factor);
+}
+
 def main(){
 	var input : 3;
 	var next : 4+input*input+3-4*(6-3);

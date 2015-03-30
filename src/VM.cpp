@@ -1,6 +1,7 @@
 #include "../header/VM.h"
 #include "../header/Instruction.h"
 #include "../header/Parser.h"
+#include "../header/AST.h"
 #include <iostream>
 #include <cstring>
 #include <fstream>
@@ -30,7 +31,15 @@ void VM::CompileAndLoadCode(const string& fileName){
 		code = code + line + "\n";
 	}
 
-	byteCodeLoaded = NewShuntingYard(NewTokenize(code), *this);
+	//byteCodeLoaded = NewShuntingYard(NewTokenize(code), *this);
+	
+	AST b;
+	
+	vector<string> tokens = NewTokenize(code);
+	vector<string> shuntedTokens = JustShuntingYard(tokens);
+	b.GenerateFromShuntedTokens(shuntedTokens, *this);
+	b.GenerateByteCode(*this);
+	
 
 }
 

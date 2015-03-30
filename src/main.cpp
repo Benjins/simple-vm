@@ -42,36 +42,19 @@ int main(int argc, char** argv){
 							PRINT(FactorialLoop(input));\
 						}\
 					}";
-
-	
-	/*
-	string code1 = "def MultAdd(a,b,c){\
-						return(a*b+a*c);\
-				   }\
-				   def main(){\
-						PRINT(MultAdd(READ(), READ(), READ()));\
-				    }";*/
-					
 	
 	VM x;
 
-	/*
-	vector<string> tokens1 = NewTokenize(code1);
-	vector<unsigned char> byteCode = NewShuntingYard(tokens1, x);
-	x.byteCodeLoaded= byteCode;
-	*/
-
 	vector<string> tokens = NewTokenize(code1);
 	vector<string> shuntedTokens = JustShuntingYard(tokens);
+	/*
+	y.GenerateFromShuntedTokens(shuntedTokens, b);
 
-	for(int i = 0; i < shuntedTokens.size(); i++){
-		//cout << shuntedTokens[i] << "\n";
-	}
+	y.GenerateByteCode(b);
+	*/
 
 #if 1 //TESTING
 	bool allPass = true;
-
-
 
 	x.CompileAndLoadCode("test2.svm");
 	x.SaveByteCode("test2.svb");
@@ -81,6 +64,7 @@ int main(int argc, char** argv){
 	allPass &= (x.Execute("testOne") == 1);
 	allPass &= (x.Execute("testTwo") == 1);
 	allPass &= (x.Execute("testThree") == 0);
+	allPass &= (x.Execute("testFour") == 4);
 
 	VM b;
 	AST y;

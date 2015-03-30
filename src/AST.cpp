@@ -72,6 +72,7 @@ void AST::GenerateFromShuntedTokens(const vector<string>& tokens, VM& vm){
 			FuncCall* func = new FuncCall();
 			func->funcName = token;
 			func->numParams = funcArity[token];
+			func->varCount = varCount;
 			for(int i = 0; i < funcArity[token]; i++){
 				func->AddParameter(values.Pop());
 			}
