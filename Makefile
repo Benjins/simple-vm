@@ -7,4 +7,4 @@ build: src/*.cpp
 endif
 	
 test: src/*.cpp
-	$(CXX) -std=c++11 -DTESTING -o simplevm-test src/*.cpp
+	$(CXX) -std=c++11 -DTESTING -g -fprofile-arcs -ftest-coverage -o simplevm-test src/*.cpp
