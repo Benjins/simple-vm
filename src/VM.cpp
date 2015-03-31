@@ -157,6 +157,9 @@ int VM::Execute(unsigned char* code, int instructionCount, int entryPoint){
 	stackSize = 0;
 	stackFrame = 0;
 
+	Push(0); //final return stackframe, not really important what it's value is.
+	Push(instructionCount+1); //on the ifnla return, we jump ot the end of the program, so we terminate.
+
 	for(int i = entryPoint; i < instructionCount; i++){
 		unsigned char instruction = code[i];
 
@@ -330,7 +333,12 @@ int VM::Execute(unsigned char* code, int instructionCount, int entryPoint){
 
 	}
 
-	return -1;
+	if(stackSize > 0){
+		return Pop();
+	}
+	else{
+		return -1;
+	}
 }
 
 void VM::Push(short value){

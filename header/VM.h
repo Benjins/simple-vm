@@ -5,7 +5,7 @@
 #include <unordered_map>
 #include <vector>
 
-#define VERSION_INT 110
+#define VERSION_INT 120
 
 /*
 File formats and specs for svm and svb files.

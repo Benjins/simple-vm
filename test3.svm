@@ -20,22 +20,22 @@ def IsPrime(number){
 }
 
 def testOne(){
-	RETURN(IsPrime(17));
+	return(IsPrime(17));
 }
 
 def testTwo(){
-	RETURN(IsPrime(37));
+	return(IsPrime(37));
 }
 
 def testThree(){
-	RETURN(IsPrime(91));
+	return(IsPrime(91));
 }
 
 def testFour(){
 	var factor : 2;
 	factor : factor + 1;
 
-	RETURN(factor * factor);
+	return(factor * factor);
 }
 
 def main(){
@@ -50,5 +50,5 @@ def main(){
 		final : final - 1;
 	}
 	
-	RETURN(final);
+	return(final);
 }
