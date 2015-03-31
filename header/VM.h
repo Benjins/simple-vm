@@ -28,9 +28,24 @@ SVB:
 
 */
 
+enum struct ValueType{
+	INT,
+	FLOAT
+};
+
+struct VMValue{
+	union{
+		int intValue;
+		float floatValue;
+	};
+
+	ValueType type;
+
+};
+
 using std::string; using std::unordered_map; using std::vector;
 
-#define MAX_STACK 512
+#define MAX_STACK 1024
 
 #define REGISTER_COUNT 1024
 
@@ -51,15 +66,15 @@ struct VM{
 	vector<unsigned char> byteCodeLoaded;
 
 protected:
-	short stack[MAX_STACK];
+	VMValue stack[MAX_STACK];
 	short stackSize;
 
 	short stackFrame;
 	
-	short registers[REGISTER_COUNT];
+	VMValue registers[REGISTER_COUNT];
 
-	void Push(short value);
-	short Pop();
+	void Push(VMValue value);
+	VMValue Pop();
 };
 
 

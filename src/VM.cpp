@@ -157,8 +157,16 @@ int VM::Execute(unsigned char* code, int instructionCount, int entryPoint){
 	stackSize = 0;
 	stackFrame = 0;
 
-	Push(0); //final return stackframe, not really important what it's value is.
-	Push(instructionCount+1); //on the ifnla return, we jump ot the end of the program, so we terminate.
+	VMValue finalStk;
+	finalStk.type = ValueType::INT;
+	finalStk.intValue = 0;
+
+	VMValue instrCount;
+	instrCount.intValue = instructionCount+1;
+	instrCount.type = ValueType::INT;
+
+	Push(finalStk); //final return stackframe, not really important what it's value is.
+	Push(instrCount); //on the ifnla return, we jump ot the end of the program, so we terminate.
 
 	for(int i = entryPoint; i < instructionCount; i++){
 		unsigned char instruction = code[i];
@@ -168,34 +176,97 @@ int VM::Execute(unsigned char* code, int instructionCount, int entryPoint){
 		switch (instruction){
 			case INT_ADD:{
 				//cout << "Add\n";
-				short a = Pop();
-				short b = Pop();
-				Push(a + b);
+				VMValue a = Pop();
+				VMValue b = Pop();
+				if(a.type != b.type){
+					cout << "\nError: trying to add differently-typed values.\n";
+					return -1;
+				}
+				else if(a.type == ValueType::INT){
+					VMValue result;
+					result.type = ValueType::INT;
+					result.intValue = a.intValue + b.intValue;
+					Push(result);
+				}
+				else if(a.type == ValueType::FLOAT){
+					VMValue result;
+					result.type = ValueType::FLOAT;
+					result.floatValue = a.floatValue + b.floatValue;
+					Push(result);
+				}
 			}break;
 
 			case INT_MUL:{
-				short a = Pop();
-				short b = Pop();
-				Push(a * b);
+				VMValue a = Pop();
+				VMValue b = Pop();
+				if(a.type != b.type){
+					cout << "\nError: trying to multiply differently-typed values.\n";
+					return -1;
+				}
+				else if(a.type == ValueType::INT){
+					VMValue result;
+					result.type = ValueType::INT;
+					result.intValue = a.intValue * b.intValue;
+					Push(result);
+				}
+				else if(a.type == ValueType::FLOAT){
+					VMValue result;
+					result.type = ValueType::FLOAT;
+					result.floatValue = a.floatValue * b.floatValue;
+					Push(result);
+				}
 			}break;
 
 			case INT_DIV:{
-				short a = Pop();
-				short b = Pop();
-				Push(b / a);
+				VMValue a = Pop();
+				VMValue b = Pop();
+				if(a.type != b.type){
+					cout << "\nError: trying to divide differently-typed values.\n";
+					return -1;
+				}
+				else if(a.type == ValueType::INT){
+					VMValue result;
+					result.type = ValueType::INT;
+					result.intValue = b.intValue / a.intValue;
+					Push(result);
+				}
+				else if(a.type == ValueType::FLOAT){
+					VMValue result;
+					result.type = ValueType::FLOAT;
+					result.floatValue = b.floatValue / a.floatValue;
+					Push(result);
+				}
 			}break;
 
 			case INT_SUB:{
-				short a = Pop();
-				short b = Pop();
-				Push(b - a);
+				VMValue a = Pop();
+				VMValue b = Pop();
+				if(a.type != b.type){
+					cout << "\nError: trying to subtract differently-typed values.\n";
+					return -1;
+				}
+				else if(a.type == ValueType::INT){
+					VMValue result;
+					result.type = ValueType::INT;
+					result.intValue = b.intValue - a.intValue;
+					Push(result);
+				}
+				else if(a.type == ValueType::FLOAT){
+					VMValue result;
+					result.type = ValueType::FLOAT;
+					result.floatValue = b.floatValue - a.floatValue;
+					Push(result);
+				}
 			}break;
 
 			case INT_LIT:{
 				//cout << "Literal\n";
 				i++; //Get the next symbol in the byte code
-				short a = code[i];
-				Push(a);
+				int a = code[i];
+				VMValue lit;
+				lit.type = ValueType::INT;
+				lit.intValue = a;
+				Push(lit);
 			}break;
 
 			case INT_DLIT:{
@@ -204,129 +275,210 @@ int VM::Execute(unsigned char* code, int instructionCount, int entryPoint){
 				i++;
 				short b = code[i];
 				short c = (a << 8) + b;
-				Push(c);
+
+				VMValue lit;
+				lit.type = ValueType::INT;
+				lit.intValue = c;
+				Push(lit);
 			}break;
 
 			case PRINT:{
 				//cout << "PRINT\n";
-				short a = Pop();
-				cout << a << endl;
+				VMValue a = Pop();
+				if(a.type == ValueType::INT){
+					cout << a.intValue << endl;
+				}
+				else if(a.type == ValueType::FLOAT){
+					cout << a.floatValue << endl;
+				}
 			}break;
 
 			case READ:{
-				short a;
-				cin >> a;
+				VMValue a;
+				cin >> a.intValue;
+				a.type = ValueType::INT;
 				Push(a);
 			}break;
 			
 			case L_THAN:{
-				short a = Pop();
-				short b = Pop();
-				short res = a > b? 1 : 0;
-				Push(res);
+				VMValue a = Pop();
+				VMValue b = Pop();
+				VMValue res;
+				res.type = ValueType::INT;
+				if(a.type != b.type){
+					cout << "\nError: trying to compare(<) differently-typed values.\n";
+					return -1;
+				}
+				else if(a.type == ValueType::INT){
+					res.intValue = b.intValue < a.intValue? 1 : 0;
+					Push(res);
+				}
+				else if(a.type == ValueType::FLOAT){
+					res.intValue = b.floatValue < a.floatValue? 1 : 0;
+					Push(res);
+				}
 			}break;
 			
 			case G_THAN:{
-				short a = Pop();
-				short b = Pop();
-				short res = a < b? 1 : 0;
-				Push(res);
+				VMValue a = Pop();
+				VMValue b = Pop();
+				VMValue res;
+				res.type = ValueType::INT;
+				if(a.type != b.type){
+					cout << "\nError: trying to compare(>) differently-typed values.\n";
+					return -1;
+				}
+				else if(a.type == ValueType::INT){
+					res.intValue = b.intValue > a.intValue? 1 : 0;
+					Push(res);
+				}
+				else if(a.type == ValueType::FLOAT){
+					res.intValue = b.floatValue > a.floatValue? 1 : 0;
+					Push(res);
+				}
 			}break;
 			
 			case BOOL_AND:{
-				short a = Pop();
-				short b = Pop();
-				short res = (a > 0 && b > 0)? 1 : 0;
+				VMValue a = Pop();
+				VMValue b = Pop();
+				if(a.type != ValueType::INT || b.type != ValueType::INT){
+					cout << "\nError: Trying to and non-boolean values.\n";
+					return -1;
+				}
+
+				VMValue res;
+				res.type = ValueType::INT;
+				res.intValue = (a.intValue > 0 && b.intValue > 0)? 1 : 0;
 				Push(res);
 			}break;
 			
 			case BOOL_OR:{
-				short a = Pop();
-				short b = Pop();
-				short res = (a > 0 || b > 0)? 1 : 0;
+				VMValue a = Pop();
+				VMValue b = Pop();
+				if(a.type != ValueType::INT || b.type != ValueType::INT){
+					cout << "\nError: Trying to and non-boolean values.\n";
+					return -1;
+				}
+
+				VMValue res;
+				res.type = ValueType::INT;
+				res.intValue = (a.intValue > 0 || b.intValue > 0)? 1 : 0;
 				Push(res);
 			}break;
 			
 			case COMPARE:{
-				short a = Pop();
-				short b = Pop();
-				short res = (a == b)? 1 : 0;
+				VMValue a = Pop();
+				VMValue b = Pop();
+				VMValue res;
+				res.type = ValueType::INT;
+				if(a.type != b.type){
+					cout << "\nError: Trying to compare differently-typed values.\n";
+					return -1;
+				}
+				else if(a.type == ValueType::INT){
+					res.intValue = (a.intValue == b.intValue)? 1 : 0;
+				}
+				else if(a.type == ValueType::FLOAT){
+					res.intValue = (a.floatValue == b.floatValue)? 1 : 0;
+				}
+				
 				Push(res);
 			}break;
 			
 			case BRANCH:{
-				short a = Pop();
-				short b = Pop();
-				if(b == 0){
-					i = a-1;
+				VMValue a = Pop();
+				VMValue b = Pop();
+				if(a.type != ValueType::INT || b.type != ValueType::INT){
+					cout << "\nError: Triyng to branch with on-integral type.\n";
+					return -1;
+				}
+				if(b.intValue == 0){
+					i = a.intValue-1;
 				}
 			}break;
 
 			case LOAD_REG:{
 				//cout << "LOAD\n";
-				short a = Pop();
-				if(a >= 0 && a < REGISTER_COUNT){
-					Push(registers[a + stackFrame]);
+				VMValue a = Pop();
+				if(a.type == ValueType::INT && a.intValue >= 0 && a.intValue < REGISTER_COUNT){
+					Push(registers[a.intValue + stackFrame]);
 				}
 				else{
-					cout << "Error: Tried to load a register of value: " << a << endl;
-					Push(0);
+					cout << "Error: Tried to load a register of value: " << a.intValue << endl;
+					return -1;
 				}
 			}break;
 
 			case SAVE_REG:{
 				//cout << "SAVE\n";
-				short a = Pop();
-				short b = Pop();
+				VMValue a = Pop();
+				VMValue b = Pop();
 
-				if(b >= 0 && b < REGISTER_COUNT){
-					registers[b + stackFrame] = a;
+				if(b.type == ValueType::INT && b.intValue >= 0 && b.intValue < REGISTER_COUNT){
+					registers[b.intValue + stackFrame] = a;
 				}
 				else{
-					cout << "Error: Tried to save to a register of value: " << b << endl;
+					cout << "Error: Tried to save to a register of value: " << b.intValue << endl;
+					return -1;
 				}
 			}break;
 
 			case CALL:{
 				//short varCount = Pop();
 				//stackFrame = stackFrame + varCount; //Need to modify stack frame passed to func?
-				short addr = Pop();
-				short varCt = Pop();
+				VMValue addr = Pop();
+				VMValue varCt = Pop();
+				if(addr.type != ValueType::INT || varCt.type != ValueType::INT){
+					cout << "\nError: Tried to execute CALL with non-integral values.\n";
+					return -1;
+				}
 				//cout << "Old stack frame before call: " << stackFrame << " after call: " << (stackFrame + varCt) << endl;
-				stackFrame = stackFrame + varCt;
-				i = addr-1;
+				stackFrame = stackFrame + varCt.intValue;
+				i = addr.intValue-1;
 			}break;
 
 			case RETURN:{
-				short value = Pop();
-				short retAddr = Pop();
-				short prevStackFrame = Pop();
+				VMValue value = Pop();
+				VMValue retAddr = Pop();
+				VMValue prevStackFrame = Pop();
 				Push(value);
 
-				i = retAddr-1;
+				if(retAddr.type != ValueType::INT || prevStackFrame.type != ValueType::INT){
+					cout << "\nError: Tried to execute RETURN with non-integral values.\n";
+					return -1;
+				}
+
+				i = retAddr.intValue-1;
 				//cout << "currentStackFrame: " << stackFrame << "  prevStackFrame: " << prevStackFrame << endl;
-				stackFrame = prevStackFrame;
+				stackFrame = prevStackFrame.intValue;
 			}break;
 
 			case STK_FRAME:{
-				Push(stackFrame);
+				VMValue val;
+				val.type = ValueType::INT;
+				val.intValue = stackFrame;
+				Push(val);
 			}break;
 
 			case PARAM:{
-				short a = Pop();
-				short b = Pop();
-				if(a >= 0 && a < REGISTER_COUNT){
-					registers[a + stackFrame] = b;
+				VMValue a = Pop();
+				VMValue b = Pop();
+				if(a.type != ValueType::INT){
+					cout << "\nError: Tried to call PARAM with non-integral index.\n";
+					return -1;
+				}
+				if(a.intValue >= 0 && a.intValue < REGISTER_COUNT){
+					registers[a.intValue + stackFrame] = b;
 				}
 			}break;
 
 			case RETURN_FINAL:{
-				short a = Pop();
-				return a;
+				VMValue a = Pop();
+				return a.intValue;
 			}break;
 
 			default:
-				cout << "\nInvalid instruction " << stack[i] << " at instruction " << i << endl;
+				cout << "\nInvalid instruction " << code[i] << " at instruction " << i << endl;
 				break;
 		}
 
@@ -334,14 +486,14 @@ int VM::Execute(unsigned char* code, int instructionCount, int entryPoint){
 	}
 
 	if(stackSize > 0){
-		return Pop();
+		return Pop().intValue;
 	}
 	else{
 		return -1;
 	}
 }
 
-void VM::Push(short value){
+void VM::Push(VMValue value){
 	if(stackSize < MAX_STACK){
 		stackSize++;
 		stack[stackSize] = value;
@@ -351,14 +503,17 @@ void VM::Push(short value){
 	}
 }
 
-short VM::Pop(){
+VMValue VM::Pop(){
 	if(stackSize > 0){
-		short a = stack[stackSize];
+		VMValue a = stack[stackSize];
 		stackSize--;
 		return a;
 	}
 	else{
 		cout << "\nError: Stack Underflow on VM.\n";
-		return 0;
+		VMValue x;
+		x.intValue = 0;
+		x.type = ValueType::INT;
+		return x;
 	}
 }

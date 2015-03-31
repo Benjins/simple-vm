@@ -46,6 +46,16 @@ def testFour(){
 	return(factor * factor);
 }
 
+def Summation(n){
+	if(n < 1){
+		return(0);
+	}
+
+	PRINT(n);
+
+	return(n + Summation(n-1));
+}
+
 def main(){
 	var input : 3;
 	var next : 4+input*input+3-4*(6-3);
@@ -56,6 +66,11 @@ def main(){
 	}
 	if(2 > 3){
 		final : final - 1;
+	}
+
+	while(input > 0){
+		PRINT(Summation(input));
+		input : READ();
 	}
 	
 	return(final);
