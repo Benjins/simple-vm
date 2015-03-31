@@ -38,9 +38,9 @@ struct VM{
 
 	VM();
 
-	void CompileAndLoadCode(const string& fileName);
+	bool CompileAndLoadCode(const string& fileName);
 	void SaveByteCode(const string& fileName);
-	void LoadByteCode(const string& fileName);
+	bool LoadByteCode(const string& fileName);
 
 	//Execute bytecode, given the start of instruction, and the count
 	int Execute(unsigned char* code, int instructionCount, int entryPoint = 0);

@@ -12,13 +12,13 @@ VM::VM(){
 	stackSize = 0;
 }
 
-void VM::CompileAndLoadCode(const string& fileName){
+bool VM::CompileAndLoadCode(const string& fileName){
 	ifstream fileIn;
 	fileIn.open(fileName);
 
 	if(!fileIn.good()){
 		cout << "\nError opening file: " << fileName << endl;
-		return;
+		return false;
 	}
 
 	byteCodeLoaded.clear();
@@ -40,7 +40,7 @@ void VM::CompileAndLoadCode(const string& fileName){
 	b.GenerateFromShuntedTokens(shuntedTokens, *this);
 	b.GenerateByteCode(*this);
 	
-
+	return true;
 }
 
 void VM::SaveByteCode(const string& fileName){
@@ -78,12 +78,12 @@ void VM::SaveByteCode(const string& fileName){
 	fileOut.close();
 }
 
-void VM::LoadByteCode(const string& fileName){
+bool VM::LoadByteCode(const string& fileName){
 	ifstream fileIn;
 	fileIn.open(fileName, std::ios::in | ofstream::binary);
 	if(!fileIn.good()){
 		cout << "Trouble opening file " << fileName << " for output.\n";
-		return;
+		return false;
 	}
 
 	char buffer[4];
@@ -135,6 +135,7 @@ void VM::LoadByteCode(const string& fileName){
 
 	delete[] codeBuffer;
 
+	return true;
 }
 
 int VM::Execute(string funcName){

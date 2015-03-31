@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>fileTypes</key>
+	<array>
+		<string>svm</string>
+	</array>
+	<key>name</key>
+	<string>SVM</string>
+	<key>patterns</key>
+	<array>
+		<dict>
+			<key>comment</key>
+			<string>numbers (integers)</string>
+			<key>match</key>
+			<string>[0-9]</string>
+			<key>name</key>
+			<string>constant.language.proto</string>
+		</dict>
+		<dict>
+			<key>comment</key>
+			<string>variables (declaration)</string>
+			<key>match</key>
+			<string>var</string>
+			<key>name</key>
+			<string>storage.type.c++</string>
+		</dict>
+		<dict>
+			<key>comment</key>
+			<string>functions (declaration)</string>
+			<key>match</key>
+			<string>def</string>
+			<key>name</key>
+			<string>entity.name.function</string>
+		</dict>
+		<dict>
+			<key>comment</key>
+			<string>keywords (if/while)</string>
+			<key>match</key>
+			<string>(if|while)</string>
+			<key>name</key>
+			<string>keyword.operator.c++</string>
+		</dict>
+		<dict>
+			<key>comment</key>
+			<string>keywords (return/print/read)</string>
+			<key>match</key>
+			<string>(return|RETURN|PRINT|READ)</string>
+			<key>name</key>
+			<string>keyword.control.import.error.c</string>
+		</dict>
+	</array>
+	<key>scopeName</key>
+	<string>source.svm</string>
+	<key>uuid</key>
+	<string>9728ff3d-5720-427e-9fde-84c8f7539538</string>
+</dict>
+</plist>

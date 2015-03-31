@@ -43,8 +43,7 @@ int main(int argc, char** argv){
 						}\
 					}";
 	
-	VM x;
-
+	
 	vector<string> tokens = NewTokenize(code1);
 	vector<string> shuntedTokens = JustShuntingYard(tokens);
 	/*
@@ -53,7 +52,8 @@ int main(int argc, char** argv){
 	y.GenerateByteCode(b);
 	*/
 
-#if 1 //TESTING
+#if TESTING
+	VM x;
 	bool allPass = true;
 
 	x.CompileAndLoadCode("test2.svm");
@@ -81,8 +81,38 @@ int main(int argc, char** argv){
 
 	cout << (allPass ? "allPass" : "some failed.") << endl;
 	return allPass ? 0 : 1;
-#else
 
+#elif COMPILER //VM Compiler
+	if(argc < 2){
+		cout << "\nError: Must supply at least one input file.\n";
+		return -1;
+	}
+
+	for(int i = 1; i < argc; i++){
+		char* fileNameC = argv[i];
+		string fileName = string(fileNameC);
+
+		VM x;
+		if(x.CompileAndLoadCode(fileName)){
+			x.SaveByteCode(fileName + ".svb");
+		}
+	}
+
+
+#else //VM runner
+	if(argc != 3){
+		cout << "\nError: Must supply one input file, and a function to call.\n";
+		return -1;
+	}
+
+	string fileName = string(argv[1]);
+	string functionName = string(argv[2]);
+
+	VM x;
+	if(x.LoadByteCode(fileName)){
+		int retVal = x.Execute(functionName);
+		cout << "\nReturned: " << retVal << endl;
+	}
 #endif
 
 	

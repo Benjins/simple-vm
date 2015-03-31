@@ -16,7 +16,7 @@ def IsPrime(number){
 													  
 	if(factorCount = 1){                              
 		return(1);                                   
-	}                                                 
+	}                                              
 }
 
 def testOne(){
@@ -32,7 +32,6 @@ def testThree(){
 }
 
 def testFour(){
-
 	var factor : 2;
 	factor : factor + 1;
 	
