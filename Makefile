@@ -7,4 +7,4 @@ build: src/*.cpp
 endif
 	
 test: src/*.cpp
-	$(CXX) -std=c++11 -DTESTING -o simplevm-test src/*.cpp
+	$(CXX) -std=c++11 -g -DTESTING -o simplevm-test src/*.cpp
