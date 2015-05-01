@@ -1,9 +1,10 @@
 simple-vm
 =========
 
-[![Build Status](https://travis-ci.org/Benjins/simple-vm.svg?branch=master)](https://travis-ci.org/Benjins/simple-vm)
-[![Windows Build status](https://ci.appveyor.com/api/projects/status/cetu5e3ufk4fm50j?svg=true)](https://ci.appveyor.com/project/Benjins/simple-vm)
-
+ * Build Status: [![Build Status](https://travis-ci.org/Benjins/simple-vm.svg?branch=master)](https://travis-ci.org/Benjins/simple-vm)
+ * Windows Build: [![Windows Build status](https://ci.appveyor.com/api/projects/status/cetu5e3ufk4fm50j?svg=true)](https://ci.appveyor.com/project/Benjins/simple-vm)
+ * Code Coverage: [![Coverage Status](https://coveralls.io/repos/Benjins/simple-vm/badge.svg?branch=master)](https://coveralls.io/r/Benjins/simple-vm?branch=master)
+ 
 A simple, stack-based VM in C++.
 
 ---------
