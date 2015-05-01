@@ -72,6 +72,7 @@ void AST::GenerateFromShuntedTokens(const vector<string>& tokens, VM& vm){
 			FuncCall* func = new FuncCall();
 			func->funcName = token;
 			func->numParams = funcArity[token];
+			func->varCount = varCount;
 			for(int i = 0; i < funcArity[token]; i++){
 				func->AddParameter(values.Pop());
 			}
@@ -145,8 +146,9 @@ int FuncCall::Evaluate(){
 
 void FuncCall::AddByteCode(VM& vm){
 	vm.byteCodeLoaded.push_back(STK_FRAME); //Stack frame?
-	vm.byteCodeLoaded.push_back(INT_LIT);
+	vm.byteCodeLoaded.push_back(INT_DLIT);
 	int retAddrIdx = vm.byteCodeLoaded.size();
+	vm.byteCodeLoaded.push_back(253); //Return Addr?
 	vm.byteCodeLoaded.push_back(253); //Return Addr?
 
 	for(int i = 0; i < numParams; i++){
@@ -157,11 +159,13 @@ void FuncCall::AddByteCode(VM& vm){
 
 	vm.byteCodeLoaded.push_back(INT_LIT);
 	vm.byteCodeLoaded.push_back(varCount);
-	vm.byteCodeLoaded.push_back(INT_LIT);
-	vm.byteCodeLoaded.push_back(funcAddr);
+	vm.byteCodeLoaded.push_back(INT_DLIT);
+	vm.byteCodeLoaded.push_back(funcAddr / 256);
+	vm.byteCodeLoaded.push_back(funcAddr % 256);
 	vm.byteCodeLoaded.push_back(CALL);
 
-	vm.byteCodeLoaded[retAddrIdx] = vm.byteCodeLoaded.size();
+	vm.byteCodeLoaded[retAddrIdx]   = vm.byteCodeLoaded.size() / 256;
+	vm.byteCodeLoaded[retAddrIdx+1] = vm.byteCodeLoaded.size() % 256;
 }
 
 
@@ -182,6 +186,9 @@ void Builtin::AddByteCode(VM& vm){
 	}
 	else if(funcName == "return"){
 		vm.byteCodeLoaded.push_back(RETURN);
+	}
+	else if(funcName == "RETURN"){
+		vm.byteCodeLoaded.push_back(RETURN_FINAL);
 	}
 }
 
@@ -271,8 +278,9 @@ int IfStatement::Evaluate(){
 
 void IfStatement::AddByteCode(VM& vm){
 	test->AddByteCode(vm);
-	vm.byteCodeLoaded.push_back(INT_LIT);
+	vm.byteCodeLoaded.push_back(INT_DLIT);
 	int jumpAddrIdx = vm.byteCodeLoaded.size();
+	vm.byteCodeLoaded.push_back(253);
 	vm.byteCodeLoaded.push_back(253);
 	vm.byteCodeLoaded.push_back(BRANCH);
 
@@ -280,7 +288,8 @@ void IfStatement::AddByteCode(VM& vm){
 		statements[i]->AddByteCode(vm);
 	}
 
-	vm.byteCodeLoaded[jumpAddrIdx] = vm.byteCodeLoaded.size();
+	vm.byteCodeLoaded[jumpAddrIdx]   = vm.byteCodeLoaded.size() / 256;
+	vm.byteCodeLoaded[jumpAddrIdx+1] = vm.byteCodeLoaded.size() % 256;
 }
 
 int WhileStatement::Evaluate(){
@@ -291,8 +300,9 @@ void WhileStatement::AddByteCode(VM& vm){
 	int recurAddrIdx = vm.byteCodeLoaded.size();
 
 	test->AddByteCode(vm);
-	vm.byteCodeLoaded.push_back(INT_LIT);
+	vm.byteCodeLoaded.push_back(INT_DLIT);
 	int jumpAddrIdx = vm.byteCodeLoaded.size();
+	vm.byteCodeLoaded.push_back(253);
 	vm.byteCodeLoaded.push_back(253);
 	vm.byteCodeLoaded.push_back(BRANCH);
 
@@ -302,9 +312,11 @@ void WhileStatement::AddByteCode(VM& vm){
 
 	vm.byteCodeLoaded.push_back(INT_LIT);
 	vm.byteCodeLoaded.push_back(0);
-	vm.byteCodeLoaded.push_back(INT_LIT);
-	vm.byteCodeLoaded.push_back(recurAddrIdx);
+	vm.byteCodeLoaded.push_back(INT_DLIT);
+	vm.byteCodeLoaded.push_back(recurAddrIdx / 256);
+	vm.byteCodeLoaded.push_back(recurAddrIdx % 256);
 	vm.byteCodeLoaded.push_back(BRANCH);
 
-	vm.byteCodeLoaded[jumpAddrIdx] = vm.byteCodeLoaded.size();
+	vm.byteCodeLoaded[jumpAddrIdx]   = vm.byteCodeLoaded.size() / 256;
+	vm.byteCodeLoaded[jumpAddrIdx+1] = vm.byteCodeLoaded.size() % 256;
 }

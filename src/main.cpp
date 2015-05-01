@@ -42,36 +42,19 @@ int main(int argc, char** argv){
 							PRINT(FactorialLoop(input));\
 						}\
 					}";
-
 	
-	/*
-	string code1 = "def MultAdd(a,b,c){\
-						return(a*b+a*c);\
-				   }\
-				   def main(){\
-						PRINT(MultAdd(READ(), READ(), READ()));\
-				    }";*/
-					
 	
-	VM x;
-
-	/*
-	vector<string> tokens1 = NewTokenize(code1);
-	vector<unsigned char> byteCode = NewShuntingYard(tokens1, x);
-	x.byteCodeLoaded= byteCode;
-	*/
-
 	vector<string> tokens = NewTokenize(code1);
 	vector<string> shuntedTokens = JustShuntingYard(tokens);
+	/*
+	y.GenerateFromShuntedTokens(shuntedTokens, b);
 
-	for(int i = 0; i < shuntedTokens.size(); i++){
-		//cout << shuntedTokens[i] << "\n";
-	}
+	y.GenerateByteCode(b);
+	*/
 
-#if 1 //TESTING
+#if TESTING
+	VM x;
 	bool allPass = true;
-
-
 
 	x.CompileAndLoadCode("test2.svm");
 	x.SaveByteCode("test2.svb");
@@ -81,13 +64,14 @@ int main(int argc, char** argv){
 	allPass &= (x.Execute("testOne") == 1);
 	allPass &= (x.Execute("testTwo") == 1);
 	allPass &= (x.Execute("testThree") == 0);
+	allPass &= (x.Execute("testFour") == 4);
 
 	VM b;
 	AST y;
 	y.GenerateFromShuntedTokens(shuntedTokens, b);
 
 	y.GenerateByteCode(b);
-	//allPass &= (b.Execute("FactorialLoopTest") == 120);
+	allPass &= (b.Execute("FactorialLoopTest") == 120);
 
 	for(int i = 0; i < b.byteCodeLoaded.size(); i++){
 		//cout << "Instr " << i << ": " << (int)b.byteCodeLoaded[i] << endl;
@@ -97,8 +81,38 @@ int main(int argc, char** argv){
 
 	cout << (allPass ? "allPass" : "some failed.") << endl;
 	return allPass ? 0 : 1;
-#else
 
+#elif COMPILER //VM Compiler
+	if(argc < 2){
+		cout << "\nError: Must supply at least one input file.\n";
+		return -1;
+	}
+
+	for(int i = 1; i < argc; i++){
+		char* fileNameC = argv[i];
+		string fileName = string(fileNameC);
+
+		VM x;
+		if(x.CompileAndLoadCode(fileName)){
+			x.SaveByteCode(fileName + ".svb");
+		}
+	}
+
+
+#else //VM runner
+	if(argc != 3){
+		cout << "\nError: Must supply one input file, and a function to call.\n";
+		return -1;
+	}
+
+	string fileName = string(argv[1]);
+	string functionName = string(argv[2]);
+
+	VM x;
+	if(x.LoadByteCode(fileName)){
+		int retVal = x.Execute(functionName);
+		cout << "\nReturned: " << retVal << endl;
+	}
 #endif
 
 	

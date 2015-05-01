@@ -1,0 +1,18 @@
+/**
+\mainpage simple-vm
+
+This is the documentation for simple-vm, CC-BY Benji Smith.  For license info, see LICENSE.
+
+Quick use:
+------------------
+
+Run `make build` to output the necessary executables:  
+
+* `svm [SVM Files]` : Compile an SVM source code file into an SVB bytecode file.
+    
+* `svb [SVB File] [Function name]` : Run given function on compiled bytecode from an SVB file.  
+
+Contributing:
+------------------
+Fork this on [Github](https://github.com/benjins/simple-vm).
+*/

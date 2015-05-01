@@ -5,7 +5,7 @@
 #include <unordered_map>
 #include <vector>
 
-#define VERSION_INT 110
+#define VERSION_INT 120
 
 /*
 File formats and specs for svm and svb files.
@@ -28,9 +28,24 @@ SVB:
 
 */
 
+enum struct ValueType{
+	INT,
+	FLOAT
+};
+
+struct VMValue{
+	union{
+		int intValue;
+		float floatValue;
+	};
+
+	ValueType type;
+
+};
+
 using std::string; using std::unordered_map; using std::vector;
 
-#define MAX_STACK 512
+#define MAX_STACK 1024
 
 #define REGISTER_COUNT 1024
 
@@ -38,9 +53,9 @@ struct VM{
 
 	VM();
 
-	void CompileAndLoadCode(const string& fileName);
+	bool CompileAndLoadCode(const string& fileName);
 	void SaveByteCode(const string& fileName);
-	void LoadByteCode(const string& fileName);
+	bool LoadByteCode(const string& fileName);
 
 	//Execute bytecode, given the start of instruction, and the count
 	int Execute(unsigned char* code, int instructionCount, int entryPoint = 0);
@@ -51,15 +66,15 @@ struct VM{
 	vector<unsigned char> byteCodeLoaded;
 
 protected:
-	short stack[MAX_STACK];
+	VMValue stack[MAX_STACK];
 	short stackSize;
 
 	short stackFrame;
 	
-	short registers[REGISTER_COUNT];
+	VMValue registers[REGISTER_COUNT];
 
-	void Push(short value);
-	short Pop();
+	void Push(VMValue value);
+	VMValue Pop();
 };
 
 
