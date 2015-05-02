@@ -1,43 +1,18 @@
-def IsPrime(number){                                 
-	var factor : 1;                                   
-	var factorCount : 0;                              
-													  
-	while(factor < number){                           
-		if( factor * (number / factor) = number){      
-			factorCount : factorCount + 1;             
-		}                                              
-													   
-		factor : factor + 1;                           
-	}                                                 
-													   
-	if(factorCount > 1 | factorCount = 0){			   
-		return(0);                                     
-	}                                                 
-													  
-	if(factorCount = 1){                              
-		return(1);                                   
-	}                                                 
-}
 def Summation(n){
-	if(n > 0){
-		return(n+Summation(n-1));
+	var total : 0;
+	var counter : 1;
+	while(counter < n+1){
+		total : total + counter;
+		counter : counter + 1;
 	}
-	return(0);
-}
-def MultAdd(a,b,c){
-	var prodOne : a * b;
-	var prodTwo : a * c;
-	return(prodOne + prodTwo);
+	
+	return total;
 }
 
-def SumMultAddSum(x,y,z){
-	return(Summation(MultAdd(Summation(x),y,z)));
-}
 def main(){
 	var input : 1;
 	while(input > 0){
 		input  : READ();
-		PRINT(IsPrime(input));
 		PRINT(Summation(input));
 	}
 	

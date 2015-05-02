@@ -122,6 +122,22 @@ struct Literal : public Value{
 	} 
 };
 
+struct FloatLiteral : public Value{
+	float value;
+
+	FloatLiteral(float _value = 0){
+		value = _value;
+	}
+
+	virtual int Evaluate(){
+		return (int)value;
+	}
+	virtual void AddByteCode(VM& vm);
+	virtual int NumParams(){
+		return 0;
+	} 
+};
+
 struct Variable : public Value{
 	int reg;
 

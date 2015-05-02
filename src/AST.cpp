@@ -228,6 +228,16 @@ void Literal::AddByteCode(VM& vm){
 	}
 }
 
+void FloatLiteral::AddByteCode(VM& vm){
+	unsigned char* castPtr = (unsigned char*)&value;
+	vm.byteCodeLoaded.push_back(FLT_LIT);
+	for(int i = 0; i < 4; i++){
+		vm.byteCodeLoaded.push_back(castPtr[i]);
+	}
+
+
+}
+
 int Variable::Evaluate(){
 	return -1;
 }

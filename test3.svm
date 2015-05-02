@@ -39,16 +39,17 @@ def testFour(){
 }
 
 def main(){
-	var input : 3;
-	var next : 4+input*input+3-4*(6-3);
-	var final : next;
+	var input : 1;
 	
-	if(2 = 2 & 3 > 1){
-		final : final + 1;
-	}
-	if(2 > 3){
-		final : final - 1;
+	while(input > 0){
+		input : READ();
+		PRINT(input);
+		var counter : 0;
+		while(counter < input + 1){
+			PRINT(IsPrime(counter));
+			counter : counter + 1;
+		}
 	}
 	
-	return(final);
+	return(0);
 }

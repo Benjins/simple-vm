@@ -477,9 +477,18 @@ int VM::Execute(unsigned char* code, int instructionCount, int entryPoint){
 				return a.intValue;
 			}break;
 
-			default:
+			case FLT_LIT:{
+				i++;
+				VMValue lit;
+				lit.type = ValueType::FLOAT;
+				lit.floatValue = *(float*)(code + i);
+				Push(lit);
+				i += 3;
+			}break;
+
+			default:{
 				cout << "\nInvalid instruction " << code[i] << " at instruction " << i << endl;
-				break;
+			}break;
 		}
 
 

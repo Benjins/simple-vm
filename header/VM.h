@@ -45,7 +45,7 @@ struct VMValue{
 
 using std::string; using std::unordered_map; using std::vector;
 
-#define MAX_STACK 1024
+#define MAX_STACK 4096
 
 #define REGISTER_COUNT 1024
 

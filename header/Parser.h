@@ -48,15 +48,10 @@ struct Stack{
 	}
 };
 
-string ParseByteCode(string fileName);
 
-static void ReadFromFile(string& readInto, string fileName);
-
-vector<string> Tokenize(const string& code);
+static void ReadFromFile(string& readnto, string fileName);
 
 vector<string> NewTokenize(const string& code);
-
-string ShuntingYard(vector<string> tokens);
 
 vector<unsigned char> NewShuntingYard(vector<string> tokens, VM& vm);
 
