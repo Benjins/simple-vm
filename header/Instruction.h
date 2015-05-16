@@ -25,7 +25,9 @@ enum Instruction{
 	STK_FRAME = 20,
 	PARAM = 21,
 	RETURN_FINAL = 22,
-	FLT_LIT = 23
+	FLT_LIT = 23,
+	INT_TO_FLT = 24,
+	READF = 25
 };
 
 

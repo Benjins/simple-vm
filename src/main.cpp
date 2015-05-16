@@ -8,8 +8,7 @@
 using std::cout; using std::endl;
 
 int main(int argc, char** argv){
-
-	
+#if TESTING
 	string code1 = "def Factorial(num){\
 					   if(num < 2){\
 							return(1);\
@@ -46,13 +45,7 @@ int main(int argc, char** argv){
 	
 	vector<string> tokens = NewTokenize(code1);
 	vector<string> shuntedTokens = JustShuntingYard(tokens);
-	/*
-	y.GenerateFromShuntedTokens(shuntedTokens, b);
 
-	y.GenerateByteCode(b);
-	*/
-
-#if TESTING
 	VM x;
 	bool allPass = true;
 
@@ -60,7 +53,7 @@ int main(int argc, char** argv){
 	x.SaveByteCode("test2.svb");
 	x.LoadByteCode("test2.svb");
 
-	//allPass &= (x.Execute("main") == 5);
+	allPass &= (x.Execute("main") == 5);
 	allPass &= (x.Execute("testOne") == 1);
 	allPass &= (x.Execute("testTwo") == 1);
 	allPass &= (x.Execute("testThree") == 0);
@@ -100,13 +93,13 @@ int main(int argc, char** argv){
 
 
 #else //VM runner
-	if(argc != 3){
-		cout << "\nError: Must supply one input file, and a function to call.\n";
+	if(argc < 2){
+		cout << "\nError: Must supply at least one input file.\n";
 		return -1;
 	}
 
 	string fileName = string(argv[1]);
-	string functionName = string(argv[2]);
+	string functionName = (argc > 2) ? string(argv[2]) : "main";
 
 	VM x;
 	if(x.LoadByteCode(fileName)){

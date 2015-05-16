@@ -18,7 +18,7 @@ void AST::GenerateFromShuntedTokens(const vector<string>& tokens, VM& vm){
 	int varCount = 0;
 
 	const string operators = "+-*><|&=/";
-	const string numbers = "0123456789";
+	const string numbers = "0123456789.";
 
 	Stack<Scope*> scopes;
 	Stack<Value*> values;
@@ -27,7 +27,12 @@ void AST::GenerateFromShuntedTokens(const vector<string>& tokens, VM& vm){
 		string token = tokens[i];
 
 		if(numbers.find(token[0]) != string::npos){
-			values.Push(new Literal(atoi(token.c_str())));
+			if(token.find(".") == string::npos){
+				values.Push(new Literal(atoi(token.c_str())));
+			}
+			else{
+				values.Push(new FloatLiteral(atof(token.c_str())));
+			}
 		}
 		else if(operators.find(token) != string::npos){
 			Operator* op = new Operator(token);
@@ -51,16 +56,16 @@ void AST::GenerateFromShuntedTokens(const vector<string>& tokens, VM& vm){
 				i++;
 			}
 
-			i++; // Skip '{'
+			i++; // Skip '{' after "def (args...)"
 
 			funcArity.insert(std::pair<string, int>(funcName, currDef->paramNames.size()));
 			scopes.Push(currDef);
 		}
-		else if(token == "var"){
+		else if(token == "var" || token == "int" || token == "float"){
 			varRegs.insert(std::pair<string, int>(tokens[i+1], varCount));
 			varCount++;
 		}
-		else if(token == "PRINT" || token == "READ" || token == "return" || token == "RETURN"){
+		else if(token == "PRINT" || token == "READ" || token == "READF" || token == "return" || token == "RETURN" || token == "itof"){
 			Builtin* builtin = new Builtin(token);
 			for(int i = 0; i < builtin->numParams; i++){
 				builtin->AddParameter(values.Pop());
@@ -184,11 +189,17 @@ void Builtin::AddByteCode(VM& vm){
 	else if(funcName == "READ"){
 		vm.byteCodeLoaded.push_back(READ);
 	}
+	else if(funcName == "READF"){
+		vm.byteCodeLoaded.push_back(READF);
+	}
 	else if(funcName == "return"){
 		vm.byteCodeLoaded.push_back(RETURN);
 	}
 	else if(funcName == "RETURN"){
 		vm.byteCodeLoaded.push_back(RETURN_FINAL);
+	}
+	else if(funcName == "itof"){
+		vm.byteCodeLoaded.push_back(INT_TO_FLT);
 	}
 }
 
@@ -234,8 +245,6 @@ void FloatLiteral::AddByteCode(VM& vm){
 	for(int i = 0; i < 4; i++){
 		vm.byteCodeLoaded.push_back(castPtr[i]);
 	}
-
-
 }
 
 int Variable::Evaluate(){

@@ -139,41 +139,36 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    }</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;};</div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="keywordtype">string</span> <a class="code" href="Parser_8h.html#af1b58ed25946eac994ddd75eccdc2131">ParseByteCode</a>(<span class="keywordtype">string</span> fileName);</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="keyword">static</span> <span class="keywordtype">void</span> ReadFromFile(<span class="keywordtype">string</span>&amp; readInto, <span class="keywordtype">string</span> fileName);</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;vector&lt;string&gt; <a class="code" href="Parser_8h.html#acb112f3a6334a3ed5fc3da710d29fbba">Tokenize</a>(<span class="keyword">const</span> <span class="keywordtype">string</span>&amp; code);</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;vector&lt;string&gt; <a class="code" href="Parser_8h.html#a49f9c1ae7f4a0613f496b0da914f7d56">NewTokenize</a>(<span class="keyword">const</span> <span class="keywordtype">string</span>&amp; code);</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="keywordtype">string</span> <a class="code" href="Parser_8h.html#aa188c9e3f9db5efc2a9f4ba1e7eaaf5b">ShuntingYard</a>(vector&lt;string&gt; tokens);</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;vector&lt;unsigned char&gt; <a class="code" href="Parser_8h.html#afbda6432b9d1eb830f22cc49d44acc1e">NewShuntingYard</a>(vector&lt;string&gt; tokens, <a class="code" href="structVM.html">VM</a>&amp; vm);</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="keywordtype">string</span> <a class="code" href="Parser_8h.html#a347ade3bd9fb2fbfb7ebac2262b99eb7">MakeIntLiteral</a>(<span class="keywordtype">int</span> number);</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;<span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> <a class="code" href="Parser_8h.html#a0c7432e7005a4e65bf94ebb5fd1d0c84">Compile</a>(<span class="keywordtype">string</span> token);</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;<span class="keywordtype">bool</span> <a class="code" href="Parser_8h.html#a1662f212d4dc9064bc2531361969d7f3">IsAFunctionToken</a>(<span class="keywordtype">string</span> token);</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="keywordtype">int</span> <a class="code" href="Parser_8h.html#afd4e086b9fe6ba24e2c22bcf6044e665">OperatorPrecedence</a>(<span class="keywordtype">string</span> token);</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;<span class="keyword">static</span> <span class="keywordtype">string</span> __tokensArr[] = {<span class="stringliteral">&quot;PRINT&quot;</span>,<span class="stringliteral">&quot;READ&quot;</span>, <span class="stringliteral">&quot;*&quot;</span>, <span class="stringliteral">&quot;-&quot;</span>, <span class="stringliteral">&quot;+&quot;</span>, <span class="stringliteral">&quot;(&quot;</span>, <span class="stringliteral">&quot;,&quot;</span>, <span class="stringliteral">&quot;)&quot;</span>};</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;<span class="keyword">static</span> <span class="keywordtype">string</span> __functionsArr[] = {<span class="stringliteral">&quot;PRINT&quot;</span>,<span class="stringliteral">&quot;READ&quot;</span>};</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<span class="keyword">static</span> vector&lt;string&gt; __tokens(&amp;__tokensArr[0], &amp;__tokensArr[8]);</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;<span class="keyword">static</span> <span class="keywordtype">string</span> __operators = <span class="stringliteral">&quot;*+&quot;</span>;</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="keyword">static</span> <span class="keywordtype">string</span> __digits = <span class="stringliteral">&quot;0123456789&quot;</span>;</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="keyword">static</span> <span class="keywordtype">void</span> ReadFromFile(<span class="keywordtype">string</span>&amp; readnto, <span class="keywordtype">string</span> fileName);</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;vector&lt;string&gt; <a class="code" href="Parser_8h.html#a49f9c1ae7f4a0613f496b0da914f7d56">NewTokenize</a>(<span class="keyword">const</span> <span class="keywordtype">string</span>&amp; code);</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;vector&lt;unsigned char&gt; <a class="code" href="Parser_8h.html#afbda6432b9d1eb830f22cc49d44acc1e">NewShuntingYard</a>(vector&lt;string&gt; tokens, <a class="code" href="structVM.html">VM</a>&amp; vm);</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="keywordtype">string</span> <a class="code" href="Parser_8h.html#a347ade3bd9fb2fbfb7ebac2262b99eb7">MakeIntLiteral</a>(<span class="keywordtype">int</span> number);</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;<span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> <a class="code" href="Parser_8h.html#a0c7432e7005a4e65bf94ebb5fd1d0c84">Compile</a>(<span class="keywordtype">string</span> token);</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<span class="keywordtype">bool</span> <a class="code" href="Parser_8h.html#a1662f212d4dc9064bc2531361969d7f3">IsAFunctionToken</a>(<span class="keywordtype">string</span> token);</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<span class="keywordtype">int</span> <a class="code" href="Parser_8h.html#afd4e086b9fe6ba24e2c22bcf6044e665">OperatorPrecedence</a>(<span class="keywordtype">string</span> token);</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;<span class="keyword">static</span> <span class="keywordtype">string</span> __tokensArr[] = {<span class="stringliteral">&quot;PRINT&quot;</span>,<span class="stringliteral">&quot;READ&quot;</span>, <span class="stringliteral">&quot;*&quot;</span>, <span class="stringliteral">&quot;-&quot;</span>, <span class="stringliteral">&quot;+&quot;</span>, <span class="stringliteral">&quot;(&quot;</span>, <span class="stringliteral">&quot;,&quot;</span>, <span class="stringliteral">&quot;)&quot;</span>};</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;<span class="keyword">static</span> <span class="keywordtype">string</span> __functionsArr[] = {<span class="stringliteral">&quot;PRINT&quot;</span>,<span class="stringliteral">&quot;READ&quot;</span>};</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<span class="keyword">static</span> vector&lt;string&gt; __tokens(&amp;__tokensArr[0], &amp;__tokensArr[8]);</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<span class="keyword">static</span> <span class="keywordtype">string</span> __operators = <span class="stringliteral">&quot;*+&quot;</span>;</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;<span class="keyword">static</span> <span class="keywordtype">string</span> __digits = <span class="stringliteral">&quot;0123456789&quot;</span>;</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="preprocessor">#endif</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Mar 30 2015 23:56:12 for simple-vm by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sat May 2 2015 18:38:34 for simple-vm by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.4
 </small></address>

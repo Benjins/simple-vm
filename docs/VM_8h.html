@@ -87,7 +87,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
-<a href="#define-members">Macros</a>  </div>
+<a href="#define-members">Macros</a> &#124;
+<a href="#enum-members">Enumerations</a>  </div>
   <div class="headertitle">
 <div class="title">VM.h File Reference</div>  </div>
 </div><!--header-->
@@ -100,17 +101,26 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structVMValue.html">VMValue</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structVM.html">VM</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
-<tr class="memitem:ab89345706d885206342f5ddb115b5ad7"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="VM_8h.html#ab89345706d885206342f5ddb115b5ad7">VERSION_INT</a>&#160;&#160;&#160;110</td></tr>
+<tr class="memitem:ab89345706d885206342f5ddb115b5ad7"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="VM_8h.html#ab89345706d885206342f5ddb115b5ad7">VERSION_INT</a>&#160;&#160;&#160;120</td></tr>
 <tr class="separator:ab89345706d885206342f5ddb115b5ad7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af24298a5ce56647751e432673282c6e2"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="VM_8h.html#af24298a5ce56647751e432673282c6e2">MAX_STACK</a>&#160;&#160;&#160;512</td></tr>
+<tr class="memitem:af24298a5ce56647751e432673282c6e2"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="VM_8h.html#af24298a5ce56647751e432673282c6e2">MAX_STACK</a>&#160;&#160;&#160;4096</td></tr>
 <tr class="separator:af24298a5ce56647751e432673282c6e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a872bdec8b3471262a8a0131d7dc0fc0d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="VM_8h.html#a872bdec8b3471262a8a0131d7dc0fc0d">REGISTER_COUNT</a>&#160;&#160;&#160;1024</td></tr>
 <tr class="separator:a872bdec8b3471262a8a0131d7dc0fc0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
+Enumerations</h2></td></tr>
+<tr class="memitem:ad9971b6ef33e02ba2c75d19c1d2518a1"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="VM_8h.html#ad9971b6ef33e02ba2c75d19c1d2518a1">ValueType</a> { <a class="el" href="VM_8h.html#ad9971b6ef33e02ba2c75d19c1d2518a1a53f93baa3057821107c750323892fa92">ValueType::INT</a>, 
+<a class="el" href="VM_8h.html#ad9971b6ef33e02ba2c75d19c1d2518a1ae738c26bf4ce1037fa81b039a915cbf6">ValueType::FLOAT</a>
+ }</td></tr>
+<tr class="separator:ad9971b6ef33e02ba2c75d19c1d2518a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
 <a class="anchor" id="af24298a5ce56647751e432673282c6e2"></a>
@@ -118,7 +128,7 @@ Macros</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define MAX_STACK&#160;&#160;&#160;512</td>
+          <td class="memname">#define MAX_STACK&#160;&#160;&#160;4096</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -142,17 +152,44 @@ Macros</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define VERSION_INT&#160;&#160;&#160;110</td>
+          <td class="memname">#define VERSION_INT&#160;&#160;&#160;120</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
+<h2 class="groupheader">Enumeration Type Documentation</h2>
+<a class="anchor" id="ad9971b6ef33e02ba2c75d19c1d2518a1"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="VM_8h.html#ad9971b6ef33e02ba2c75d19c1d2518a1">ValueType</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><em><a class="anchor" id="ad9971b6ef33e02ba2c75d19c1d2518a1a53f93baa3057821107c750323892fa92"></a>INT</em>&nbsp;</td><td class="fielddoc">
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="ad9971b6ef33e02ba2c75d19c1d2518a1ae738c26bf4ce1037fa81b039a915cbf6"></a>FLOAT</em>&nbsp;</td><td class="fielddoc">
+</td></tr>
+</table>
+
+</div>
+</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Mar 30 2015 23:56:12 for simple-vm by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sat May 2 2015 18:38:34 for simple-vm by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.4
 </small></address>

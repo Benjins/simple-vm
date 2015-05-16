@@ -24,6 +24,10 @@ bld/
 [Bb]in/
 [Oo]bj/
 
+#executables
+svb
+svm
+simplevm-test
 *.exe
 
 # Roslyn cache directories

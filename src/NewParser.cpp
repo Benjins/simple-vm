@@ -44,7 +44,7 @@ vector<string> JustShuntingYard(vector<string>& tokens){
 		else if(token == "{" || token == "}"){
 			shuntedTokens.push_back(token);
 		}
-		else if(token == "var"){
+		else if(token == "var" || token == "int" || token == "float"){
 			shuntedTokens.push_back(token);
 			variables.insert(std::pair<string,int>(tokens[i+1],1));
 		}
@@ -229,7 +229,7 @@ vector<unsigned char> NewShuntingYard(vector<string> tokens, VM& vm){
 
 			}
 		}
-		else if(token == "var"){
+		else if(token == "var" || token == "int" || token == "float"){
 			i++;
 			string varName = tokens[i];
 			auto regIdx = varReg.find(varName);

@@ -220,21 +220,32 @@ int VM::Execute(unsigned char* code, int instructionCount, int entryPoint){
 			case INT_DIV:{
 				VMValue a = Pop();
 				VMValue b = Pop();
-				if(a.type != b.type){
-					cout << "\nError: trying to divide differently-typed values.\n";
-					return -1;
-				}
-				else if(a.type == ValueType::INT){
+				if(a.type == ValueType::INT && b.type == ValueType::INT){
 					VMValue result;
 					result.type = ValueType::INT;
 					result.intValue = b.intValue / a.intValue;
 					Push(result);
 				}
-				else if(a.type == ValueType::FLOAT){
+				else if(a.type == ValueType::FLOAT && b.type == ValueType::INT){
+					VMValue result;
+					result.type = ValueType::FLOAT;
+					result.floatValue = b.intValue / a.floatValue;
+					Push(result);
+				}
+				else if(a.type == ValueType::INT && b.type == ValueType::FLOAT){
+					VMValue result;
+					result.type = ValueType::FLOAT;
+					result.floatValue = b.floatValue / a.intValue;
+					Push(result);
+				}
+				else if(a.type == ValueType::FLOAT && b.type == ValueType::FLOAT){
 					VMValue result;
 					result.type = ValueType::FLOAT;
 					result.floatValue = b.floatValue / a.floatValue;
 					Push(result);
+				}
+				else{
+					cout << "\nTrying to divide non-numerical types.\n";
 				}
 			}break;
 
@@ -300,6 +311,13 @@ int VM::Execute(unsigned char* code, int instructionCount, int entryPoint){
 				Push(a);
 			}break;
 			
+			case READF:{
+				VMValue a;
+				cin >> a.floatValue;
+				a.type = ValueType::FLOAT;
+				Push(a);
+			}break;
+			
 			case L_THAN:{
 				VMValue a = Pop();
 				VMValue b = Pop();
@@ -324,15 +342,19 @@ int VM::Execute(unsigned char* code, int instructionCount, int entryPoint){
 				VMValue b = Pop();
 				VMValue res;
 				res.type = ValueType::INT;
-				if(a.type != b.type){
-					cout << "\nError: trying to compare(>) differently-typed values.\n";
-					return -1;
-				}
-				else if(a.type == ValueType::INT){
+				if(a.type == ValueType::INT && b.type == ValueType::INT){
 					res.intValue = b.intValue > a.intValue? 1 : 0;
 					Push(res);
 				}
-				else if(a.type == ValueType::FLOAT){
+				else if(a.type == ValueType::INT && b.type == ValueType::FLOAT){
+					res.intValue = b.floatValue > a.intValue? 1 : 0;
+					Push(res);
+				}
+				else if(a.type == ValueType::FLOAT && b.type == ValueType::INT){
+					res.intValue = b.intValue > a.floatValue? 1 : 0;
+					Push(res);
+				}
+				else if(a.type == ValueType::FLOAT && b.type == ValueType::FLOAT){
 					res.intValue = b.floatValue > a.floatValue? 1 : 0;
 					Push(res);
 				}
@@ -485,9 +507,21 @@ int VM::Execute(unsigned char* code, int instructionCount, int entryPoint){
 				Push(lit);
 				i += 3;
 			}break;
+			
+			case INT_TO_FLT:{
+				VMValue i = Pop();
+				if(i.type != ValueType::INT){
+					cout << "\nError: Converting non-int from int to float.\n";
+				}
+				
+				VMValue f;
+				f.type = ValueType::FLOAT;
+				f.floatValue = i.intValue;
+				Push(f);
+			}break;
 
 			default:{
-				cout << "\nInvalid instruction " << code[i] << " at instruction " << i << endl;
+				cout << "\nInvalid instruction " << int(code[i]) << " at instruction " << i << endl;
 			}break;
 		}
 

@@ -1,5 +1,5 @@
 def IsPrime(number){                                 
-	var factor : 1;                                   
+	var factor : 1;                           
 	var factorCount : 0;                              
 													  
 	while(factor < number){                           
@@ -67,10 +67,11 @@ def main(){
 	if(2 > 3){
 		final : final - 1;
 	}
-
-	while(input > 0){
-		PRINT(Summation(input));
-		input : READ();
+	
+	final : final - 1;
+	
+	if(2 + (3*3) / 2 = 6){
+		final : final + 1;
 	}
 	
 	return(final);

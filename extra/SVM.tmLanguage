@@ -22,7 +22,7 @@
 			<key>comment</key>
 			<string>variables (declaration)</string>
 			<key>match</key>
-			<string>var</string>
+			<string>(var|int|float)</string>
 			<key>name</key>
 			<string>storage.type.c++</string>
 		</dict>

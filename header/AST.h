@@ -78,10 +78,16 @@ struct Builtin : public FuncCall{
 		else if(funcName == "READ"){
 			numParams = 0;
 		}
+		else if(funcName == "READF"){
+			numParams = 0;
+		}
 		else if(funcName == "return"){
 			numParams = 1;
 		}
 		else if(funcName == "RETURN"){
+			numParams = 1;
+		}
+		else if(funcName == "itof"){
 			numParams = 1;
 		}
 	}
