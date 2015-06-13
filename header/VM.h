@@ -6,7 +6,7 @@
 #include <map>
 #include <vector>
 
-#define VERSION_INT 120
+#define VERSION_INT 130
 
 /*
 File formats and specs for svm and svb files.
