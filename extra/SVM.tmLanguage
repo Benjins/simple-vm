@@ -28,9 +28,9 @@
 		</dict>
 		<dict>
 			<key>comment</key>
-			<string>functions (declaration)</string>
+			<string>functions (definition/declaration)</string>
 			<key>match</key>
-			<string>def</string>
+			<string>(def|extern)</string>
 			<key>name</key>
 			<string>entity.name.function</string>
 		</dict>
@@ -46,7 +46,7 @@
 			<key>comment</key>
 			<string>keywords (return/print/read)</string>
 			<key>match</key>
-			<string>(return|RETURN|PRINT|READ)</string>
+			<string>(return|RETURN|PRINT|READ|READF)</string>
 			<key>name</key>
 			<string>keyword.control.import.error.c</string>
 		</dict>

@@ -8,9 +8,9 @@ Quick use:
 
 Run `make build` to output the necessary executables:  
 
-* `svm [SVM Files]` : Compile an SVM source code file into an SVB bytecode file.
+* `svm [SVM File] [DLL files]` : Compile an SVM source code file into an SVB bytecode file.  Any DLL files have their names added to the SVB file as dependencies.
     
-* `svb [SVB File] [Function name]` : Run given function on compiled bytecode from an SVB file.  
+* `svb [SVB File] [optional:Function name]` : Run given function on compiled bytecode from an SVB file.  If no function name is given, 'main' is assumed.
 
 Contributing:
 ------------------

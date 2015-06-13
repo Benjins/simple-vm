@@ -31,7 +31,7 @@ vector<string> JustShuntingYard(vector<string>& tokens){
 		}
 		else if(funcDef){
 			shuntedTokens.push_back(token);
-			if(token == "{"){
+			if(token == "{" || token == ";"){
 				funcDef = false;
 			}
 			else if(token != "," && token != "(" && token != ")"){

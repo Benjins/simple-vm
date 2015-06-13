@@ -52,8 +52,6 @@ void AST::GenerateFromShuntedTokens(const vector<string>& tokens, VM& vm){
 			while(tokens[i] != ")"){
 				if(tokens[i] != ","){
 					currDef->paramNames.push_back(tokens[i]);
-					varRegs.insert(std::pair<string, int>(tokens[i], varCount));
-					varCount++;
 				}
 				i++;
 			}
@@ -74,8 +72,6 @@ void AST::GenerateFromShuntedTokens(const vector<string>& tokens, VM& vm){
 			while(tokens[i] != ")"){
 				if(tokens[i] != ","){
 					currDef->paramNames.push_back(tokens[i]);
-					varRegs.insert(std::pair<string, int>(tokens[i], varCount));
-					varCount++;
 				}
 				i++;
 			}
@@ -129,7 +125,9 @@ void AST::GenerateFromShuntedTokens(const vector<string>& tokens, VM& vm){
 			values.Push(assmt);
 		}
 		else if(token == ";"){
-			scopes.Peek()->AddStatement(values.Pop());
+			if(scopes.stackSize > 0){
+				scopes.Peek()->AddStatement(values.Pop());
+			}
 		}
 		else if(token == "{"){
 			scopes.Push(new Scope());

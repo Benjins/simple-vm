@@ -45,8 +45,21 @@ bool VM::CompileAndLoadCode(const string& fileName, vector<string>* dllsToLoad /
 	vector<string> tokens = NewTokenize(code);
 	vector<string> shuntedTokens = JustShuntingYard(tokens);
 
+	/*
+	for(const string& token : shuntedTokens){
+		cout << "|" << token << "|\n";
+	}
+	*/
+	
+
 	b.GenerateFromShuntedTokens(shuntedTokens, *this);
 	b.GenerateByteCode(*this);
+
+	/*
+	for(char instr : byteCodeLoaded){
+		cout << "|" << (int)instr << "|\n";
+	}*/
+	
 
 	return true;
 }
