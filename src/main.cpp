@@ -2,12 +2,16 @@
 #include "../header/Instruction.h"
 #include "../header/Parser.h"
 #include "../header/AST.h"
+#include "../header/DLLFile.h"
 #include <assert.h>
 #include <iostream>
+
+#include <dlfcn.h>
 
 using std::cout; using std::endl;
 
 int main(int argc, char** argv){
+
 #if TESTING
 	string code1 = "def Factorial(num){\
 					   if(num < 2){\

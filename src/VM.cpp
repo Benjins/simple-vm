@@ -2,6 +2,7 @@
 #include "../header/Instruction.h"
 #include "../header/Parser.h"
 #include "../header/AST.h"
+#include "../header/DLLFile.h"
 #include <iostream>
 #include <cstring>
 #include <fstream>
@@ -75,6 +76,24 @@ void VM::SaveByteCode(const string& fileName){
 		fileOut.write(iter->first.c_str(), strLength);
 	}
 
+	int numDllsUsed = dllFilesLoaded.size();
+	fileOut.write((char*)&numDllsUsed, 4);
+
+	for(auto iter = dllFilesLoaded.begin(); iter != dllFilesLoaded.end(); iter++){
+		int strLength = iter->first.size() + 1;
+		fileOut.write((char*)&strLength, 4);
+		fileOut.write(iter->first.c_str(), strLength);
+	}
+
+	int numExternFuncs = externFuncPointers.size();
+	fileOut.write((char*)&numExternFuncs, 4);
+
+	for(auto iter = externFuncPointers.begin(); iter != externFuncPointers.end(); iter++){
+		int strLength = iter->first.size() + 1;
+		fileOut.write((char*)&strLength, 4);
+		fileOut.write(iter->first.c_str(), strLength);
+	}
+
 	fileOut.close();
 }
 
@@ -128,6 +147,39 @@ bool VM::LoadByteCode(const string& fileName){
 
 		std::pair<string, int> funcPtr(funcName, entryPoint);
 		funcPointers.insert(funcPtr);
+
+		delete[] strData;
+	}
+
+	fileIn.read(buffer, 4);
+	int numDlls = *(int*)buffer;
+
+	for(int i = 0; i < numDlls; i++){
+		fileIn.read(buffer, 4);
+		int strLength = *(int*)buffer;
+
+		char* strData = new char[strLength];
+		fileIn.read(strData, strLength);
+		string dllName = string(strData);
+
+		auto iterPair = dllFilesLoaded.insert({dllName, DLLFile()});
+		iterPair.first->second.OpenFile(dllName);
+
+		delete[] strData;
+	}
+
+	fileIn.read(buffer, 4);
+	int numExternFunctions = *(int*)buffer;
+
+	for(int i = 0; i < numExternFunctions; i++){
+		fileIn.read(buffer, 4);
+		int strLength = *(int*)buffer;
+
+		char* strData = new char[strLength];
+		fileIn.read(strData, strLength);
+		string externFuncName = string(strData);
+
+		LoadExternFunction(externFuncName);
 
 		delete[] strData;
 	}
@@ -534,6 +586,23 @@ int VM::Execute(unsigned char* code, int instructionCount, int entryPoint){
 	else{
 		return -1;
 	}
+}
+
+void VM::LoadDLL(const string& fileName){
+	auto iterPair = dllFilesLoaded.insert({fileName, DLLFile()});
+	iterPair.first->second.OpenFile(fileName);
+}
+
+void VM::LoadExternFunction(const string& funcName){
+	for(auto& file : dllFilesLoaded){
+		void* funcPtr = file.second.GetFunction(funcName);
+		if(funcPtr != nullptr){
+			externFuncPointers.insert({funcName, funcPtr});
+			return;
+		}
+	}
+
+	cout << "\nError: Could not find definition for function '" << funcName << "' in loaded dynamic libraries.\n";
 }
 
 void VM::Push(VMValue value){

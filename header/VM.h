@@ -2,7 +2,8 @@
 #define VM_H
 
 #include <string>
-#include <unordered_map>
+#include <map>
+#include <map>
 #include <vector>
 
 #define VERSION_INT 120
@@ -25,12 +26,23 @@ SVB:
 		- 4 bytes length of string (including null terminator)
 		- [Length of string and null terminator] bytes containing the value of the string
 
+## - 4 bytes: number of DLL files to load
+## - [Number of DLL's] of:
+##     - 4 bytes length of string
+##     - [Length of string and null terminator] bytes containing string
+
+ - 4 bytes: number of extern functions used
+ - [Number of functions] of extern reference
+    - FuncPair struct: 
+		- 4 bytes length of string (including null terminator)
+		- [Length of string and null terminator] bytes containing the value of the string
 
 */
 
 enum struct ValueType{
 	INT,
-	FLOAT
+	FLOAT,
+	VOID
 };
 
 struct VMValue{
@@ -43,7 +55,9 @@ struct VMValue{
 
 };
 
-using std::string; using std::unordered_map; using std::vector;
+using std::string; using std::map; using std::vector;
+
+struct DLLFile;
 
 #define MAX_STACK 4096
 
@@ -62,8 +76,10 @@ struct VM{
 	int Execute(unsigned char* code, int instructionCount, const string& entry);
 	int Execute(string funcName);
 
-	unordered_map<string, int> funcPointers;
 	vector<unsigned char> byteCodeLoaded;
+	map<string, int> funcPointers;
+	map<string, void*> externFuncPointers;
+	map<string, DLLFile> dllFilesLoaded;
 
 protected:
 	VMValue stack[MAX_STACK];
@@ -72,6 +88,9 @@ protected:
 	short stackFrame;
 	
 	VMValue registers[REGISTER_COUNT];
+
+	void LoadDLL(const string& fileName);
+	void LoadExternFunction(const string& funcName);
 
 	void Push(VMValue value);
 	VMValue Pop();

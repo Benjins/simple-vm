@@ -13,8 +13,8 @@ Statement* CompileTokenToAST(const string& token){
 }
 
 void AST::GenerateFromShuntedTokens(const vector<string>& tokens, VM& vm){
-	unordered_map<string, int> varRegs;
-	unordered_map<string, int> funcArity;
+	map<string, int> varRegs;
+	map<string, int> funcArity;
 	int varCount = 0;
 
 	const string operators = "+-*><|&=/";
