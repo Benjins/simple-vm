@@ -27,6 +27,7 @@ void AST::GenerateFromShuntedTokens(const vector<string>& tokens, VM& vm){
 
 	for(int i = 0; i < tokens.size(); i++){
 		string token = tokens[i];
+		//cout << "|" << token << "|\n";
 
 		if(numbers.find(token[0]) != string::npos){
 			if(token.find(".") == string::npos){
@@ -52,6 +53,8 @@ void AST::GenerateFromShuntedTokens(const vector<string>& tokens, VM& vm){
 			while(tokens[i] != ")"){
 				if(tokens[i] != ","){
 					currDef->paramNames.push_back(tokens[i]);
+					varRegs.insert(std::pair<string, int>(tokens[i], varCount));
+					varCount++;
 				}
 				i++;
 			}
