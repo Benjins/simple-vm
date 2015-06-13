@@ -2,6 +2,8 @@
 #include "../header/Instruction.h"
 #include "../header/VM.h"
 
+#include <algorithm>
+
 Statement* CompileTokenToAST(const string& token){
 	const string operators = "+-*><|&=/";
 	if(operators.find(token) != string::npos){
@@ -61,7 +63,27 @@ void AST::GenerateFromShuntedTokens(const vector<string>& tokens, VM& vm){
 			funcArity.insert(std::pair<string, int>(funcName, currDef->paramNames.size()));
 			scopes.Push(currDef);
 		}
-		else if(token == "var" || token == "int" || token == "float"){
+		else if(token == "extern"){
+			string funcName = tokens[i+1];
+			i += 3;
+
+			FuncDef* currDef = new FuncDef();
+			currDef->isExtern = true;
+			currDef->name = funcName;
+
+			while(tokens[i] != ")"){
+				if(tokens[i] != ","){
+					currDef->paramNames.push_back(tokens[i]);
+					varRegs.insert(std::pair<string, int>(tokens[i], varCount));
+					varCount++;
+				}
+				i++;
+			}
+
+			i++; // Skip ';' after "def (args...)"
+			vm.externFuncNames.push_back(funcName);
+		}
+		else if(token == "var"){ // || token == "int" || token == "float"){
 			varRegs.insert(std::pair<string, int>(tokens[i+1], varCount));
 			varCount++;
 		}
@@ -81,6 +103,15 @@ void AST::GenerateFromShuntedTokens(const vector<string>& tokens, VM& vm){
 			for(int i = 0; i < funcArity[token]; i++){
 				func->AddParameter(values.Pop());
 			}
+
+			values.Push(func);
+		}
+		else if(std::find(vm.externFuncNames.begin(), vm.externFuncNames.end(), token) != vm.externFuncNames.end()){
+			ExternFunc* func = new ExternFunc();
+			func->funcName = token;
+			func->numParams = 1;
+
+			func->AddParameter(values.Pop());
 
 			values.Push(func);
 		}
@@ -281,13 +312,42 @@ int FuncDef::Evaluate(){
 }
 
 void FuncDef::AddByteCode(VM& vm){
-	for(int paramIdx = paramNames.size() - 1; paramIdx >= 0; paramIdx--){
-		vm.byteCodeLoaded.push_back(INT_LIT);
-		vm.byteCodeLoaded.push_back(paramIdx);
-		vm.byteCodeLoaded.push_back(PARAM);
+	if(!isExtern){
+		for(int paramIdx = paramNames.size() - 1; paramIdx >= 0; paramIdx--){
+			vm.byteCodeLoaded.push_back(INT_LIT);
+			vm.byteCodeLoaded.push_back(paramIdx);
+			vm.byteCodeLoaded.push_back(PARAM);
+		}
+		for(int i = 0; i < numStatements; i++){
+			statements[i]->AddByteCode(vm);
+		}
 	}
-	for(int i = 0; i < numStatements; i++){
-		statements[i]->AddByteCode(vm);
+}
+
+int ExternFunc::Evaluate(){
+	return -1;
+}
+
+void ExternFunc::AddByteCode(VM& vm){
+	int index = -1;
+	for(int i = 0; i < vm.externFuncNames.size(); i++){
+		if(vm.externFuncNames[i] == funcName){
+			index = i;
+			break;
+		}
+	}
+
+	if(index == -1){
+		cout << "Could not find extern function with the name '" << funcName << "'\n";
+	}
+	else{
+		if(numParams != 1){
+			cout << "For now, number of params for extern must be 1.\n";
+		}
+		parameterVals[0]->AddByteCode(vm);
+		vm.byteCodeLoaded.push_back(INT_LIT);
+		vm.byteCodeLoaded.push_back(index);
+		vm.byteCodeLoaded.push_back(EXTERN_CALL);
 	}
 }
 

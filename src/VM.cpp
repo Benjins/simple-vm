@@ -13,7 +13,7 @@ VM::VM(){
 	stackSize = 0;
 }
 
-bool VM::CompileAndLoadCode(const string& fileName){
+bool VM::CompileAndLoadCode(const string& fileName, vector<string>* dllsToLoad /* = nullptr*/){
 	ifstream fileIn;
 	fileIn.open(fileName);
 
@@ -32,14 +32,25 @@ bool VM::CompileAndLoadCode(const string& fileName){
 		code = code + line + "\n";
 	}
 
-	//byteCodeLoaded = NewShuntingYard(NewTokenize(code), *this);
+	fileIn.close();
+
+	if(dllsToLoad != nullptr){
+		for(auto& dllName : *dllsToLoad){
+			LoadDLL(dllName);
+		}
+	}
 	
 	AST b;
 	
 	vector<string> tokens = NewTokenize(code);
 	vector<string> shuntedTokens = JustShuntingYard(tokens);
+
 	b.GenerateFromShuntedTokens(shuntedTokens, *this);
 	b.GenerateByteCode(*this);
+
+	for(char instr : byteCodeLoaded){
+		cout << "|" << (int)instr << "|\n";
+	}
 	
 	return true;
 }
@@ -85,13 +96,13 @@ void VM::SaveByteCode(const string& fileName){
 		fileOut.write(iter->first.c_str(), strLength);
 	}
 
-	int numExternFuncs = externFuncPointers.size();
+	int numExternFuncs = externFuncNames.size();
 	fileOut.write((char*)&numExternFuncs, 4);
 
-	for(auto iter = externFuncPointers.begin(); iter != externFuncPointers.end(); iter++){
-		int strLength = iter->first.size() + 1;
+	for(auto iter = externFuncNames.begin(); iter != externFuncNames.end(); iter++){
+		int strLength = iter->size() + 1;
 		fileOut.write((char*)&strLength, 4);
-		fileOut.write(iter->first.c_str(), strLength);
+		fileOut.write(iter->c_str(), strLength);
 	}
 
 	fileOut.close();
@@ -572,6 +583,19 @@ int VM::Execute(unsigned char* code, int instructionCount, int entryPoint){
 				Push(f);
 			}break;
 
+			case EXTERN_CALL:{
+				VMValue addrIdx = Pop();
+				if(addrIdx.type != ValueType::INT){
+					cout << "\nError: Tried to execute EXTERN_CALL with non-integral value.\n";
+					return -1;
+				}
+
+				void* addr = externFuncPointers[addrIdx.intValue];
+				VMValue (*externFunc)(VMValue) = (VMValue (*)(VMValue))addr;
+				VMValue retVal = (*externFunc)(Pop());
+				Push(retVal);
+			}break;
+
 			default:{
 				cout << "\nInvalid instruction " << int(code[i]) << " at instruction " << i << endl;
 			}break;
@@ -597,7 +621,8 @@ void VM::LoadExternFunction(const string& funcName){
 	for(auto& file : dllFilesLoaded){
 		void* funcPtr = file.second.GetFunction(funcName);
 		if(funcPtr != nullptr){
-			externFuncPointers.insert({funcName, funcPtr});
+			externFuncNames.push_back(funcName);
+			externFuncPointers.push_back(funcPtr);
 			return;
 		}
 	}

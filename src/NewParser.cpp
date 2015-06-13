@@ -23,7 +23,7 @@ vector<string> JustShuntingYard(vector<string>& tokens){
 
 	for(int i = 0; i < tokens.size(); i++){
 		string token = tokens[i];
-		if(token == "def"){
+		if(token == "def" || token == "extern"){
 			funcDef = true;
 			shuntedTokens.push_back(token);
 			i++;

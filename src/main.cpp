@@ -85,14 +85,19 @@ int main(int argc, char** argv){
 		return -1;
 	}
 
-	for(int i = 1; i < argc; i++){
-		char* fileNameC = argv[i];
-		string fileName = string(fileNameC);
+	char* fileNameC = argv[1];
+	string fileName = string(fileNameC);
 
-		VM x;
-		if(x.CompileAndLoadCode(fileName)){
-			x.SaveByteCode(fileName + ".svb");
-		}
+	vector<string> dllNames;
+	for(int i = 2; i < argc; i++){
+		char* dllNameC = argv[i];
+		string dllName = string(dllNameC);
+		dllNames.push_back(dllName);
+	}
+
+	VM x;
+	if(x.CompileAndLoadCode(fileName, &dllNames)){
+		x.SaveByteCode(fileName + ".svb");
 	}
 
 

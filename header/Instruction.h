@@ -27,7 +27,8 @@ enum Instruction{
 	RETURN_FINAL = 22,
 	FLT_LIT = 23,
 	INT_TO_FLT = 24,
-	READF = 25
+	READF = 25,
+	EXTERN_CALL = 26
 };
 
 

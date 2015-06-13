@@ -204,10 +204,46 @@ struct Scope : public Statement{
 struct FuncDef : public Scope{
 	string name;
 
+	bool isExtern;
+
+	FuncDef(){isExtern = false;}
+
 	vector<string> paramNames;
 
 	virtual int Evaluate();
 	virtual void AddByteCode(VM& vm);
+};
+
+struct ExternFunc : public Value{
+	string funcName;
+	Value** parameterVals;
+	int numParams;
+	int currParams;
+
+	ExternFunc(){
+		funcName = "";
+		parameterVals = nullptr;
+		numParams = 0;
+		currParams = 0;
+	}
+
+	void AddParameter(Value* newVal){
+		Value** newParameterVals = new Value*[++currParams];
+		if(parameterVals != NULL){
+			memcpy(newParameterVals, parameterVals, sizeof(Value*) * (currParams - 1));
+			cout << "Lol.\n";
+			delete[] parameterVals;
+			cout << "Done.\n";
+		}
+		newParameterVals[currParams - 1] = newVal;
+		parameterVals = newParameterVals;
+	}
+
+	virtual int Evaluate();
+	virtual void AddByteCode(VM& vm);
+	virtual int NumParams(){
+		return 1;
+	} 
 };
 
 struct IfStatement : public Scope{

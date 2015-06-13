@@ -1,0 +1,12 @@
+extern Lolinomial(x);
+
+extern LoliLoli(y);
+
+def main(){
+
+	PRINT(Lolinomial(READ()));
+
+	PRINT(LoliLoli(READF()));
+
+	return(0);
+}

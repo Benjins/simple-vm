@@ -67,7 +67,7 @@ struct VM{
 
 	VM();
 
-	bool CompileAndLoadCode(const string& fileName);
+	bool CompileAndLoadCode(const string& fileName, vector<string>* dllsToLoad = nullptr);
 	void SaveByteCode(const string& fileName);
 	bool LoadByteCode(const string& fileName);
 
@@ -78,8 +78,10 @@ struct VM{
 
 	vector<unsigned char> byteCodeLoaded;
 	map<string, int> funcPointers;
-	map<string, void*> externFuncPointers;
 	map<string, DLLFile> dllFilesLoaded;
+
+	vector<string> externFuncNames;
+	vector<void*> externFuncPointers;
 
 protected:
 	VMValue stack[MAX_STACK];
