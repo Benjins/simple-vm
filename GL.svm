@@ -11,21 +11,25 @@ def main(){
 	var xKey : 120;
 	var frame : 0;
 
+	var wKey : 119;
+	var sKey : 115;
+	var aKey : 97;
+	var dKey : 100;
+
 	var dump : Init(0);
+
+	var x : 50;
+	var y : 50;
 
 	while(end = 0){
 		dump : FrameStart(0);
 
 		PRINT(frame);
 
-		var x : 50 + frame;
-		while(x > 500){
-			x : x - 500;
-		}
+		x : x + GetInput(dKey) - GetInput(aKey);
+		y : y - GetInput(sKey) + GetInput(wKey);
 
-		var col : x / itof(500);
-
-		dump : Draw(col);
+		dump : Draw(x * 500 + y);
 
 		end : GetInput(xKey);
 

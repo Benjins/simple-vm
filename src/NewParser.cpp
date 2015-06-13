@@ -83,7 +83,7 @@ vector<string> JustShuntingYard(vector<string>& tokens){
 		else if(operators.find(token) != string::npos){
 			while(operatorStack.stackSize > 0 
 				&& operators.find(operatorStack.Peek()) != string::npos 
-				&& OperatorPrecedence(operatorStack.Peek()) > OperatorPrecedence(token)){
+				&& OperatorPrecedence(operatorStack.Peek()) >= OperatorPrecedence(token)){
 					shuntedTokens.push_back(operatorStack.Pop());
 			}
 			operatorStack.Push(token);

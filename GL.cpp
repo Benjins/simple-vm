@@ -156,6 +156,7 @@ VMValue Init(VMValue init){
 	glutKeyboardUpFunc(OnKeyUpFunc);
 	
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glPointSize(10.0f);
     
 	//glEnable(GL_CULL_FACE);
 	//glEnable(GL_DEPTH_TEST);
@@ -194,11 +195,13 @@ VMValue FrameEnd(VMValue a){
 }
 
 VMValue Draw(VMValue a){
-	//glBegin(GL_POINT);
-	//glVertex2f(a.intValue / 500, a.intValue % 500);
-	//glEnd();
+	int pixelX = a.intValue / 500;
+	int pixelY = a.intValue % 500;
+	glBegin(GL_POINTS);
+		glVertex2f(pixelX / 250.0f - 1, pixelY / 250.0f - 1);
+	glEnd();
 
-	glClearColor(1.0f, 1.0f, a.floatValue, 1.0f);
+	//glClearColor(1.0f, 1.0f, a.floatValue, 1.0f);
 
 	VMValue ret;
 	ret.intValue = 0;
@@ -208,7 +211,7 @@ VMValue Draw(VMValue a){
 
 VMValue GetInput(VMValue a){
 	VMValue ret;
-	ret.intValue = (input.GetKeyUp(a.intValue) ? 1 : 0);
+	ret.intValue = (input.GetKey(a.intValue) ? 1 : 0);
 	ret.type = ValueType::INT;
 	return ret;
 }
