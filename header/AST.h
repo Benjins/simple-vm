@@ -242,7 +242,7 @@ struct ExternFunc : public Value{
 	virtual int Evaluate();
 	virtual void AddByteCode(VM& vm);
 	virtual int NumParams(){
-		return 1;
+		return numParams;
 	} 
 };
 

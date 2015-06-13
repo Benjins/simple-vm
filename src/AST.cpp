@@ -17,6 +17,7 @@ Statement* CompileTokenToAST(const string& token){
 void AST::GenerateFromShuntedTokens(const vector<string>& tokens, VM& vm){
 	map<string, int> varRegs;
 	map<string, int> funcArity;
+	map<string, int> externFuncArity;
 	int varCount = 0;
 
 	const string operators = "+-*><|&=/";
@@ -81,6 +82,7 @@ void AST::GenerateFromShuntedTokens(const vector<string>& tokens, VM& vm){
 
 			i++; // Skip ';' after "def (args...)"
 			vm.externFuncNames.push_back(funcName);
+			externFuncArity.insert(std::pair<string, int>(funcName, currDef->paramNames.size()));
 		}
 		else if(token == "var"){ // || token == "int" || token == "float"){
 			varRegs.insert(std::pair<string, int>(tokens[i+1], varCount));
@@ -108,9 +110,11 @@ void AST::GenerateFromShuntedTokens(const vector<string>& tokens, VM& vm){
 		else if(std::find(vm.externFuncNames.begin(), vm.externFuncNames.end(), token) != vm.externFuncNames.end()){
 			ExternFunc* func = new ExternFunc();
 			func->funcName = token;
-			func->numParams = 1;
+			func->numParams = externFuncArity[token];
 
-			func->AddParameter(values.Pop());
+			for(int i = 0; i < func->numParams; i++){
+				func->AddParameter(values.Pop());
+			}
 
 			values.Push(func);
 		}

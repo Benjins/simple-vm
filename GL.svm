@@ -16,10 +16,15 @@ def main(){
 	var aKey : 97;
 	var dKey : 100;
 
+	var distToWin : 5;
+
 	var dump : Init(0);
 
 	var x : 50;
 	var y : 50;
+
+	var enemyX : 200;
+	var enemyY : 250;
 
 	while(end = 0){
 		dump : FrameStart(0);
@@ -29,9 +34,27 @@ def main(){
 		x : x + GetInput(dKey) - GetInput(aKey);
 		y : y - GetInput(sKey) + GetInput(wKey);
 
-		dump : Draw(x * 500 + y);
+		var xDiff : x - enemyX;
+		var yDiff : y - enemyY
+		if((xDiff > (0 - distToWin) & xDiff < distToWin) & (yDiff > (0 - distToWin) & yDiff < distToWin)){
+			var rand : frame * 17;
+			var randTwo : frame * 23;
+			enemyX : rand - ((rand / 500) * 500);
+			enemyY : randTwo - ((randTwo / 500) * 500);
 
-		end : GetInput(xKey);
+			distToWin : distToWin - 1;
+			if(distToWin < 3){
+				PRINT(666);
+				end : 1;
+			}
+		}
+
+		dump : Draw(x * 500 + y);
+		dump : Draw(enemyX * 500 + enemyY);
+
+		if(end = 0){
+			end : GetInput(xKey);
+		}
 
 		dump : FrameEnd(0);
 		frame : frame + 1;
