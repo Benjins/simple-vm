@@ -48,10 +48,6 @@ bool VM::CompileAndLoadCode(const string& fileName, vector<string>* dllsToLoad /
 	b.GenerateFromShuntedTokens(shuntedTokens, *this);
 	b.GenerateByteCode(*this);
 
-	for(char instr : byteCodeLoaded){
-		cout << "|" << (int)instr << "|\n";
-	}
-	
 	return true;
 }
 

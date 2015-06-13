@@ -26,10 +26,10 @@ SVB:
 		- 4 bytes length of string (including null terminator)
 		- [Length of string and null terminator] bytes containing the value of the string
 
-## - 4 bytes: number of DLL files to load
-## - [Number of DLL's] of:
-##     - 4 bytes length of string
-##     - [Length of string and null terminator] bytes containing string
+ - 4 bytes: number of DLL files to load
+ - [Number of DLL's] of:
+     - 4 bytes length of string
+     - [Length of string and null terminator] bytes containing string
 
  - 4 bytes: number of extern functions used
  - [Number of functions] of extern reference
