@@ -9,3 +9,6 @@ docs: header/*.h src/*.cpp *.dox
 
 test: src/*.cpp
 	$(CXX) -std=c++11 -DTESTING -g -fprofile-arcs -ftest-coverage -o simplevm-test src/*.cpp -ldl
+
+check:
+	cppcheck --force --inline-suppr --template '{file},{line},{severity},{id},{message}' --enable=all --std=c++11 src/*.cpp 2> cpp-check-analysis.txt
