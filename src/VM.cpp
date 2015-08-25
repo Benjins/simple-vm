@@ -182,7 +182,7 @@ bool VM::LoadByteCode(const string& fileName){
 		fileIn.read(strData, strLength);
 		string dllName = string(strData);
 
-		auto iterPair = dllFilesLoaded.insert({dllName, DLLFile()});
+		auto iterPair = dllFilesLoaded.insert(std::make_pair(dllName, DLLFile()));
 		iterPair.first->second.OpenFile(dllName);
 
 		delete[] strData;
@@ -622,7 +622,7 @@ int VM::Execute(unsigned char* code, int instructionCount, int entryPoint){
 }
 
 void VM::LoadDLL(const string& fileName){
-	auto iterPair = dllFilesLoaded.insert({fileName, DLLFile()});
+	auto iterPair = dllFilesLoaded.insert(std::make_pair(fileName, DLLFile()));
 	iterPair.first->second.OpenFile(fileName);
 }
 

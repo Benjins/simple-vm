@@ -6,9 +6,11 @@
 #include <assert.h>
 #include <iostream>
 
-#include <dlfcn.h>
+//#include <dlfcn.h>
 
 using std::cout; using std::endl;
+
+//#define TESTING 1
 
 int main(int argc, char** argv){
 
@@ -69,12 +71,6 @@ int main(int argc, char** argv){
 
 	y.GenerateByteCode(b);
 	allPass &= (b.Execute("FactorialLoopTest") == 120);
-
-	for(int i = 0; i < b.byteCodeLoaded.size(); i++){
-		//cout << "Instr " << i << ": " << (int)b.byteCodeLoaded[i] << endl;
-	}
-
-	//cout << "\nMain entry:" << b.funcPointers["main"] << endl;
 
 	cout << (allPass ? "allPass" : "some failed.") << endl;
 	return allPass ? 0 : 1;

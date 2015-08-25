@@ -11,6 +11,7 @@ using std::cout;
 
 void DLLFile::OpenFile(const string& fileName){
 #if defined(_WIN32) || defined(_WIN64)
+	handle = LoadLibraryA(fileName.c_str());
 #else	
 	handle = dlopen(fileName.c_str(), RTLD_LAZY);
 	if (!handle) {
@@ -22,6 +23,10 @@ void DLLFile::OpenFile(const string& fileName){
 
 void DLLFile::CloseFile(){
 #if defined(_WIN32) || defined(_WIN64)
+	if(handle != 0){
+		FreeLibrary(handle);
+		handle = 0;
+	}
 #else
 	if(handle != nullptr){
 		dlclose(handle);
@@ -32,6 +37,8 @@ void DLLFile::CloseFile(){
 
 void* DLLFile::GetFunction(const string& funcName) const{
 #if defined(_WIN32) || defined(_WIN64)
+	void* func = GetProcAddress(handle, funcName.c_str());
+	return func;
 #else
 	void* func = dlsym(handle, funcName.c_str());
 	char *error;
