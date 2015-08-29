@@ -10,7 +10,7 @@
 
 using std::cout; using std::endl;
 
-//#define TESTING 1
+#define COMPILER 1
 
 int main(int argc, char** argv){
 
@@ -94,6 +94,8 @@ int main(int argc, char** argv){
 	VM x;
 	if(x.CompileAndLoadCode(fileName, &dllNames)){
 		x.SaveByteCode(fileName + ".svb");
+		x.LoadByteCode(fileName + ".svb");
+		x.Execute("main");
 	}
 
 

@@ -4,6 +4,7 @@
 #include <string>
 #include <cstring>
 #include "Parser.h"
+#include "VM.h"
 
 using std::string;
 
@@ -106,6 +107,8 @@ struct Builtin : public FuncCall{
 
 struct Assignment : public Value{
 	int reg;
+	string varName;
+	ValueType type;
 
 	Value* val;
 
@@ -146,6 +149,8 @@ struct FloatLiteral : public Value{
 
 struct Variable : public Value{
 	int reg;
+	string varName;
+	ValueType type;
 
 	virtual int Evaluate();
 	virtual void AddByteCode(VM& vm);

@@ -1,19 +1,20 @@
-def Summation(n){
-	var total : 0;
-	var counter : 1;
+def Summation(int n){
+	int total : 0;
+	int counter : 1;
 	while(counter < n+1){
 		total : total + counter;
 		counter : counter + 1;
 	}
-	return total;
+	
+	return(total);
 }
 
 def main(){
-	var input : 1;
+	float input : 1;
 	while(input > 0){
 		input : READF();
 		PRINT(input/2.11);
 	}
 	
-	RETURN(0);
+	return(0);
 }

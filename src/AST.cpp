@@ -20,6 +20,9 @@ void AST::GenerateFromShuntedTokens(const vector<string>& tokens, VM& vm){
 	map<string, int> externFuncArity;
 	int varCount = 0;
 
+	vector<string> variables;
+	map<string, ValueType> varTypes;
+
 	const string operators = "+-*><|&=/";
 	const string numbers = "0123456789.";
 
@@ -52,9 +55,14 @@ void AST::GenerateFromShuntedTokens(const vector<string>& tokens, VM& vm){
 			currDef->name = funcName;
 
 			while(tokens[i] != ")"){
-				if(tokens[i] != ","){
-					currDef->paramNames.push_back(tokens[i]);
-					varRegs.insert(std::pair<string, int>(tokens[i], varCount));
+				if(tokens[i] == "int"){
+					varRegs.insert(std::pair<string, int>(tokens[i+1], varCount));
+					varTypes.insert(std::pair<string,ValueType>(tokens[i+1], ValueType::INT));
+					varCount++;
+				}
+				else if(tokens[i] == "float"){
+					varRegs.insert(std::pair<string, int>(tokens[i+1], varCount));
+					varTypes.insert(std::pair<string,ValueType>(tokens[i+1], ValueType::FLOAT));
 					varCount++;
 				}
 				i++;
@@ -74,8 +82,15 @@ void AST::GenerateFromShuntedTokens(const vector<string>& tokens, VM& vm){
 			currDef->name = funcName;
 
 			while(tokens[i] != ")"){
-				if(tokens[i] != ","){
-					currDef->paramNames.push_back(tokens[i]);
+				if(tokens[i] == "int"){
+					varRegs.insert(std::pair<string, int>(tokens[i+1], varCount));
+					varTypes.insert(std::pair<string,ValueType>(tokens[i+1], ValueType::INT));
+					varCount++;
+				}
+				else if(tokens[i] == "float"){
+					varRegs.insert(std::pair<string, int>(tokens[i+1], varCount));
+					varTypes.insert(std::pair<string,ValueType>(tokens[i+1], ValueType::FLOAT));
+					varCount++;
 				}
 				i++;
 			}
@@ -86,6 +101,17 @@ void AST::GenerateFromShuntedTokens(const vector<string>& tokens, VM& vm){
 		}
 		else if(token == "var"){ // || token == "int" || token == "float"){
 			varRegs.insert(std::pair<string, int>(tokens[i+1], varCount));
+			varTypes.insert(std::pair<string,ValueType>(tokens[i+1], ValueType::INT));
+			varCount++;
+		}
+		else if(token == "int"){ // || token == "int" || token == "float"){
+			varRegs.insert(std::pair<string, int>(tokens[i+1], varCount));
+			varTypes.insert(std::pair<string,ValueType>(tokens[i+1], ValueType::INT));
+			varCount++;
+		}
+		else if(token == "float"){ // || token == "int" || token == "float"){
+			varRegs.insert(std::pair<string, int>(tokens[i+1], varCount));
+			varTypes.insert(std::pair<string,ValueType>(tokens[i+1], ValueType::FLOAT));
 			varCount++;
 		}
 		else if(token == "PRINT" || token == "READ" || token == "READF" || token == "return" || token == "RETURN" || token == "itof"){
@@ -118,8 +144,10 @@ void AST::GenerateFromShuntedTokens(const vector<string>& tokens, VM& vm){
 
 			values.Push(func);
 		}
-		else if(varRegs.find(token) != varRegs.end()){
+		else if(varTypes.find(token) != varTypes.end()){
 			Variable* var = new Variable();
+			var->varName = token;
+			var->type = varTypes.find(token)->second;
 			var->reg = varRegs[token];
 			values.Push(var);
 		}
@@ -128,6 +156,8 @@ void AST::GenerateFromShuntedTokens(const vector<string>& tokens, VM& vm){
 			assmt->val = values.Pop();
 			Variable* reg = (Variable*)values.Pop(); 
 			assmt->reg = reg->reg;
+			assmt->varName = reg->varName;
+			assmt->type = reg->type;
 
 			values.Push(assmt);
 		}
