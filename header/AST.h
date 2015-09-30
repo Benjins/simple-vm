@@ -8,9 +8,11 @@
 
 using std::string;
 
-struct VM; struct FuncDef; struct Value; struct Statement; struct StructDef;
+struct VM; struct FuncDef; struct Value; struct Statement; struct StructDef; struct AST;
 
 Statement* CompileTokenToAST(const string& token);
+
+AST* MakeASTFromTokens(const vector<string>& tokens);
 
 struct Type{
 	string name;
@@ -71,7 +73,7 @@ struct FuncCall : public Value{
 	virtual void AddByteCode(VM& vm);
 	virtual int NumParams(){
 		return numParams;
-	} 
+	}
 };
 
 struct Builtin : public FuncCall{
@@ -109,7 +111,7 @@ struct Builtin : public FuncCall{
 		else if(funcName == "READ"){
 			return 0;
 		}
-	} 
+	}
 };
 
 struct Assignment : public Value{
@@ -135,7 +137,7 @@ struct Literal : public Value{
 	virtual void AddByteCode(VM& vm);
 	virtual int NumParams(){
 		return 0;
-	} 
+	}
 };
 
 struct FloatLiteral : public Value{
@@ -151,7 +153,7 @@ struct FloatLiteral : public Value{
 	virtual void AddByteCode(VM& vm);
 	virtual int NumParams(){
 		return 0;
-	} 
+	}
 };
 
 struct Variable : public Value{
@@ -159,6 +161,20 @@ struct Variable : public Value{
 	string varName;
 	ValueType type;
 
+	virtual int GetRegister(){return reg;}
+	virtual int Evaluate();
+	virtual void AddByteCode(VM& vm);
+	virtual int NumParams(){
+		return 0;
+	}
+};
+
+struct FieldAcces : public Variable{
+	Variable* variable;
+	string fieldName;
+	int offset;
+
+	virtual int GetRegister(){return reg + offset;}
 	virtual int Evaluate();
 	virtual void AddByteCode(VM& vm);
 	virtual int NumParams(){
@@ -182,7 +198,7 @@ struct Operator : public Value{
 	virtual void AddByteCode(VM& vm);
 	virtual int NumParams(){
 		return 2;
-	} 
+	}
 };
 
 
@@ -218,6 +234,7 @@ struct Scope : public Statement{
 struct FuncDef : public Scope{
 	string name;
 	map<string, Type> parameters;
+	Type retType;
 
 	bool isExtern;
 
@@ -230,12 +247,14 @@ struct FuncDef : public Scope{
 };
 
 struct StructMember{
-	Type type;
 	string name;
+	Type type;
+	int offset;
 };
 
 struct StructDef{
 	string name;
+	int size;
 	vector<StructMember> members;
 };
 
@@ -268,7 +287,7 @@ struct ExternFunc : public Value{
 	virtual void AddByteCode(VM& vm);
 	virtual int NumParams(){
 		return numParams;
-	} 
+	}
 };
 
 struct IfStatement : public Scope{

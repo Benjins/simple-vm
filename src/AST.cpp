@@ -4,6 +4,8 @@
 
 #include <algorithm>
 
+#define FIND(container, item) std::find((container).begin(), (container).end(), (item))
+
 Statement* CompileTokenToAST(const string& token){
 	const string operators = "+-*><|&=/";
 	if(operators.find(token) != string::npos){
@@ -20,13 +22,18 @@ struct TokenStream{
 	vector<Token> tokens;
 	int cursor;
 
+	AST* ast;
+
 	map<string, Type> definedTypes;
 	map<string, FuncDef*> definedFuncs;
+	map<string, FuncDef*> builtinFuncs;
 	int stackSizeInWords;
 	map<string, Type> variables;
 
+	vector<string> binaryOps;
+	vector<string> unaryOps;
+
 	Stack<Scope*> scopes;
-	Stack<Value*> values;
 
 	bool ExpectAndEatToken(const string& keyWord){
 		if(tokens[cursor] == keyWord){
@@ -38,11 +45,48 @@ struct TokenStream{
 	}
 
 	bool ExpectAndEatUniqueName(){
+		if(definedFuncs.find())
+		return false;
+	}
+
+	bool ExpectAndEatVariable(){
+		if(variables.find(tokens[cursor]) != variables.end()){
+			cursor++;
+			return true;
+		}
+
 		return false;
 	}
 
 	bool ExpectAndEatAssignment(){
-		
+		int oldCursor = cursor;
+		if(!ExpectAndEatVariable()){
+			cursor = oldCursor;
+			return false;
+		}
+
+		const string& varName = tokens[cursor-1];
+
+		if(!ExpectAndEatToken("=")){
+			cursor = oldCursor;
+			return false;
+		}
+
+		Value* val;
+		if(!ExpectAndEatValue(&val)){
+			cursor = oldCursor;
+			return false;
+		}
+
+		if(!ExpectAndEatToken(";")){
+			cursor = oldCursor;
+			return false;
+		}
+
+		Assignment* assgn = new Assignment();
+		assgn->var =
+
+		return true;
 	}
 
 	void AddVariable(const Type& type, const string& name){
@@ -54,18 +98,187 @@ struct TokenStream{
 		stackSizeInWords += type.sizeInWords;
 	}
 
-	bool ExpectAndEatValue(){
-		
-	}
-
-	bool ExpectAndEatNumber(){
-		static const string _digits = "0123456789";
-		if(_digits.find(tokens[cursor][0]) != string::npos){
+	bool ExpectAndEatNumber(VMValue* out){
+		if(ExpectAndConvertNumber(tokens[cursor], out)){
 			cursor++;
 			return true;
 		}
 
 		return false;
+	}
+
+	bool ExpectAndConvertNumber(const string& token, VMValue* out){
+		static const string _digits = "0123456789";
+		if(_digits.find(token[0]) != string::npos){
+			if(out != nullptr){
+				if(tokens[cursor].find(".") != string::npos){
+					out->type = ValueType::FLOAT;
+					out->floatValue = atof(token.c_str());
+				}
+				else{
+					out->type = ValueType::INT;
+					out->floatValue = atoi(token.c_str());
+				}
+			}
+			return true;
+		}
+
+		return false;
+	}
+
+	bool EatFieldName(){
+		return true;
+	}
+
+	/*
+	bool ExpectAndEatValueHelp(Value** out){
+		int oldCursor = cursor;
+		VMValue val;
+		if(ExpectAndEatNumber(&val)){
+			if(val.type == ValueType::FLOAT){
+				*out = new FloatLiteral(val.floatValue);
+			}
+			else{
+				*out = new Literal(val.intValue);
+			}
+
+			return true;
+		}
+
+		if(ExpectAndEatVariable()){
+			if(ExpectAndEatToken(".")){
+				if(EatFieldName()){
+					FieldAcces* access = new FieldAcces();
+					Variable* var = new Variable();
+					var->varName = tokens[cursor - 3];
+					access->var = var;
+					access->fieldName = tokens[cursor - 1];
+					const string& structName = variables.find(var->varName)->second.name;
+					StructDef* structType = nullptr;
+					for(StructDef* structDef : ast->structDefs){
+						if(structDef->name == structName){
+							structType = structDef;
+							break;
+						}
+					}
+
+					if(structType == nullptr){
+						//Error?
+						cursor = oldCursor;
+						return false;
+					}
+					else{
+						int offset = 0;
+						for(const StructMember& member : structType->members){
+							if(member.name == access->fieldName){
+								offset = member.offset;
+								break;
+							}
+						}
+
+						access->offset = offset;
+						*out = offset;
+						return true;
+					}
+				}
+				else{
+					//Error?
+					cursor = oldCursor;
+					return false;
+				}
+			}
+			else{
+				Variable* var = new Variable();
+				var->varName = tokens[cursor - 1];
+				*out = var;
+				return true;
+			}
+		}
+	}
+	*/
+
+	/*
+
+	#valueHelp -> number
+	#valueHelp -> variable  + . + fieldName
+	#valueHelp -> variable
+	valueHelp -> unaryOp + Value
+	valueHelp -> ( + valueHelp + )
+	valueHelp -> funcCAll + ( + valueList + )
+
+	value -> valueHelp
+	value -> valueHelp + bi_op + value
+	*/
+
+	bool ExpectAndEatValue(Value** out){
+		int oldCursor = cursor;
+		vector<string> valueTokens;
+		int parenCount = 0;
+
+		//Bit of a hack so i can use JustShuntingYard()
+		for(int index = cursor; index < tokens.size(); index++){
+			if(tokens[index] == "("){
+				parenCount++;
+			}
+			else if(tokens[index] == ")"){
+				parenCount--;
+			}
+
+			if(tokens[index] == ";" || parenCount < 0){
+				break;
+			}
+
+			valueTokens.push_back(tokens[index]);
+		}
+
+		vector<string> shuntedTokens = JustShuntingYard(valueTokens);
+
+		Stack<Value*> values;
+		Stack<string> operatorStack;
+		for(const string& str : shuntedTokens){
+			VMValue val;
+			if(ExpectAndConvertNumber(&val)){
+				//push num onto stack
+				if(val.type == ValueType::INT){
+					values.push(new Literal(val.intValue));
+				}
+				else{
+					values.push(new FloatLiteral(val.floatValue));
+				}
+			}
+			else if(FIND(binaryOps, token) != binaryOps.end()){
+				Operator* op = CompileTokenToAST(token);
+				op->right = values.Pop();
+				op->left  = values.Pop();
+				values.Push(op);
+			}
+			else if(FIND(builtinFuncs, token) != builtinFuncs.end() || FIND(definedFuncs, token) != definedFuncs.end()){
+				FuncCall* call = new FuncCall();
+				call->funcName = token;
+				FuncDef* def = FIND(builtinFuncs, token)->second;
+				for(int i = 0; i < def->parameters.size(); i++){
+					if(values.stackSize == 0){
+						cout << "\n\nError, function '" << token << "' takes " << def->parameters.size() << " arguments.\n";
+						return false;
+					}
+					call->AddParameter(values.Pop());
+				}
+
+				values.Push(call);
+			}
+			else{
+				cout << "\nOdd egde case?\n";
+			}
+		}
+
+		if(values.stackSize == ){
+			*out = values.Peek();
+			cursor += valueTokens.size();
+			return true;
+		}
+		else{
+			return false;
+		}
 	}
 
 	bool ExpectAndEatVarDecl(){
@@ -127,7 +340,9 @@ struct TokenStream{
 			StructMember member;
 			member.name = uniqueName;
 			member.type = declType;
+			member.offset = def->size;
 			def->members.push_back(member);
+			def->size += members.type.size;
 			return true;
 		}
 
@@ -163,7 +378,10 @@ struct TokenStream{
 		}
 
 		if(ExpectAndEatToken(";")){
-			
+			ast->structDefs.push_back(def);
+			definedTypes.insert(std::make_pair(def->name,   {def->name, def->size}));
+
+			return true;
 		}
 
 		delete def;
@@ -172,21 +390,169 @@ struct TokenStream{
 	}
 
 	void Setup(){
-		
+		FuncDef printDef = new FuncDef();
+		printDef.name = "PRINT";
+		printDef.retType.name = "void";
+		printDef.retType.sizeInWords = 0;
+		printDef.parameters.insert(std::make_pair("val", {"int", 1}));
+
+		FuncDef printfDef = new FuncDef();
+		printfDef.name = "PRINTF";
+		printfDef.retType.name = "void";
+		printfDef.retType.sizeInWords = 0;
+		printfDef.parameters.insert(std::make_pair("val", {"float", 1}));
+
+		FuncDef readDef = new FuncDef();
+		readDef.name = "READ";
+		readDef.retType.name = "int";
+		readDef.retType.sizeInWords = 1;
+
+		FuncDef readfDef = new FuncDef();
+		readfDef.name = "READF";
+		readfDef.retType.name = "float";
+		readfDef.retType.sizeInWords = 1;
+
+		FuncDef ftoiDef = new FuncDef();
+		ftoiDef.name = "PRINTF";
+		ftoiDef.retType.name = "int";
+		ftoiDef.retType.sizeInWords = 1;
+		ftoiDef.parameters.insert(std::make_pair("val", {"float", 1}));
+
+		builtinFuncs.insert(std::make_pair("PRINT",  printDef));
+		builtinFuncs.insert(std::make_pair("PRINTF", printfDef));
+		builtinFuncs.insert(std::make_pair("READ",   readDef));
+		builtinFuncs.insert(std::make_pair("READF",  readfDef));
+		builtinFuncs.insert(std::make_pair("ftoi",  ftoiDef));
+
+		definedTypes.insert(std::make_pair("int",   {"int",   1}));
+		definedTypes.insert(std::make_pair("float", {"float", 1}));
+		definedTypes.insert(std::make_pair("void",  {"void",  0}));
+
+		binaryOps.push_back("+");
+		binaryOps.push_back("-");
+		binaryOps.push_back("/");
+		binaryOps.push_back("*");
+		binaryOps.push_back("&");
+		binaryOps.push_back("|");
+		binaryOps.push_back("==");
+		binaryOps.push_back(">");
+		binaryOps.push_back("<");
+
+		//unaryOps.push_back("!");
+
+		ast = new AST();
 	}
 
 	bool ExpectAndEatType(){
-		
+		if(definedTypes.find(tokens[cursor]) != definedTypes.end()){
+			cursor++;
+			return true;
+		}
+	}
+
+	bool ExpectAndEatParameter(){
+		int oldCursor = cursor;
+
+		if(!ExpectAndEatType()){
+			cursor = oldCursor;
+			return false;
+		}
+
+		if(!ExpectAndEatUniqueName()){
+			cursor = oldCursor;
+			return false;
+		}
+
+		return true;
+	}
+
+	bool ExpectAndEatStatement(Statement** out){
+		if(ExpectAndEatAssignment()){
+
+		}
+	}
+
+	bool ExpectAndEatFunctionDef(){
+		int oldCursor = cursor;
+
+		if(!ExpectAndEatType()){
+			cursor = oldCursor;
+			return false;
+		}
+
+		const string& retTypeName = tokens[cursor - 1];
+
+		if(!ExpectAndEatUniqueName()){
+			cursor = oldCursor;
+			return false;
+		}
+
+		const string& funcName = tokens[cursor - 1];
+
+		FuncDef* def = new FuncDef();
+		const Type& retType = definedTypes.find(retTypeName)->second;
+		def->retType = retType;
+		def->name = funcName;
+
+		int paramCount = 0;
+		while(tokens[cursor] != ")"){
+			if(!ExpectAndEatParameter()){
+				delete def;
+				cursor = oldCursor;
+				return false;
+			}
+
+			fun
+
+			if(paramCount != 0){
+				if(!ExpectAndEatToken(",")){
+					delete def;
+					cursor = oldCursor;
+					return false;
+				}
+			}
+
+			paramCount++;
+		}
+
+		if(!ExpectAndEatToken("{")){
+			delete def;
+			cursor = oldCursor;
+			return false;
+		}
+
+		while(tokens[cursor] != "}"){
+			//if(!Expec)
+		}
+
 	}
 
 	AST* ParseAST(){
+		Setup();
+
 		while(cursor < tokens.size()){
-			//if(
+			if(ExpectAndEatVarDecl()){
+
+			}
+			else if(ExpectAndEatStructDef()){
+
+			}
+			else if(ExpectAndEatFunctionDef()){
+
+			}
 		}
 
-		return nullptr;
+		return ast;
 	}
 };
+
+AST* MakeASTFromTokens(const vector<string>& tokens){
+	TokenStream stream;
+	stream.tokens = tokens;
+	stream.cursor = 0;
+
+	return stream.ParseAST();
+}
 
 void AST::GenerateFromShuntedTokens(const vector<string>& tokens, VM& vm){
 	map<string, int> varRegs;
@@ -328,7 +694,7 @@ void AST::GenerateFromShuntedTokens(const vector<string>& tokens, VM& vm){
 		else if(token == ":"){
 			Assignment* assmt = new Assignment();
 			assmt->val = values.Pop();
-			Variable* reg = (Variable*)values.Pop(); 
+			Variable* reg = (Variable*)values.Pop();
 			assmt->reg = reg->reg;
 			assmt->varName = reg->varName;
 			assmt->type = reg->type;

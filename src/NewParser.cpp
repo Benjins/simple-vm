@@ -54,9 +54,6 @@ vector<string> JustShuntingYard(vector<string>& tokens){
 		else if(token == "("){
 			operatorStack.Push(token);
 		}
-		else if(token == "("){
-			
-		}
 		else if(token == ")"){
 			while(operatorStack.Peek() != "("){
 				shuntedTokens.push_back(operatorStack.Pop());
@@ -81,8 +78,8 @@ vector<string> JustShuntingYard(vector<string>& tokens){
 			shuntedTokens.push_back(";");
 		}
 		else if(operators.find(token) != string::npos){
-			while(operatorStack.stackSize > 0 
-				&& operators.find(operatorStack.Peek()) != string::npos 
+			while(operatorStack.stackSize > 0
+				&& operators.find(operatorStack.Peek()) != string::npos
 				&& OperatorPrecedence(operatorStack.Peek()) >= OperatorPrecedence(token)){
 					shuntedTokens.push_back(operatorStack.Pop());
 			}
@@ -91,6 +88,10 @@ vector<string> JustShuntingYard(vector<string>& tokens){
 		else{
 			operatorStack.Push(token);
 		}
+	}
+
+	while(operatorStack.stackSize > 0){
+		shuntedTokens.push_back(operatorStack.Pop());
 	}
 
 	return shuntedTokens;
@@ -103,9 +104,9 @@ vector<string> NewTokenize(const string& code){
 	char currChar = ' ';
 	bool inQuotes = false;
 	bool inNumber = false;
-	
+
 	vector<string> tokens;
-	
+
 	for(int i = 0; i < code.size(); i++){
 		currChar = code[i];
 		if(currChar == '"'){
@@ -113,7 +114,7 @@ vector<string> NewTokenize(const string& code){
 				tokens.push_back(memoryString);
 				memoryString = "";
 			}
-			
+
 			tokens.push_back("\"");
 			inQuotes = !inQuotes;
 			inNumber = false;
@@ -137,7 +138,7 @@ vector<string> NewTokenize(const string& code){
 				tokens.push_back(memoryString);
 				memoryString = "";
 			}
-			
+
 			string op = "_";
 			op[0] = currChar;
 			tokens.push_back(op);
@@ -147,12 +148,12 @@ vector<string> NewTokenize(const string& code){
 			inNumber = false;
 		}
 	}
-	
+
 	if(memoryString.size() > 0){
 		tokens.push_back(memoryString);
 		memoryString = "";
 	}
-	
+
 	return tokens;
 }
 
@@ -220,7 +221,7 @@ vector<unsigned char> NewShuntingYard(vector<string> tokens, VM& vm){
 						i++;
 					}
 				}
-				
+
 				for(int paramIdx = paramCount - 1; paramIdx >= 0; paramIdx--){
 					byteCode.push_back(INT_LIT);
 					byteCode.push_back(paramIdx);
@@ -309,8 +310,8 @@ vector<unsigned char> NewShuntingYard(vector<string> tokens, VM& vm){
 			}
 		}
 		else if(operators.find(token) != string::npos){
-			while(operatorStack.stackSize > 0 
-				&& operators.find(operatorStack.Peek()) != string::npos 
+			while(operatorStack.stackSize > 0
+				&& operators.find(operatorStack.Peek()) != string::npos
 				&& OperatorPrecedence(operatorStack.Peek()) > OperatorPrecedence(token)){
 					byteCode.push_back(Compile(operatorStack.Pop()));
 			}
@@ -361,7 +362,7 @@ vector<unsigned char> NewShuntingYard(vector<string> tokens, VM& vm){
 					varCount = prevVarCount;
 				}
 			}
-			
+
 		}
 		else if(token == ";"){
 			while(operatorStack.stackSize > 0){
