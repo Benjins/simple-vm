@@ -8,12 +8,18 @@
 
 using std::string;
 
-struct VM; struct FuncDef; struct Value; struct Statement;
+struct VM; struct FuncDef; struct Value; struct Statement; struct StructDef;
 
 Statement* CompileTokenToAST(const string& token);
 
+struct Type{
+	string name;
+	int sizeInWords;
+};
+
 struct AST{
 	vector<FuncDef*> defs;
+	vector<StructDef*> structDefs;
 
 	void GenerateFromShuntedTokens(const vector<string>& tokens, VM& vm);
 	void GenerateByteCode(VM& vm);
@@ -31,6 +37,7 @@ struct Statement : public Expression{
 };
 
 struct Value : public Statement{
+	Type type;
 	virtual int Evaluate() = 0;
 	virtual void AddByteCode(VM& vm) = 0;
 	virtual int NumParams() = 0;
@@ -184,6 +191,8 @@ struct Scope : public Statement{
 
 	int numStatements;
 
+	map<string, Type> variablesInScope;
+
 	Scope(){
 		numStatements = 0;
 		statements = NULL;
@@ -208,6 +217,7 @@ struct Scope : public Statement{
 
 struct FuncDef : public Scope{
 	string name;
+	map<string, Type> parameters;
 
 	bool isExtern;
 
@@ -217,6 +227,16 @@ struct FuncDef : public Scope{
 
 	virtual int Evaluate();
 	virtual void AddByteCode(VM& vm);
+};
+
+struct StructMember{
+	Type type;
+	string name;
+};
+
+struct StructDef{
+	string name;
+	vector<StructMember> members;
 };
 
 struct ExternFunc : public Value{

@@ -48,7 +48,6 @@ struct Stack{
 	}
 };
 
-
 static void ReadFromFile(string& readnto, string fileName);
 
 vector<string> NewTokenize(const string& code);

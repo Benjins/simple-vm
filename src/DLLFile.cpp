@@ -1,6 +1,7 @@
 #include "../header/DLLFile.h"
 
 #include <iostream>
+#include <stdio.h>
 
 using std::cout;
 
@@ -16,7 +17,6 @@ void DLLFile::OpenFile(const string& fileName){
 	handle = dlopen(fileName.c_str(), RTLD_LAZY);
 	if (!handle) {
         fprintf (stderr, "%s\n", dlerror());
-        exit(1);
     }
 #endif
 }

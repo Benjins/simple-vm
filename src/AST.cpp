@@ -14,6 +14,180 @@ Statement* CompileTokenToAST(const string& token){
 	}
 }
 
+typedef string Token;
+
+struct TokenStream{
+	vector<Token> tokens;
+	int cursor;
+
+	map<string, Type> definedTypes;
+	map<string, FuncDef*> definedFuncs;
+	int stackSizeInWords;
+	map<string, Type> variables;
+
+	Stack<Scope*> scopes;
+	Stack<Value*> values;
+
+	bool ExpectAndEatToken(const string& keyWord){
+		if(tokens[cursor] == keyWord){
+			cursor++;
+			return true;
+		}
+
+		return false;
+	}
+
+	bool ExpectAndEatUniqueName(){
+		return false;
+	}
+
+	bool ExpectAndEatAssignment(){
+		
+	}
+
+	void AddVariable(const Type& type, const string& name){
+		variables.insert(std::make_pair(name, type));
+		if(scopes.stackSize > 0){
+			scopes.Peek()->variablesInScope.insert(std::make_pair(name, type));
+		}
+
+		stackSizeInWords += type.sizeInWords;
+	}
+
+	bool ExpectAndEatValue(){
+		
+	}
+
+	bool ExpectAndEatNumber(){
+		static const string _digits = "0123456789";
+		if(_digits.find(tokens[cursor][0]) != string::npos){
+			cursor++;
+			return true;
+		}
+
+		return false;
+	}
+
+	bool ExpectAndEatVarDecl(){
+		int currentCursor = cursor;
+
+		if(!ExpectAndEatType()){
+			cursor = currentCursor;
+			return false;
+		}
+
+		const Type& declType = definedTypes.find(tokens[cursor-1])->second;
+
+		if(!ExpectAndEatUniqueName()){
+			cursor = currentCursor;
+			return false;
+		}
+
+		const string& uniqueName = tokens[cursor-1];
+
+		if(ExpectAndEatToken(";")){
+			AddVariable(declType, uniqueName);
+			return true;
+		}
+		else if(ExpectAndEatToken("=")){
+			if(ExpectAndEatValue()){
+				AddVariable(declType, uniqueName);
+				return true;
+			}
+			else{
+				cursor = currentCursor;
+				return false;
+			}
+		}
+		else{
+			//ERROR?
+			cursor = currentCursor;
+			return false;
+		}
+	}
+
+	bool ExpectAndEatFieldDecl(StructDef* def){
+		int currentCursor = cursor;
+
+		if(!ExpectAndEatType()){
+			cursor = currentCursor;
+			return false;
+		}
+
+		const Type& declType = definedTypes.find(tokens[cursor-1])->second;
+
+		if(!ExpectAndEatUniqueName()){
+			cursor = currentCursor;
+			return false;
+		}
+
+		const string& uniqueName = tokens[cursor-1];
+
+		if(ExpectAndEatToken(";")){
+			StructMember member;
+			member.name = uniqueName;
+			member.type = declType;
+			def->members.push_back(member);
+			return true;
+		}
+
+		return false;
+	}
+
+	bool ExpectAndEatStructDef(){
+		int oldCursor = cursor;
+		if(!ExpectAndEatToken("struct")){
+			cursor = oldCursor;
+			return false;
+		}
+
+		if(!ExpectAndEatUniqueName()){
+			cursor = oldCursor;
+			return false;
+		}
+
+		if(!ExpectAndEatToken("{")){
+			cursor = oldCursor;
+			return false;
+		}
+
+		StructDef* def = new StructDef();
+		def->name = tokens[cursor - 2];
+
+		while(tokens[cursor] != "}"){
+			if(!ExpectAndEatFieldDecl(def)){
+				cursor = oldCursor;
+				delete def;
+				return false;
+			}
+		}
+
+		if(ExpectAndEatToken(";")){
+			
+		}
+
+		delete def;
+		cursor = oldCursor;
+		return false;
+	}
+
+	void Setup(){
+		
+	}
+
+	bool ExpectAndEatType(){
+		
+	}
+
+	AST* ParseAST(){
+		while(cursor < tokens.size()){
+			//if(
+		}
+
+		return nullptr;
+	}
+};
+
 void AST::GenerateFromShuntedTokens(const vector<string>& tokens, VM& vm){
 	map<string, int> varRegs;
 	map<string, int> funcArity;
