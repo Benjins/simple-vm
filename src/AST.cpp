@@ -45,7 +45,10 @@ struct TokenStream{
 	}
 
 	bool ExpectAndEatUniqueName(){
-		if(definedFuncs.find())
+		if(definedFuncs.find(tokens[cursor]) == definedFuncs.end() && variables.find(tokens[cursor]) == variables.end()){
+			cursor++;
+			return true;
+		}
 		return false;
 	}
 
@@ -62,7 +65,22 @@ struct TokenStream{
 		int oldCursor = cursor;
 		if(!ExpectAndEatVariable()){
 			cursor = oldCursor;
-			return false;
+			if(!ExpectAndEatType()){
+				cursor = oldCursor;
+				return false;
+			}
+			else{
+				if(!ExpectAndEatUniqueName()){
+					cursor = oldCursor;
+					return false;
+				}
+				else{
+					const string& typeName = tokens[cursor-2];
+					const string& varName  = tokens[cursor-1];
+					const Type& varType = definedTypes.find(typeName)->second;
+					AddVariable(varType, varName);
+				}
+			}
 		}
 
 		const string& varName = tokens[cursor-1];
@@ -84,7 +102,10 @@ struct TokenStream{
 		}
 
 		Assignment* assgn = new Assignment();
-		assgn->var =
+		assgn->varName = varName;
+		assgn->val = val;
+
+		scopes.Peek()->AddStatement(assgn);
 
 		return true;
 	}
@@ -131,73 +152,6 @@ struct TokenStream{
 	}
 
 	/*
-	bool ExpectAndEatValueHelp(Value** out){
-		int oldCursor = cursor;
-		VMValue val;
-		if(ExpectAndEatNumber(&val)){
-			if(val.type == ValueType::FLOAT){
-				*out = new FloatLiteral(val.floatValue);
-			}
-			else{
-				*out = new Literal(val.intValue);
-			}
-
-			return true;
-		}
-
-		if(ExpectAndEatVariable()){
-			if(ExpectAndEatToken(".")){
-				if(EatFieldName()){
-					FieldAcces* access = new FieldAcces();
-					Variable* var = new Variable();
-					var->varName = tokens[cursor - 3];
-					access->var = var;
-					access->fieldName = tokens[cursor - 1];
-					const string& structName = variables.find(var->varName)->second.name;
-					StructDef* structType = nullptr;
-					for(StructDef* structDef : ast->structDefs){
-						if(structDef->name == structName){
-							structType = structDef;
-							break;
-						}
-					}
-
-					if(structType == nullptr){
-						//Error?
-						cursor = oldCursor;
-						return false;
-					}
-					else{
-						int offset = 0;
-						for(const StructMember& member : structType->members){
-							if(member.name == access->fieldName){
-								offset = member.offset;
-								break;
-							}
-						}
-
-						access->offset = offset;
-						*out = offset;
-						return true;
-					}
-				}
-				else{
-					//Error?
-					cursor = oldCursor;
-					return false;
-				}
-			}
-			else{
-				Variable* var = new Variable();
-				var->varName = tokens[cursor - 1];
-				*out = var;
-				return true;
-			}
-		}
-	}
-	*/
-
-	/*
 
 	#valueHelp -> number
 	#valueHelp -> variable  + . + fieldName
@@ -231,34 +185,48 @@ struct TokenStream{
 			valueTokens.push_back(tokens[index]);
 		}
 
-		vector<string> shuntedTokens = JustShuntingYard(valueTokens);
+		vector<string> shuntedTokens = JustShuntingYard(valueTokens, variables);
 
 		Stack<Value*> values;
 		Stack<string> operatorStack;
 		for(const string& str : shuntedTokens){
 			VMValue val;
-			if(ExpectAndConvertNumber(&val)){
+			if(ExpectAndConvertNumber(str, &val)){
 				//push num onto stack
 				if(val.type == ValueType::INT){
-					values.push(new Literal(val.intValue));
+					values.Push(new Literal(val.intValue));
 				}
 				else{
-					values.push(new FloatLiteral(val.floatValue));
+					values.Push(new FloatLiteral(val.floatValue));
 				}
 			}
-			else if(FIND(binaryOps, token) != binaryOps.end()){
-				Operator* op = CompileTokenToAST(token);
+			else if(FIND(binaryOps, str) != binaryOps.end()){
+				Operator* op = new Operator(str);
 				op->right = values.Pop();
 				op->left  = values.Pop();
 				values.Push(op);
 			}
-			else if(FIND(builtinFuncs, token) != builtinFuncs.end() || FIND(definedFuncs, token) != definedFuncs.end()){
-				FuncCall* call = new FuncCall();
-				call->funcName = token;
-				FuncDef* def = FIND(builtinFuncs, token)->second;
+			else if(builtinFuncs.find(str) != builtinFuncs.end() ){
+				Builtin* builtin = new Builtin(str);
+				FuncDef* def = builtinFuncs.find(str)->second;
+
 				for(int i = 0; i < def->parameters.size(); i++){
 					if(values.stackSize == 0){
-						cout << "\n\nError, function '" << token << "' takes " << def->parameters.size() << " arguments.\n";
+						cout << "\n\nError, function '" << str << "' takes " << def->parameters.size() << " arguments.\n";
+						return false;
+					}
+					builtin->AddParameter(values.Pop());
+				}
+
+				values.Push(builtin);
+			}
+			else if(definedFuncs.find(str) != definedFuncs.end()){
+				FuncCall* call = new FuncCall();
+				call->funcName = str;
+				FuncDef* def = definedFuncs.find(str)->second;
+				for(int i = 0; i < def->parameters.size(); i++){
+					if(values.stackSize == 0){
+						cout << "\n\nError, function '" << str << "' takes " << def->parameters.size() << " arguments.\n";
 						return false;
 					}
 					call->AddParameter(values.Pop());
@@ -266,12 +234,18 @@ struct TokenStream{
 
 				values.Push(call);
 			}
+			else if(variables.find(str) != variables.end()){
+				Variable* var = new Variable();
+				var->varName = str;
+				var->varType = definedTypes.find(variables.find(str)->second.name)->second;
+				values.Push(var);
+			}
 			else{
 				cout << "\nOdd egde case?\n";
 			}
 		}
 
-		if(values.stackSize == ){
+		if(values.stackSize == 1){
 			*out = values.Peek();
 			cursor += valueTokens.size();
 			return true;
@@ -303,7 +277,12 @@ struct TokenStream{
 			return true;
 		}
 		else if(ExpectAndEatToken("=")){
-			if(ExpectAndEatValue()){
+			Value* val;
+			if(ExpectAndEatValue(&val)){
+				Assignment* assgn = new Assignment();
+				assgn->varName = uniqueName;
+				assgn->val = val;
+				scopes.Peek()->AddStatement(assgn);
 				AddVariable(declType, uniqueName);
 				return true;
 			}
@@ -342,7 +321,7 @@ struct TokenStream{
 			member.type = declType;
 			member.offset = def->size;
 			def->members.push_back(member);
-			def->size += members.type.size;
+			def->size += member.type.sizeInWords;
 			return true;
 		}
 
@@ -379,7 +358,8 @@ struct TokenStream{
 
 		if(ExpectAndEatToken(";")){
 			ast->structDefs.push_back(def);
-			definedTypes.insert(std::make_pair(def->name,   {def->name, def->size}));
+			Type type =  {def->name, def->size};
+			definedTypes.insert(std::make_pair(def->name, type));
 
 			return true;
 		}
@@ -390,33 +370,37 @@ struct TokenStream{
 	}
 
 	void Setup(){
-		FuncDef printDef = new FuncDef();
-		printDef.name = "PRINT";
-		printDef.retType.name = "void";
-		printDef.retType.sizeInWords = 0;
-		printDef.parameters.insert(std::make_pair("val", {"int", 1}));
+		Type intType = {"int", 1};
+		Type floatType = {"float", 1};
+		Type voidType = {"void", 0};
 
-		FuncDef printfDef = new FuncDef();
-		printfDef.name = "PRINTF";
-		printfDef.retType.name = "void";
-		printfDef.retType.sizeInWords = 0;
-		printfDef.parameters.insert(std::make_pair("val", {"float", 1}));
+		FuncDef* printDef = new FuncDef();
+		printDef->name = "PRINT";
+		printDef->retType.name = "void";
+		printDef->retType.sizeInWords = 0;
+		printDef->parameters.insert(std::make_pair("val", intType));
 
-		FuncDef readDef = new FuncDef();
-		readDef.name = "READ";
-		readDef.retType.name = "int";
-		readDef.retType.sizeInWords = 1;
+		FuncDef* printfDef = new FuncDef();
+		printfDef->name = "PRINTF";
+		printfDef->retType.name = "void";
+		printfDef->retType.sizeInWords = 0;
+		printfDef->parameters.insert(std::make_pair("val", floatType));
 
-		FuncDef readfDef = new FuncDef();
-		readfDef.name = "READF";
-		readfDef.retType.name = "float";
-		readfDef.retType.sizeInWords = 1;
+		FuncDef* readDef = new FuncDef();
+		readDef->name = "READ";
+		readDef->retType.name = "int";
+		readDef->retType.sizeInWords = 1;
 
-		FuncDef ftoiDef = new FuncDef();
-		ftoiDef.name = "PRINTF";
-		ftoiDef.retType.name = "int";
-		ftoiDef.retType.sizeInWords = 1;
-		ftoiDef.parameters.insert(std::make_pair("val", {"float", 1}));
+		FuncDef* readfDef = new FuncDef();
+		readfDef->name = "READF";
+		readfDef->retType.name = "float";
+		readfDef->retType.sizeInWords = 1;
+
+		FuncDef* ftoiDef = new FuncDef();
+		ftoiDef->name = "PRINTF";
+		ftoiDef->retType.name = "int";
+		ftoiDef->retType.sizeInWords = 1;
+		ftoiDef->parameters.insert(std::make_pair("val", floatType));
 
 		builtinFuncs.insert(std::make_pair("PRINT",  printDef));
 		builtinFuncs.insert(std::make_pair("PRINTF", printfDef));
@@ -424,9 +408,9 @@ struct TokenStream{
 		builtinFuncs.insert(std::make_pair("READF",  readfDef));
 		builtinFuncs.insert(std::make_pair("ftoi",  ftoiDef));
 
-		definedTypes.insert(std::make_pair("int",   {"int",   1}));
-		definedTypes.insert(std::make_pair("float", {"float", 1}));
-		definedTypes.insert(std::make_pair("void",  {"void",  0}));
+		definedTypes.insert(std::make_pair("int",   intType));
+		definedTypes.insert(std::make_pair("float", floatType));
+		definedTypes.insert(std::make_pair("void",  voidType));
 
 		binaryOps.push_back("+");
 		binaryOps.push_back("-");
@@ -466,10 +450,55 @@ struct TokenStream{
 		return true;
 	}
 
-	bool ExpectAndEatStatement(Statement** out){
-		if(ExpectAndEatAssignment()){
+	bool ExpectAndEatControlStatement();
 
+	bool ExpectAndEatStatement(){
+		int oldCursor = cursor;
+		
+		if(ExpectAndEatToken("return")){
+			Value* val;
+			if(ExpectAndEatValue(&val)){
+				if(ExpectAndEatToken(";")){
+					Builtin* builtin = new Builtin("return");
+					builtin->AddParameter(val);
+					scopes.Peek()->AddStatement(builtin);
+					return true;
+				}
+				else{
+					delete val;
+					cursor = oldCursor;
+					return false;
+				}
+			}
+			else{
+				cursor = oldCursor;
+				return false;
+			}
 		}
+
+		if(ExpectAndEatControlStatement()){
+			return true;
+		}
+
+		if(ExpectAndEatAssignment()){
+			return true;
+		}
+		
+		Value* val;
+		if(ExpectAndEatValue(&val)){
+			if(ExpectAndEatToken(";")){
+				scopes.Peek()->AddStatement(val);
+				return true;
+			}
+			else{
+				delete val;
+				cursor = oldCursor;
+				return false;
+			}
+		}
+
+		cursor = oldCursor;
+		return false;
 	}
 
 	bool ExpectAndEatFunctionDef(){
@@ -489,6 +518,11 @@ struct TokenStream{
 
 		const string& funcName = tokens[cursor - 1];
 
+		if(!ExpectAndEatToken("(")){
+			cursor = oldCursor;
+			return false;
+		}
+
 		FuncDef* def = new FuncDef();
 		const Type& retType = definedTypes.find(retTypeName)->second;
 		def->retType = retType;
@@ -502,7 +536,13 @@ struct TokenStream{
 				return false;
 			}
 
-			fun
+			const string& paramTypeName = tokens[cursor - 2];
+			const string& paramName = tokens[cursor - 1];
+			const Type& paramType = definedTypes.find(paramTypeName)->second;
+
+			AddVariable(paramType, paramName);
+
+			def->parameters.insert(std::make_pair(paramName, paramType));
 
 			if(paramCount != 0){
 				if(!ExpectAndEatToken(",")){
@@ -515,16 +555,38 @@ struct TokenStream{
 			paramCount++;
 		}
 
+		if(!ExpectAndEatToken(")")){
+			delete def;
+			cursor = oldCursor;
+			return false;
+		}
+
 		if(!ExpectAndEatToken("{")){
 			delete def;
 			cursor = oldCursor;
 			return false;
 		}
 
+		scopes.Push(def);
+		ast->defs.push_back(def);
+
 		while(tokens[cursor] != "}"){
-			//if(!Expec)
+			if(!ExpectAndEatStatement()){
+				delete def;
+				cursor = oldCursor;
+				return false;
+			}
 		}
 
+		if(!ExpectAndEatToken("}")){
+				delete def;
+				cursor = oldCursor;
+				return false;
+			}
+
+		scopes.Pop();
+
+		return true;
 	}
 
 	AST* ParseAST(){
@@ -540,11 +602,85 @@ struct TokenStream{
 			else if(ExpectAndEatFunctionDef()){
 
 			}
+			else{
+				cout << "\nError: could not parse: '" << tokens[cursor]<< "'\n";
+				break;
+			}
 		}
 
 		return ast;
 	}
 };
+
+bool TokenStream::ExpectAndEatControlStatement(){
+	bool isWhile = false;
+	int oldCursor = cursor;
+	if(ExpectAndEatToken("if")){
+		isWhile = false;
+	}
+	else if(ExpectAndEatToken("while")){
+		isWhile = true;
+	}
+	else{
+		cursor = oldCursor;
+		return false;
+	}
+
+	if(!ExpectAndEatToken("(")){
+		cursor = oldCursor;
+		return false;
+	}
+
+	Value* val;
+	if(!ExpectAndEatValue(&val)){
+		cursor = oldCursor;
+		return false;
+	}
+
+	if(!ExpectAndEatToken(")")){
+		delete val;
+		cursor = oldCursor;
+		return false;
+	}
+
+	if(!ExpectAndEatToken("{")){
+		delete val;
+		cursor = oldCursor;
+		return false;
+	}
+
+	IfStatement* ifStmt;
+	if(isWhile){
+		ifStmt = new WhileStatement();
+	}
+	else{
+		ifStmt = new IfStatement();
+	}
+
+	scopes.Peek()->AddStatement(ifStmt);
+	scopes.Push(ifStmt);
+
+	while(tokens[cursor] != "}"){
+		if(!ExpectAndEatStatement()){
+			delete ifStmt;
+			cursor = oldCursor;
+			return false;
+		}
+	}
+
+	if(!ExpectAndEatToken("}")){
+		delete val;
+		delete ifStmt;
+		cursor = oldCursor;
+		return false;
+	}
+
+	scopes.Pop();
+
+	ifStmt->test = val;
+
+	return true;
+}
 
 AST* MakeASTFromTokens(const vector<string>& tokens){
 	TokenStream stream;
@@ -791,6 +927,9 @@ void Builtin::AddByteCode(VM& vm){
 
 	if(funcName == "PRINT"){
 		vm.byteCodeLoaded.push_back(PRINT);
+	}
+	else if(funcName == "PRINTF"){
+		vm.byteCodeLoaded.push_back(PRINTF);
 	}
 	else if(funcName == "READ"){
 		vm.byteCodeLoaded.push_back(READ);

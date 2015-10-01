@@ -40,26 +40,11 @@ bool VM::CompileAndLoadCode(const string& fileName, vector<string>* dllsToLoad /
 		}
 	}
 	
-	AST b;
-	
 	vector<string> tokens = NewTokenize(code);
-	vector<string> shuntedTokens = JustShuntingYard(tokens);
 
-	/*
-	for(const string& token : shuntedTokens){
-		cout << "|" << token << "|\n";
-	}
-	*/
-	
+	AST* otherAST = MakeASTFromTokens(tokens);	
 
-	b.GenerateFromShuntedTokens(shuntedTokens, *this);
-	b.GenerateByteCode(*this);
-
-	/*
-	for(char instr : byteCodeLoaded){
-		cout << "|" << (int)instr << "|\n";
-	}*/
-	
+	otherAST->GenerateByteCode(*this);
 
 	return true;
 }
@@ -370,6 +355,17 @@ int VM::Execute(unsigned char* code, int instructionCount, int entryPoint){
 				VMValue a = Pop();
 				if(a.type == ValueType::INT){
 					cout << a.intValue << endl;
+				}
+				else if(a.type == ValueType::FLOAT){
+					cout << "\nError: calling PRINT on float type.\n" << endl;
+				}
+			}break;
+
+			case PRINTF:{
+				//cout << "PRINT\n";
+				VMValue a = Pop();
+				if(a.type == ValueType::INT){
+					cout << "\nError: calling PRINTF on integer type.\n" << endl;
 				}
 				else if(a.type == ValueType::FLOAT){
 					cout << a.floatValue << endl;

@@ -160,6 +160,7 @@ struct Variable : public Value{
 	int reg;
 	string varName;
 	ValueType type;
+	Type varType;
 
 	virtual int GetRegister(){return reg;}
 	virtual int Evaluate();

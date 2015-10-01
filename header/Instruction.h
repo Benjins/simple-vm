@@ -28,7 +28,8 @@ enum Instruction{
 	FLT_LIT = 23,
 	INT_TO_FLT = 24,
 	READF = 25,
-	EXTERN_CALL = 26
+	PRINTF = 26,
+	EXTERN_CALL = 27
 };
 
 

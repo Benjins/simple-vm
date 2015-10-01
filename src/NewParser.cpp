@@ -1,19 +1,18 @@
 #include "../header/Parser.h"
 #include "../header/VM.h"
 #include "../header/Instruction.h"
+#include "../header/AST.h"
 #include <fstream>
-#include <unordered_map>
 #include <iostream>
 #include <sstream>
 #include <cstdlib>
 
-using std::cout; using std::unordered_map;
 
-vector<string> JustShuntingYard(vector<string>& tokens){
+using std::cout;
+
+vector<string> JustShuntingYard(vector<string>& tokens, map<string, Type>& variables){
 	const string operators = "+*-/=><|&:";
 	const string numbers = "0123456789.";
-
-	unordered_map<string,int> variables;
 
 	vector<string> shuntedTokens;
 
@@ -23,30 +22,8 @@ vector<string> JustShuntingYard(vector<string>& tokens){
 
 	for(int i = 0; i < tokens.size(); i++){
 		string token = tokens[i];
-		if(token == "def" || token == "extern"){
-			funcDef = true;
+		if(numbers.find(token[0]) != string::npos){
 			shuntedTokens.push_back(token);
-			i++;
-			shuntedTokens.push_back(tokens[i]);
-		}
-		else if(funcDef){
-			shuntedTokens.push_back(token);
-			if(token == "{" || token == ";"){
-				funcDef = false;
-			}
-			else if(token != "," && token != "(" && token != ")"){
-				variables.insert(std::pair<string,int>(token, 1));
-			}
-		}
-		else if(numbers.find(token[0]) != string::npos){
-			shuntedTokens.push_back(token);
-		}
-		else if(token == "{" || token == "}"){
-			shuntedTokens.push_back(token);
-		}
-		else if(token == "var" || token == "int" || token == "float"){
-			shuntedTokens.push_back(token);
-			variables.insert(std::pair<string,int>(tokens[i+1],1));
 		}
 		else if(variables.find(token) != variables.end()){
 			shuntedTokens.push_back(token);
@@ -165,8 +142,8 @@ vector<unsigned char> NewShuntingYard(vector<string> tokens, VM& vm){
 	Stack<int> whileIndexStack;
 	int assignment = -1;
 
-	unordered_map<string, int> varReg;
-	unordered_map<string, int> paramNames;
+	map<string, int> varReg;
+	map<string, int> paramNames;
 
 	bool funcDef = false;
 	int braceCount = 0;

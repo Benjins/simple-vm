@@ -4,14 +4,15 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <map>
 
 #define MAX_STACK_SIZE 512
 
-using std::string; using std::vector; using std::cout;
+using std::string; using std::vector; using std::cout; using std::map;
 
-struct VM;
+struct VM; struct Type;
 
-vector<string> JustShuntingYard(vector<string>& tokens);
+vector<string> JustShuntingYard(vector<string>& tokens, map<string, Type>& variables);
 
 template<typename T>
 struct Stack{
