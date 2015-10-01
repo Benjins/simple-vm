@@ -151,19 +151,6 @@ struct TokenStream{
 		return true;
 	}
 
-	/*
-
-	#valueHelp -> number
-	#valueHelp -> variable  + . + fieldName
-	#valueHelp -> variable
-	valueHelp -> unaryOp + Value
-	valueHelp -> ( + valueHelp + )
-	valueHelp -> funcCAll + ( + valueList + )
-
-	value -> valueHelp
-	value -> valueHelp + bi_op + value
-	*/
-
 	bool ExpectAndEatValue(Value** out){
 		int oldCursor = cursor;
 		vector<string> valueTokens;
