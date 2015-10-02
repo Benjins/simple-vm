@@ -62,8 +62,25 @@ struct TokenStream{
 		return false;
 	}
 
+	bool ExpectAndEatField(StructDef* structType, StructMember* out){
+		int oldCursor = cursor;
+
+		for(auto& member : structType->members){
+			if(member.name == tokens[cursor]){
+				*out = member;
+				cursor++;
+				return true;
+			}
+		}
+
+		cursor = oldCursor;
+		return false;
+	}
+
 	bool ExpectAndEatAssignment(){
 		int oldCursor = cursor;
+		bool isDeclaration = false;
+
 		if(!ExpectAndEatVariable()){
 			cursor = oldCursor;
 			if(!ExpectAndEatType()){
@@ -80,11 +97,33 @@ struct TokenStream{
 					const string& varName  = tokens[cursor-1];
 					const Type& varType = definedTypes.find(typeName)->second;
 					AddVariable(varType, varName);
+					isDeclaration = true;
 				}
 			}
 		}
 
-		const string& varName = tokens[cursor-1];
+		string varName = tokens[cursor-1];
+		Type varType = variables.find(varName)->second;
+		StructDef* structDef = FindStructByName(varType.name);
+
+		int offset = 0;
+
+		if(!isDeclaration && structDef != nullptr){
+			while(structDef != nullptr){
+				if(ExpectAndEatToken(".")){
+					StructMember member;
+					if(ExpectAndEatField(structDef, &member)){
+						offset += member.offset;
+
+						const Type& fieldType = member.type;
+						structDef = FindStructByName(fieldType.name);
+					}
+				}
+				else{
+					break;
+				}
+			}
+		}
 
 		if(!ExpectAndEatToken("=")){
 			cursor = oldCursor;
@@ -103,7 +142,7 @@ struct TokenStream{
 		}
 
 		Assignment* assgn = new Assignment();
-		assgn->reg = varRegs.find(varName)->second;
+		assgn->reg = varRegs.find(varName)->second + offset;
 		assgn->varName = varName;
 		assgn->val = val;
 
@@ -161,6 +200,17 @@ struct TokenStream{
 		return true;
 	}
 
+	StructDef* FindStructByName(const string& name){
+		for(StructDef* astStructDef : ast->structDefs){
+			if(astStructDef->name == name){
+				return astStructDef;
+				break;
+			}
+		}
+
+		return nullptr;
+	}
+
 	bool ExpectAndEatValue(Value** out){
 		int oldCursor = cursor;
 		vector<string> valueTokens;
@@ -182,11 +232,12 @@ struct TokenStream{
 			valueTokens.push_back(tokens[index]);
 		}
 
-		vector<string> shuntedTokens = JustShuntingYard(valueTokens, variables);
+		vector<string> shuntedTokens = JustShuntingYard(valueTokens, definedFuncs, builtinFuncs);
 
 		Stack<Value*> values;
 		Stack<string> operatorStack;
-		for(const string& str : shuntedTokens){
+		for(int index = 0; index < shuntedTokens.size(); index++){
+			const string& str = shuntedTokens[index];
 			VMValue val;
 			if(ExpectAndConvertNumber(str, &val)){
 				//push num onto stack
@@ -235,12 +286,36 @@ struct TokenStream{
 			else if(variables.find(str) != variables.end()){
 				Variable* var = new Variable();
 				var->varName = str;
-				var->reg = varRegs.find(str)->second;
+				var->_reg = varRegs.find(str)->second;
 				var->varType = definedTypes.find(variables.find(str)->second.name)->second;
 				values.Push(var);
 			}
+			else if(str == "."){
+				string fieldName = operatorStack.Pop();
+				Value* val = values.Pop();
+				Variable* var = static_cast<Variable*>(val);
+
+				FieldAccess* fieldAccess = new FieldAccess();
+				fieldAccess->fieldName = fieldName;
+				fieldAccess->variable = var;
+				StructDef* def = FindStructByName(var->varType.name);
+				if(def == nullptr){
+					printf("\nError: Tried to use '.' operator on variable '%s' of type: '%s'\n", var->varName, var->varType.name);
+					break;
+				}
+				else{
+					for(auto& member : def->members){
+						if(member.name == fieldName){
+							fieldAccess->varType = member.type;
+							fieldAccess->offset = member.offset;
+							values.Push(fieldAccess);
+							break;
+						}
+					}
+				}
+			}
 			else{
-				cout << "\nOdd egde case?\n";
+				operatorStack.Push(str);
 			}
 		}
 
@@ -551,6 +626,15 @@ struct TokenStream{
 
 		int paramCount = 0;
 		while(tokens[cursor] != ")"){
+			if(paramCount != 0){
+				if(!ExpectAndEatToken(",")){
+					delete def;
+					scopes.Pop();
+					cursor = oldCursor;
+					return false;
+				}
+			}
+
 			if(!ExpectAndEatParameter()){
 				delete def;
 				cursor = oldCursor;
@@ -564,15 +648,6 @@ struct TokenStream{
 			AddVariable(paramType, paramName);
 
 			def->parameters.insert(std::make_pair(paramName, paramType));
-
-			if(paramCount != 0){
-				if(!ExpectAndEatToken(",")){
-					delete def;
-					scopes.Pop();
-					cursor = oldCursor;
-					return false;
-				}
-			}
 
 			paramCount++;
 		}
@@ -843,7 +918,7 @@ int Variable::Evaluate(){
 }
 
 void Variable::AddByteCode(VM& vm){
-	Literal(reg).AddByteCode(vm);
+	Literal(GetRegister()).AddByteCode(vm);
 	vm.byteCodeLoaded.push_back(LOAD_REG);
 }
 

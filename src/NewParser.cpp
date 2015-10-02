@@ -10,9 +10,9 @@
 
 using std::cout;
 
-vector<string> JustShuntingYard(vector<string>& tokens, map<string, Type>& variables){
-	const string operators = "+*-/=><|&:";
-	const string numbers = "0123456789.";
+vector<string> JustShuntingYard(vector<string>& tokens, map<string, FuncDef*>& defs, map<string, FuncDef*>& builtinDefs){
+	const string operators = "+*-/=><|&.";
+	const string numbers = "0123456789";
 
 	vector<string> shuntedTokens;
 
@@ -23,9 +23,6 @@ vector<string> JustShuntingYard(vector<string>& tokens, map<string, Type>& varia
 	for(int i = 0; i < tokens.size(); i++){
 		string token = tokens[i];
 		if(numbers.find(token[0]) != string::npos){
-			shuntedTokens.push_back(token);
-		}
-		else if(variables.find(token) != variables.end()){
 			shuntedTokens.push_back(token);
 		}
 		else if(token == "("){
@@ -54,13 +51,17 @@ vector<string> JustShuntingYard(vector<string>& tokens, map<string, Type>& varia
 
 			shuntedTokens.push_back(";");
 		}
-		else if(operators.find(token) != string::npos){
+		else if(operators.find(token[0]) != string::npos){
 			while(operatorStack.stackSize > 0
 				&& operators.find(operatorStack.Peek()) != string::npos
 				&& OperatorPrecedence(operatorStack.Peek()) >= OperatorPrecedence(token)){
 					shuntedTokens.push_back(operatorStack.Pop());
 			}
 			operatorStack.Push(token);
+		}
+		else if(defs.find(token) == defs.end() 
+			&& builtinDefs.find(token) == builtinDefs.end()){
+			shuntedTokens.push_back(token);
 		}
 		else{
 			operatorStack.Push(token);
@@ -75,8 +76,8 @@ vector<string> JustShuntingYard(vector<string>& tokens, map<string, Type>& varia
 }
 
 vector<string> NewTokenize(const string& code){
-	const string operators = "(),+*-/=><|&{};:";
-	const string numbers = "0123456789.";
+	const string operators = "(),.+*-/=><|&{};:";
+	const string numbers = "0123456789";
 	string memoryString = "";
 	char currChar = ' ';
 	bool inQuotes = false;
@@ -105,7 +106,7 @@ vector<string> NewTokenize(const string& code){
 				memoryString = "";
 			}
 		}
-		else if(numbers.find(currChar) != string::npos){
+		else if(numbers.find(currChar) != string::npos || (inNumber && currChar == '.')){
 			inNumber = true;
 			memoryString += currChar;
 		}

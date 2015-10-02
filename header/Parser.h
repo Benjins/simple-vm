@@ -10,9 +10,9 @@
 
 using std::string; using std::vector; using std::cout; using std::map;
 
-struct VM; struct Type;
+struct VM; struct Type; struct FuncDef;
 
-vector<string> JustShuntingYard(vector<string>& tokens, map<string, Type>& variables);
+vector<string> JustShuntingYard(vector<string>& tokens, map<string, FuncDef*>& defs, map<string, FuncDef*>& builtinDefs);
 
 template<typename T>
 struct Stack{

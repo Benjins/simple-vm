@@ -35,13 +35,22 @@ bool IsAFunctionToken(string token){
 }
 
 int OperatorPrecedence(string token){
-	int precedence[] = {3,3,4,4,2,2,2,1,1,0};
+	static const int operatorCount = 11;
+	int precedence[operatorCount] = {3,3,4,4,2,2,2,1,1,0,5};
 	
 	//cout << "OpPrec\n";
 	
-	string ops = "+-*/=><|&:";
+	string ops[operatorCount] = {"+", "-", "/", "*", "==", ">", "<", "|", "&", "=", "."};
 	
-	int index = ops.find(token);
+
+	int index = 0;
+	for(int i = 0; i < operatorCount; i++){
+		if(ops[i] == token){
+			index = i;
+			break;
+		}
+	}
+
 	if(index != string::npos){
 		//cout << "Operator: " << token << ", precedence: " << precedence[index] << endl;
 		return precedence[index];

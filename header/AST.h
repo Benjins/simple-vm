@@ -158,11 +158,11 @@ struct FloatLiteral : public Value{
 };
 
 struct Variable : public Value{
-	int reg;
+	int _reg;
 	string varName;
 	Type varType;
 
-	virtual int GetRegister(){return reg;}
+	virtual int GetRegister(){return _reg;}
 	virtual int Evaluate();
 	virtual void AddByteCode(VM& vm);
 	virtual int NumParams(){
@@ -170,14 +170,13 @@ struct Variable : public Value{
 	}
 };
 
-struct FieldAcces : public Variable{
+struct FieldAccess : public Variable{
 	Variable* variable;
 	string fieldName;
 	int offset;
 
-	virtual int GetRegister(){return reg + offset;}
-	virtual int Evaluate();
-	virtual void AddByteCode(VM& vm);
+	virtual int GetRegister(){return variable->GetRegister() + offset;}
+	virtual int Evaluate(){return -1;}
 	virtual int NumParams(){
 		return 0;
 	}

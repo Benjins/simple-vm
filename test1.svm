@@ -23,8 +23,16 @@ int Factorial(int x){
 	return x * Factorial(x-1);
 }
 
+float MagnitudeSqr(float x, float y, float z){
+	return x*x + y*y + z*z;
+}
+
 int main(){
 	Vector3 vec;
+	vec.x = 3.0;
+	vec.y = 4.0;
+	vec.z = 12.0;
+	PRINTF(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
 	
 	float input = 1.0;
 	while(input > 0){
@@ -38,6 +46,8 @@ int main(){
 		PRINT(Summation(inputNext));
 		PRINT(Factorial(inputNext));
 	}
+	
+	return 0;
 	
 	int i = 1;
 	while(i < 50){
