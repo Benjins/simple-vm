@@ -46,6 +46,11 @@ bool VM::CompileAndLoadCode(const string& fileName, vector<string>* dllsToLoad /
 
 	otherAST->GenerateByteCode(*this);
 
+	printf("Bytecode size: %d\n", byteCodeLoaded.size());
+	for(int i = 0; i < byteCodeLoaded.size(); i++){
+		printf("|%d|\n", byteCodeLoaded[i]);
+	}
+
 	return true;
 }
 
@@ -223,7 +228,7 @@ int VM::Execute(unsigned char* code, int instructionCount, int entryPoint){
 	instrCount.type = ValueType::INT;
 
 	Push(finalStk); //final return stackframe, not really important what it's value is.
-	Push(instrCount); //on the ifnla return, we jump ot the end of the program, so we terminate.
+	Push(instrCount); //on the final return, we jump to the end of the program, so we terminate.
 
 	for(int i = entryPoint; i < instructionCount; i++){
 		unsigned char instruction = code[i];
@@ -362,7 +367,6 @@ int VM::Execute(unsigned char* code, int instructionCount, int entryPoint){
 			}break;
 
 			case PRINTF:{
-				//cout << "PRINT\n";
 				VMValue a = Pop();
 				if(a.type == ValueType::INT){
 					cout << "\nError: calling PRINTF on integer type.\n" << endl;

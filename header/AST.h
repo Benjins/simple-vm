@@ -23,7 +23,6 @@ struct AST{
 	vector<FuncDef*> defs;
 	vector<StructDef*> structDefs;
 
-	void GenerateFromShuntedTokens(const vector<string>& tokens, VM& vm);
 	void GenerateByteCode(VM& vm);
 };
 
@@ -83,6 +82,9 @@ struct Builtin : public FuncCall{
 		currParams = 0;
 
 		if(funcName == "PRINT"){
+			numParams = 1;
+		}
+		else if(funcName == "PRINTF"){
 			numParams = 1;
 		}
 		else if(funcName == "READ"){
@@ -216,6 +218,14 @@ struct Scope : public Statement{
 	}
 
 	void AddStatement(Statement* newStmt){
+
+		/*
+		Assignment* assgnCast = dynamic_cast<Assignment*>(newStmt);
+		if(assgnCast != nullptr && assgnCast->reg > 40 || assgnCast->reg < 0){
+			_CrtDbgBreak();
+		}
+		*/
+
 		Statement** newStatements = new Statement*[++numStatements];
 		if(statements != NULL){
 			memcpy(newStatements, statements, sizeof(Statement*) * (numStatements - 1));

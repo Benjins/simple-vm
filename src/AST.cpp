@@ -29,6 +29,7 @@ struct TokenStream{
 	map<string, FuncDef*> builtinFuncs;
 	int stackSizeInWords;
 	map<string, Type> variables;
+	map<string, int> varRegs;
 
 	vector<string> binaryOps;
 	vector<string> unaryOps;
@@ -102,6 +103,7 @@ struct TokenStream{
 		}
 
 		Assignment* assgn = new Assignment();
+		assgn->reg = varRegs.find(varName)->second;
 		assgn->varName = varName;
 		assgn->val = val;
 
@@ -111,6 +113,7 @@ struct TokenStream{
 	}
 
 	void AddVariable(const Type& type, const string& name){
+		varRegs.insert(std::make_pair(name, stackSizeInWords));
 		variables.insert(std::make_pair(name, type));
 		if(scopes.stackSize > 0){
 			scopes.Peek()->variablesInScope.insert(std::make_pair(name, type));
@@ -132,13 +135,13 @@ struct TokenStream{
 		static const string _digits = "0123456789";
 		if(_digits.find(token[0]) != string::npos){
 			if(out != nullptr){
-				if(tokens[cursor].find(".") != string::npos){
+				if(token.find(".") != string::npos){
 					out->type = ValueType::FLOAT;
 					out->floatValue = atof(token.c_str());
 				}
 				else{
 					out->type = ValueType::INT;
-					out->floatValue = atoi(token.c_str());
+					out->intValue = atoi(token.c_str());
 				}
 			}
 			return true;
@@ -224,6 +227,7 @@ struct TokenStream{
 			else if(variables.find(str) != variables.end()){
 				Variable* var = new Variable();
 				var->varName = str;
+				var->reg = varRegs.find(str)->second;
 				var->varType = definedTypes.find(variables.find(str)->second.name)->second;
 				values.Push(var);
 			}
@@ -266,11 +270,14 @@ struct TokenStream{
 		else if(ExpectAndEatToken("=")){
 			Value* val;
 			if(ExpectAndEatValue(&val)){
+				AddVariable(declType, uniqueName);
+
 				Assignment* assgn = new Assignment();
 				assgn->varName = uniqueName;
+				assgn->reg = varRegs.find(uniqueName)->second;
 				assgn->val = val;
+
 				scopes.Peek()->AddStatement(assgn);
-				AddVariable(declType, uniqueName);
 				return true;
 			}
 			else{
@@ -410,6 +417,8 @@ struct TokenStream{
 		binaryOps.push_back("<");
 
 		//unaryOps.push_back("!");
+
+		stackSizeInWords = 0;
 
 		ast = new AST();
 	}
@@ -677,193 +686,6 @@ AST* MakeASTFromTokens(const vector<string>& tokens){
 	return stream.ParseAST();
 }
 
-void AST::GenerateFromShuntedTokens(const vector<string>& tokens, VM& vm){
-	map<string, int> varRegs;
-	map<string, int> funcArity;
-	map<string, int> externFuncArity;
-	int varCount = 0;
-
-	vector<string> variables;
-	map<string, ValueType> varTypes;
-
-	const string operators = "+-*><|&=/";
-	const string numbers = "0123456789.";
-
-	Stack<Scope*> scopes;
-	Stack<Value*> values;
-
-	for(int i = 0; i < tokens.size(); i++){
-		string token = tokens[i];
-		//cout << "|" << token << "|\n";
-
-		if(numbers.find(token[0]) != string::npos){
-			if(token.find(".") == string::npos){
-				values.Push(new Literal(atoi(token.c_str())));
-			}
-			else{
-				values.Push(new FloatLiteral(atof(token.c_str())));
-			}
-		}
-		else if(operators.find(token) != string::npos){
-			Operator* op = new Operator(token);
-			op->right = values.Pop();
-			op->left = values.Pop();
-			values.Push(op);
-		}
-		else if(token == "def"){
-			string funcName = tokens[i+1];
-			i += 3;
-
-			FuncDef* currDef = new FuncDef();
-			currDef->name = funcName;
-
-			while(tokens[i] != ")"){
-				if(tokens[i] == "int"){
-					varRegs.insert(std::pair<string, int>(tokens[i+1], varCount));
-					varTypes.insert(std::pair<string,ValueType>(tokens[i+1], ValueType::INT));
-					varCount++;
-				}
-				else if(tokens[i] == "float"){
-					varRegs.insert(std::pair<string, int>(tokens[i+1], varCount));
-					varTypes.insert(std::pair<string,ValueType>(tokens[i+1], ValueType::FLOAT));
-					varCount++;
-				}
-				i++;
-			}
-
-			i++; // Skip '{' after "def (args...)"
-
-			funcArity.insert(std::pair<string, int>(funcName, currDef->paramNames.size()));
-			scopes.Push(currDef);
-		}
-		else if(token == "extern"){
-			string funcName = tokens[i+1];
-			i += 3;
-
-			FuncDef* currDef = new FuncDef();
-			currDef->isExtern = true;
-			currDef->name = funcName;
-
-			while(tokens[i] != ")"){
-				if(tokens[i] == "int"){
-					varRegs.insert(std::pair<string, int>(tokens[i+1], varCount));
-					varTypes.insert(std::pair<string,ValueType>(tokens[i+1], ValueType::INT));
-					varCount++;
-				}
-				else if(tokens[i] == "float"){
-					varRegs.insert(std::pair<string, int>(tokens[i+1], varCount));
-					varTypes.insert(std::pair<string,ValueType>(tokens[i+1], ValueType::FLOAT));
-					varCount++;
-				}
-				i++;
-			}
-
-			i++; // Skip ';' after "def (args...)"
-			vm.externFuncNames.push_back(funcName);
-			externFuncArity.insert(std::pair<string, int>(funcName, currDef->paramNames.size()));
-		}
-		else if(token == "var"){ // || token == "int" || token == "float"){
-			varRegs.insert(std::pair<string, int>(tokens[i+1], varCount));
-			varTypes.insert(std::pair<string,ValueType>(tokens[i+1], ValueType::INT));
-			varCount++;
-		}
-		else if(token == "int"){ // || token == "int" || token == "float"){
-			varRegs.insert(std::pair<string, int>(tokens[i+1], varCount));
-			varTypes.insert(std::pair<string,ValueType>(tokens[i+1], ValueType::INT));
-			varCount++;
-		}
-		else if(token == "float"){ // || token == "int" || token == "float"){
-			varRegs.insert(std::pair<string, int>(tokens[i+1], varCount));
-			varTypes.insert(std::pair<string,ValueType>(tokens[i+1], ValueType::FLOAT));
-			varCount++;
-		}
-		else if(token == "PRINT" || token == "READ" || token == "READF" || token == "return" || token == "RETURN" || token == "itof"){
-			Builtin* builtin = new Builtin(token);
-			for(int i = 0; i < builtin->numParams; i++){
-				builtin->AddParameter(values.Pop());
-			}
-
-			values.Push(builtin);
-		}
-		else if(funcArity.find(token) != funcArity.end()){
-			FuncCall* func = new FuncCall();
-			func->funcName = token;
-			func->numParams = funcArity[token];
-			func->varCount = varCount;
-			for(int i = 0; i < funcArity[token]; i++){
-				func->AddParameter(values.Pop());
-			}
-
-			values.Push(func);
-		}
-		else if(std::find(vm.externFuncNames.begin(), vm.externFuncNames.end(), token) != vm.externFuncNames.end()){
-			ExternFunc* func = new ExternFunc();
-			func->funcName = token;
-			func->numParams = externFuncArity[token];
-
-			for(int i = 0; i < func->numParams; i++){
-				func->AddParameter(values.Pop());
-			}
-
-			values.Push(func);
-		}
-		else if(varTypes.find(token) != varTypes.end()){
-			Variable* var = new Variable();
-			var->varName = token;
-			var->type = varTypes.find(token)->second;
-			var->reg = varRegs[token];
-			values.Push(var);
-		}
-		else if(token == ":"){
-			Assignment* assmt = new Assignment();
-			assmt->val = values.Pop();
-			Variable* reg = (Variable*)values.Pop();
-			assmt->reg = reg->reg;
-			assmt->varName = reg->varName;
-			assmt->type = reg->type;
-
-			values.Push(assmt);
-		}
-		else if(token == ";"){
-			if(scopes.stackSize > 0){
-				scopes.Peek()->AddStatement(values.Pop());
-			}
-		}
-		else if(token == "{"){
-			scopes.Push(new Scope());
-		}
-		else if(token == "if"){
-			IfStatement* ifStmt = new IfStatement();
-			ifStmt->test = values.Pop();
-			scopes.Push(ifStmt);
-			i++; //capture the {
-		}
-		else if(token == "while"){
-			WhileStatement* whileStmt = new WhileStatement();
-			whileStmt->test = values.Pop();
-			scopes.Push(whileStmt);
-			i++; //capture the {
-		}
-		else if(token == "}"){
-			Scope* scp = scopes.Pop();
-			if(scopes.stackSize > 0){
-				scopes.Peek()->AddStatement(scp);
-			}
-			else{
-				FuncDef* def = dynamic_cast<FuncDef*>(scp);
-				if(def == NULL){
-					cout << "\nError: Top-level scope is not a function.\n";
-				}
-				else{
-					defs.push_back(def);
-					varRegs.clear();
-					varCount = 0;
-				}
-			}
-		}
-	}
-}
-
 void AST::GenerateByteCode(VM& vm){
 	vm.funcPointers.clear();
 	vm.byteCodeLoaded.clear();
@@ -1014,7 +836,7 @@ int FuncDef::Evaluate(){
 
 void FuncDef::AddByteCode(VM& vm){
 	if(!isExtern){
-		for(int paramIdx = paramNames.size() - 1; paramIdx >= 0; paramIdx--){
+		for(int paramIdx = parameters.size() - 1; paramIdx >= 0; paramIdx--){
 			vm.byteCodeLoaded.push_back(INT_LIT);
 			vm.byteCodeLoaded.push_back(paramIdx);
 			vm.byteCodeLoaded.push_back(PARAM);

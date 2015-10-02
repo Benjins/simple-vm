@@ -16,5 +16,12 @@ int main(){
 		PRINTF(input/2.11);
 	}
 	
+	int inputNext = 12;
+	while(inputNext > 0){
+		inputNext = READ();
+		PRINT(inputNext / 2);
+		PRINTF(input);
+	}
+	
 	return 0;
 }
