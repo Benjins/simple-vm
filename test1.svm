@@ -27,8 +27,7 @@ int main(){
 	int inputNext = 12;
 	while(inputNext > 0){
 		inputNext = READ();
-		PRINT(inputNext / 2);
-		PRINTF(input);
+		PRINT(Summation(inputNext));
 	}
 	
 	return 0;

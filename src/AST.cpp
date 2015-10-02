@@ -580,9 +580,12 @@ struct TokenStream{
 
 		scopes.Push(def);
 		ast->defs.push_back(def);
+		definedFuncs.insert(std::make_pair(funcName, def));
 
 		while(tokens[cursor] != "}"){
 			if(!ExpectAndEatStatement()){
+				definedFuncs.erase(definedFuncs.find(funcName));
+				ast->defs.erase(FIND(ast->defs, def));
 				delete def;
 				cursor = oldCursor;
 				return false;
@@ -590,6 +593,8 @@ struct TokenStream{
 		}
 
 		if(!ExpectAndEatToken("}")){
+				definedFuncs.erase(definedFuncs.find(funcName));
+				ast->defs.erase(FIND(ast->defs, def));
 				delete def;
 				cursor = oldCursor;
 				return false;
@@ -722,7 +727,7 @@ void FuncCall::AddByteCode(VM& vm){
 	vm.byteCodeLoaded.push_back(253); //Return Addr?
 	vm.byteCodeLoaded.push_back(253); //Return Addr?
 
-	for(int i = 0; i < numParams; i++){
+	for(int i = 0; i < currParams; i++){
 		parameterVals[i]->AddByteCode(vm);
 	}
 
