@@ -122,6 +122,14 @@ struct TokenStream{
 		stackSizeInWords += type.sizeInWords;
 	}
 
+	void RemoveVariable(const string& name){
+		auto variable = variables.find(name);
+		stackSizeInWords -= variable->second.sizeInWords;
+		variables.erase(variable);
+
+		varRegs.erase(varRegs.find(name));
+	}
+
 	bool ExpectAndEatNumber(VMValue* out){
 		if(ExpectAndConvertNumber(tokens[cursor], out)){
 			cursor++;
@@ -213,6 +221,7 @@ struct TokenStream{
 			else if(definedFuncs.find(str) != definedFuncs.end()){
 				FuncCall* call = new FuncCall();
 				call->funcName = str;
+				call->varCount = stackSizeInWords;
 				FuncDef* def = definedFuncs.find(str)->second;
 				for(int i = 0; i < def->parameters.size(); i++){
 					if(values.stackSize == 0){
@@ -601,6 +610,9 @@ struct TokenStream{
 			}
 
 		scopes.Pop();
+		for(const auto& variableInScope : def->variablesInScope){
+			RemoveVariable(variableInScope.first);
+		}
 
 		return true;
 	}
@@ -692,6 +704,9 @@ bool TokenStream::ExpectAndEatControlStatement(){
 	}
 
 	scopes.Pop();
+	for(const auto& variableInScope : ifStmt->variablesInScope){
+		RemoveVariable(variableInScope.first);
+	}
 
 	ifStmt->test = val;
 
