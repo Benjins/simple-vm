@@ -46,10 +46,12 @@ bool VM::CompileAndLoadCode(const string& fileName, vector<string>* dllsToLoad /
 
 	otherAST->GenerateByteCode(*this);
 
+	/*
 	printf("Bytecode size: %d\n", byteCodeLoaded.size());
 	for(int i = 0; i < byteCodeLoaded.size(); i++){
 		printf("|%d|\n", byteCodeLoaded[i]);
 	}
+	*/
 
 	return true;
 }

@@ -267,6 +267,9 @@ struct StructDef{
 	string name;
 	int size;
 	vector<StructMember> members;
+
+	StructDef() : members(), name(), size(0){
+	}
 };
 
 struct ExternFunc : public Value{

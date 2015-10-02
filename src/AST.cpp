@@ -349,13 +349,14 @@ struct TokenStream{
 				return false;
 			}
 		}
+		if(ExpectAndEatToken("}")){
+			if(ExpectAndEatToken(";")){
+				ast->structDefs.push_back(def);
+				Type type =  {def->name, def->size};
+				definedTypes.insert(std::make_pair(def->name, type));
 
-		if(ExpectAndEatToken(";")){
-			ast->structDefs.push_back(def);
-			Type type =  {def->name, def->size};
-			definedTypes.insert(std::make_pair(def->name, type));
-
-			return true;
+				return true;
+			}
 		}
 
 		delete def;
@@ -451,6 +452,20 @@ struct TokenStream{
 	bool ExpectAndEatStatement(){
 		int oldCursor = cursor;
 		
+		if(ExpectAndEatType()){
+			if(ExpectAndEatUniqueName()){
+				if(ExpectAndEatToken(";")){
+					const string& typeName = tokens[cursor - 3];
+					const string& varName  = tokens[cursor - 2];
+					const Type& varType = definedTypes.find(typeName)->second;
+					AddVariable(varType, varName);
+					return true;
+				}
+			}
+		}
+
+		cursor = oldCursor;
+
 		if(ExpectAndEatToken("return")){
 			Value* val;
 			if(ExpectAndEatValue(&val)){
@@ -589,10 +604,10 @@ struct TokenStream{
 		Setup();
 
 		while(cursor < tokens.size()){
-			if(ExpectAndEatVarDecl()){
+			if(ExpectAndEatStructDef()){
 
 			}
-			else if(ExpectAndEatStructDef()){
+			else if(ExpectAndEatVarDecl()){
 
 			}
 			else if(ExpectAndEatFunctionDef()){
