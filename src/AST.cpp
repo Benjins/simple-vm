@@ -113,13 +113,12 @@ struct TokenStream{
 	}
 
 	void AddVariable(const Type& type, const string& name){
-		varRegs.insert(std::make_pair(name, stackSizeInWords));
+		stackSizeInWords += type.sizeInWords;
+		varRegs.insert(std::make_pair(name, stackSizeInWords - 1));
 		variables.insert(std::make_pair(name, type));
 		if(scopes.stackSize > 0){
 			scopes.Peek()->variablesInScope.insert(std::make_pair(name, type));
 		}
-
-		stackSizeInWords += type.sizeInWords;
 	}
 
 	void RemoveVariable(const string& name){
@@ -548,6 +547,8 @@ struct TokenStream{
 		def->retType = retType;
 		def->name = funcName;
 
+		scopes.Push(def);
+
 		int paramCount = 0;
 		while(tokens[cursor] != ")"){
 			if(!ExpectAndEatParameter()){
@@ -567,6 +568,7 @@ struct TokenStream{
 			if(paramCount != 0){
 				if(!ExpectAndEatToken(",")){
 					delete def;
+					scopes.Pop();
 					cursor = oldCursor;
 					return false;
 				}
@@ -587,7 +589,7 @@ struct TokenStream{
 			return false;
 		}
 
-		scopes.Push(def);
+		
 		ast->defs.push_back(def);
 		definedFuncs.insert(std::make_pair(funcName, def));
 

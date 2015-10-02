@@ -119,7 +119,6 @@ struct Builtin : public FuncCall{
 struct Assignment : public Value{
 	int reg;
 	string varName;
-	ValueType type;
 
 	Value* val;
 
@@ -161,7 +160,6 @@ struct FloatLiteral : public Value{
 struct Variable : public Value{
 	int reg;
 	string varName;
-	ValueType type;
 	Type varType;
 
 	virtual int GetRegister(){return reg;}
