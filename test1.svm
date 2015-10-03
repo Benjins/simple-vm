@@ -23,7 +23,30 @@ int Factorial(int x){
 	return x * Factorial(x-1);
 }
 
+
+float Madd(float a, float b, float c){
+	return a*b + a*c;
+}
+
+
+float MagnitudeSqr(Vector3 vec){
+	return vec.x;
+}
+
 int main(){
+	Vector3 vec;
+	vec.x = 3.0;
+	vec.y = 4.0;
+	vec.z = 12.0;
+	PRINTF(MagnitudeSqr(vec));
+	PRINTF(1.203);
+	
+	return 0;
+}
+
+
+
+int mainTwo(){
 	Vector3 vec;
 	vec.x = 3.0;
 	vec.y = 4.0;
@@ -62,3 +85,4 @@ int main(){
 	
 	return 0;
 }
+

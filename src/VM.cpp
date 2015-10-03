@@ -642,6 +642,7 @@ void VM::LoadExternFunction(const string& funcName){
 }
 
 void VM::Push(VMValue value){
+	//printf("Push. Stacksize: %d\n", stackSize);
 	if(stackSize < MAX_STACK){
 		stackSize++;
 		stack[stackSize] = value;
@@ -652,6 +653,7 @@ void VM::Push(VMValue value){
 }
 
 VMValue VM::Pop(){
+	//printf("Pop. Stacksize: %d\n", stackSize);
 	if(stackSize > 0){
 		VMValue a = stack[stackSize];
 		stackSize--;

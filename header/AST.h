@@ -175,7 +175,10 @@ struct FieldAccess : public Variable{
 	string fieldName;
 	int offset;
 
-	virtual int GetRegister(){return variable->GetRegister() + offset;}
+	virtual int GetRegister(){
+		int reg = variable->GetRegister() + offset;
+		return reg;
+	}
 	virtual int Evaluate(){return -1;}
 	virtual int NumParams(){
 		return 0;

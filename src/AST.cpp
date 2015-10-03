@@ -152,8 +152,8 @@ struct TokenStream{
 	}
 
 	void AddVariable(const Type& type, const string& name){
+		varRegs.insert(std::make_pair(name, stackSizeInWords));
 		stackSizeInWords += type.sizeInWords;
-		varRegs.insert(std::make_pair(name, stackSizeInWords - 1));
 		variables.insert(std::make_pair(name, type));
 		if(scopes.stackSize > 0){
 			scopes.Peek()->variablesInScope.insert(std::make_pair(name, type));
