@@ -36,7 +36,7 @@ before_script:
 
 script: 
   - cd ${TRAVIS_BUILD_DIR}
-  - make compiler && make machine && make test && ./simplevm-test
+  - make compiler && make machine && make test && ls && ./simplevm-test
 
 env:
   global:
