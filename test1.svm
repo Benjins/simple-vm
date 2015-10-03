@@ -4,6 +4,11 @@ struct Vector3{
 	float z;
 };
 
+struct VectorTri{
+	Vector3 pos;
+	int scale;
+};
+
 int Summation(int n){
 	int total = 0;
 	int counter = 1;
@@ -33,12 +38,28 @@ float MagnitudeSqr(Vector3 vec){
 	return vec.x * vec.x + vec.y*vec.y + vec.z*vec.z;
 }
 
+int PrintVector(Vector3 vec){
+	PRINTF(vec.x);
+	PRINTF(vec.y);
+	PRINTF(vec.z);
+	
+	return 0;
+}
+
+int PrintTri(VectorTri tri){
+	PRINT(tri.scale);
+	return PrintVector(tri.pos);
+}
+
 int main(){
-	Vector3 vec;
-	vec.x = 3.0;
-	vec.y = 4.0;
-	vec.z = 12.0;
-	PRINTF(MagnitudeSqr(vec));
+	VectorTri tri;
+	tri.pos.x = 1.2;
+	tri.pos.y = 23.1;
+	tri.pos.z = 2.6;
+	tri.scale = 19;
+	
+	int retVal = PrintTri(tri);
+	
 	PRINTF(1.203);
 	
 	return 0;
