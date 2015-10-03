@@ -92,7 +92,7 @@ unsigned char Compile(string token){
 	if(token == "+"){
 		return INT_ADD;
 	}
-	if(token == "="){
+	if(token == "=="){
 		return COMPARE;
 	}
 	if(token == "<"){

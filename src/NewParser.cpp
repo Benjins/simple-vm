@@ -75,55 +75,138 @@ vector<string> JustShuntingYard(vector<string>& tokens, map<string, FuncDef*>& d
 	return shuntedTokens;
 }
 
+enum struct TokenizeState{
+	WORD,
+	OPERATOR,
+	NUMBER,
+	QUOTES,
+	EMPTY
+};
+
 vector<string> NewTokenize(const string& code){
-	const string operators = "(),.+*-/=><|&{};:";
+	static const int operatorCount = 17;
+	const string operators[operatorCount] = {"(", ")", "{", "}", ",", ".", "+", "*", "-", "/", "=", "==", "<", ">", "&", "|", ";"};
 	const string numbers = "0123456789";
 	string memoryString = "";
 	char currChar = ' ';
-	bool inQuotes = false;
-	bool inNumber = false;
 
 	vector<string> tokens;
+	TokenizeState state = TokenizeState::EMPTY;
 
 	for(int i = 0; i < code.size(); i++){
 		currChar = code[i];
-		if(currChar == '"'){
-			if(inQuotes || memoryString.size() > 0){
-				tokens.push_back(memoryString);
-				memoryString = "";
-			}
 
-			tokens.push_back("\"");
-			inQuotes = !inQuotes;
-			inNumber = false;
-		}
-		else if(inQuotes){
-			memoryString += currChar;
-		}
-		else if(currChar == ' ' || currChar == '\r' || currChar == '\t' || currChar == '\n'){
-			if(memoryString.size() > 0){
-				tokens.push_back(memoryString);
-				memoryString = "";
+		bool charIsOperator = false;
+		for(int idx = 0; idx < operatorCount; idx++){
+			if(operators[idx].find(currChar) != string::npos){
+				charIsOperator = true;
+				break;
 			}
 		}
-		else if(numbers.find(currChar) != string::npos || (inNumber && currChar == '.')){
-			inNumber = true;
-			memoryString += currChar;
-		}
-		else if(operators.find(currChar) != string::npos){
-			inNumber = false;
-			if(memoryString.size() > 0){
-				tokens.push_back(memoryString);
-				memoryString = "";
-			}
 
-			string op = "_";
-			op[0] = currChar;
-			tokens.push_back(op);
+		bool charIsNumber = numbers.find(currChar) != string::npos;
+
+		bool charIsWhitespace = (currChar == ' ' || currChar == '\n' || currChar == '\t' || currChar == '\r');
+
+		if(charIsWhitespace){
+			if(state != TokenizeState::EMPTY){
+				tokens.push_back(memoryString);
+				memoryString = "";
+			}
+			state = TokenizeState::EMPTY;
 		}
-		else{
-			memoryString += currChar;
-			inNumber = false;
+		
+		switch (state)
+		{
+		case TokenizeState::WORD:
+			{
+				if(charIsOperator){
+					state = TokenizeState::OPERATOR;
+					tokens.push_back(memoryString);
+					memoryString = "";
+					memoryString += currChar;
+				}
+				else{
+					memoryString += currChar;
+				}
+			}break;
+		case TokenizeState::OPERATOR:
+			{
+				if(charIsOperator){
+					string memoryAndThis = memoryString;
+					memoryAndThis += currChar;
+
+					bool continuesOperator = false;
+					for(int idx = 0; idx < operatorCount; idx++){
+						if(operators[idx].find(memoryAndThis) != string::npos){
+							continuesOperator = true;
+							break;
+						}
+					}
+
+					if(continuesOperator){
+						memoryString += currChar;
+						//If I were a leet haxxor, I'd do this:
+						//memoryString.swap(memoryAndThis);
+					}
+					else{
+						tokens.push_back(memoryString);
+						memoryString = "";
+						memoryString += currChar;
+					}
+				}
+				else if(charIsNumber){
+					tokens.push_back(memoryString);
+					memoryString = "";
+					memoryString += currChar;
+
+					state = TokenizeState::NUMBER;
+				}
+				else{
+					tokens.push_back(memoryString);
+					memoryString = "";
+					memoryString =+ currChar;
+					state = TokenizeState::WORD;
+				}
+			}break;
+		case TokenizeState::NUMBER:
+			{
+				if(charIsNumber || currChar == '.'){
+					memoryString += currChar;
+				}
+				else{
+					tokens.push_back(memoryString);
+					memoryString = "";
+					memoryString += currChar;
+					
+					state = (charIsOperator ? TokenizeState::OPERATOR : TokenizeState::WORD);
+				}
+			}break;
+		case TokenizeState::QUOTES:
+			{
+			}break;
+		case TokenizeState::EMPTY:
+			{
+				if(charIsWhitespace){
+					
+				}
+				else{
+					memoryString = "";
+					memoryString += currChar;
+
+					if(charIsOperator){
+						state = TokenizeState::OPERATOR;
+					}
+					else if(charIsNumber){
+						state = TokenizeState::NUMBER;
+					}
+					else{
+						state = TokenizeState::WORD;
+					}
+				}
+			}break;
+		default:
+			break;
 		}
 	}
 
