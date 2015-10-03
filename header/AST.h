@@ -218,14 +218,6 @@ struct Scope : public Statement{
 	}
 
 	void AddStatement(Statement* newStmt){
-
-		/*
-		Assignment* assgnCast = dynamic_cast<Assignment*>(newStmt);
-		if(assgnCast != nullptr && assgnCast->reg > 40 || assgnCast->reg < 0){
-			_CrtDbgBreak();
-		}
-		*/
-
 		Statement** newStatements = new Statement*[++numStatements];
 		if(statements != NULL){
 			memcpy(newStatements, statements, sizeof(Statement*) * (numStatements - 1));

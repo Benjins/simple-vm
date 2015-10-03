@@ -288,14 +288,15 @@ struct TokenStream{
 				var->varName = str;
 				var->_reg = varRegs.find(str)->second;
 				var->varType = definedTypes.find(variables.find(str)->second.name)->second;
-				values.Push(var);
+				values.Push(var); 
 			}
 			else if(str == "."){
 				string fieldName = operatorStack.Pop();
 				Value* val = values.Pop();
 				Variable* var = dynamic_cast<Variable*>(val);
 				if(var == nullptr){
-					_CrtDbgBreak();
+					cout << "\nError: using '.' on non-variable value.\n";
+					return false;
 				}
 
 				FieldAccess* fieldAccess = new FieldAccess();
@@ -973,7 +974,7 @@ void FuncDef::AddByteCode(VM& vm){
 		}
 
 		if(regIdx != -1){
-			_CrtDbgBreak();
+			//_CrtDbgBreak();
 		}
 
 		for(int i = 0; i < numStatements; i++){
