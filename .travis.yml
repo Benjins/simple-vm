@@ -40,7 +40,7 @@ script:
   - make machine
   - make test 
   - ls 
-  - ./simplevm-test
+  - if [ "$CXX" == "g++" ]; then ./simplevm-test; fi
 
 env:
   global:
