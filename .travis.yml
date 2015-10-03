@@ -38,15 +38,8 @@ script:
   - cd ${TRAVIS_BUILD_DIR}
   - make compiler
   - make machine
-  - make test 
-  - ls 
+  - if [ "$CXX" == "g++" ]; then make test; fi
   - if [ "$CXX" == "g++" ]; then ./simplevm-test; fi
 
-env:
-  global:
-    - "FTP_USER=bnsmith"
-    - secure: "Iqkk6B8HCcZ0L/RswzGTxEw0u4RueobQrgpbfFXhbu55rroxMaIPVM2PYmKREDlNqBBiIVgaWQHMme7W6A5eFko9lBD+oVk2BhoJaVOsATZ6aRdFnrzZJ3/+kw+VqLMrhDsOqm3zdJ7BSNSFAJubmaYeSUgt9WEQj1E9sfS8wm4="
-    - secure: "PYtEaHI9TIMsGuALWDDA8qpdbZynA4aJnNWlSeb7sovIC3S34bYwVn6DQl/q/dkE8+IzWCAOvmfjUoQFGPqqtQTc85lSxfl8CfH1CKnXOFb2zttQxAzC7+/6MMBI0e0qI0xGlzKZW7/UMf2JRvIACTiFY3Rsh1B0e0RyvLwSKXE="
-  
 after_success:
-  - coveralls --gcov-options '\-lp'
+  - if [ "$CXX" == "g++" ]; then coveralls --gcov-options '\-lp'; fi
