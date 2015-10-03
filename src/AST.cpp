@@ -293,7 +293,10 @@ struct TokenStream{
 			else if(str == "."){
 				string fieldName = operatorStack.Pop();
 				Value* val = values.Pop();
-				Variable* var = static_cast<Variable*>(val);
+				Variable* var = dynamic_cast<Variable*>(val);
+				if(var == nullptr){
+					_CrtDbgBreak();
+				}
 
 				FieldAccess* fieldAccess = new FieldAccess();
 				fieldAccess->fieldName = fieldName;
@@ -918,8 +921,11 @@ int Variable::Evaluate(){
 }
 
 void Variable::AddByteCode(VM& vm){
-	Literal(GetRegister()).AddByteCode(vm);
-	vm.byteCodeLoaded.push_back(LOAD_REG);
+	for(int i = 0; i < varType.sizeInWords; i++){
+		int reg = GetRegister() + i;
+		Literal(reg).AddByteCode(vm);
+		vm.byteCodeLoaded.push_back(LOAD_REG);
+	}
 }
 
 int Operator::Evaluate(){
@@ -948,11 +954,28 @@ int FuncDef::Evaluate(){
 
 void FuncDef::AddByteCode(VM& vm){
 	if(!isExtern){
-		for(int paramIdx = parameters.size() - 1; paramIdx >= 0; paramIdx--){
-			vm.byteCodeLoaded.push_back(INT_LIT);
-			vm.byteCodeLoaded.push_back(paramIdx);
-			vm.byteCodeLoaded.push_back(PARAM);
+		int totalSize = 0;
+
+		for(auto& pair : parameters){
+			totalSize += pair.second.sizeInWords;
 		}
+
+		int regIdx = totalSize - 1;
+		int paramCount = 0;
+		for(auto iter = parameters.rbegin(); iter != parameters.rend(); iter++){
+			for(int offset = 0; offset < iter->second.sizeInWords; offset++){
+				vm.byteCodeLoaded.push_back(INT_LIT);
+				vm.byteCodeLoaded.push_back(regIdx);
+				vm.byteCodeLoaded.push_back(PARAM);
+				regIdx--;
+				paramCount++;
+			}
+		}
+
+		if(regIdx != -1){
+			_CrtDbgBreak();
+		}
+
 		for(int i = 0; i < numStatements; i++){
 			statements[i]->AddByteCode(vm);
 		}

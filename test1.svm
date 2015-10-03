@@ -30,7 +30,7 @@ float Madd(float a, float b, float c){
 
 
 float MagnitudeSqr(Vector3 vec){
-	return vec.x;
+	return vec.x * vec.x + vec.y*vec.y + vec.z*vec.z;
 }
 
 int main(){
