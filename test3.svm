@@ -1,55 +1,56 @@
-def IsPrime(number){                                 
-	var factor : 1;                                   
-	var factorCount : 0;                              
+int IsPrime(int number){                                 
+	int factor = 1;                                   
+	int factorCount = 0;                              
 													  
 	while(factor < number){                           
-		if( factor * (number / factor) = number){      
-			factorCount : factorCount + 1;             
+		if( factor * (number / factor) == number){      
+			factorCount = factorCount + 1;             
 		}                                              
 													   
-		factor : factor + 1;                           
+		factor = factor + 1;                           
 	}                                                 
 													   
-	if(factorCount > 1 | factorCount = 0){			   
-		return(0);                                     
+	if(factorCount > 1 | factorCount == 0){			   
+		return 0;                                     
 	}                                                 
 													  
 	if(factorCount = 1){                              
-		return(1);                                   
+		return 1;                                   
 	}                                              
 }
 
-def testOne(){
-	return(IsPrime(17));
+int testOne(){
+	return IsPrime(17);
 }
 
-def testTwo(){
-	return(IsPrime(37));
+int testTwo(){
+	return IsPrime(37);
 }
 
-def testThree(){
-	return(IsPrime(91));
+int testThree(){
+	return IsPrime(91);
 }
 
-def testFour(){
-	var factor : 2;
-	factor : factor + 1;
+int testFour(){
+	int factor = 2;
+	factor = factor + 1;
 
-	return(factor * factor);
+	return factor * factor;
 }
 
-def main(){
-	var input : 1;
+int main(){
+	int input = 1;
 	
 	while(input > 0){
-		input : READ();
+		input = READ();
 		PRINT(input);
-		var counter : 0;
+		int counter = 0;
+		
 		while(counter < input + 1){
 			PRINT(IsPrime(counter));
-			counter : counter + 1;
+			counter = counter + 1;
 		}
 	}
 	
-	return(0);
+	return 0;
 }
