@@ -303,7 +303,7 @@ struct TokenStream{
 				fieldAccess->variable = var;
 				StructDef* def = FindStructByName(var->varType.name);
 				if(def == nullptr){
-					printf("\nError: Tried to use '.' operator on variable '%s' of type: '%s'\n", var->varName, var->varType.name);
+					printf("\nError: Tried to use '.' operator on variable '%s' of type: '%s'\n", var->varName.c_str(), var->varType.name.c_str());
 					break;
 				}
 				else{
