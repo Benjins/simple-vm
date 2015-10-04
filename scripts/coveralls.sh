@@ -1,6 +1,5 @@
 #!bin/bash
-g++ coveralls.cpp -o  ../coveralls_cpp
-cd ..
+g++ scripts/coveralls.cpp -o  coveralls_cpp
 ARGS_ARRAY=("$COV_TOKEN")
 
 for f in `ls *.gcov`
