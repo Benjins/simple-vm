@@ -33,4 +33,4 @@ script:
   # - if [ "$CXX" != "g++" ]; then make docs; fi
 
 after_success:
-  - if [ "$CXX" == "g++" ]; then ls; ls src; . ./scripts/coveralls.sh; fi
+  - if [ "$CXX" == "g++" ]; then . ./scripts/coveralls.sh; fi
