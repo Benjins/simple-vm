@@ -1,7 +1,7 @@
 #!bin/bash
 g++ coveralls.cpp -o  ../coveralls_cpp
 cd ..
-ARGS_ARRAY=("TokenIsGood214135135")
+ARGS_ARRAY=("$COV_TOKEN")
 
 for f in `ls *.gcov`
 do
