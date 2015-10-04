@@ -1,7 +1,7 @@
 #!bin/bash
 mv *.gcda src/
 mv *.gcno src/
-gcov src/*.cpp > coverage.txt
+gcov -r src/*.cpp > coverage.txt
 g++ scripts/coveralls.cpp -o  coveralls_cpp
 ARGS_ARRAY=("$COV_TOKEN")
 
@@ -15,4 +15,5 @@ if  [[ "$f" != /* ]] ;
 done
 
 ./coveralls_cpp ${ARGS_ARRAY[*]}
+cat coverage.json
 #curl -H "Content-Type: application/json" --data @coverage.json https://coveralls.io/api/v1/jobs
