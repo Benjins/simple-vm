@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-char* GetCoverageForFile(char* fileName);
+char* GetCoverageForFile(char* fileName, char** sourceFileNameOut);
 
 int main(int argc, char** argv){	
 	char* outBuffer = (char*)malloc(1024*1024*20);
@@ -11,8 +11,8 @@ int main(int argc, char** argv){
 	char header[256];
 	memset(header, 0, 256);
 	sprintf(header, "{\n\
-	\"repo_token\": \"%s\",\n\
-	\"source_files\": \n[\n", argv[1]);
+	\\\"repo_token\\\": \\\"%s\\\",\n\
+	\\\"source_files\\\": \n[\n", argv[1]);
 	char* footer = "\n]\n}";
 	
 	outCursor += sprintf(outCursor, header);
@@ -27,13 +27,15 @@ int main(int argc, char** argv){
 		printf("The file is named '%s'.\n", fileName);
 		
 		char sourceFileFormat[256] = "{\n\
-		  \"name\": \"%s\",\n\
-		  \"source_digest\": \"%s\",\n\
-		  \"coverage\": %s\n\
+		  \\\"name\\\": \\\"%s\\\",\n\
+		  \\\"source_digest\\\": \\\"%s\\\",\n\
+		  \\\"coverage\\\": %s\n\
 		}";
 		
-		char* fileCoverage = GetCoverageForFile(fileName);
-		outCursor += sprintf(outCursor, sourceFileFormat, fileName, hash, fileCoverage);
+		char* sourceFileName;
+		char* fileCoverage = GetCoverageForFile(fileName, &sourceFileName);
+		outCursor += sprintf(outCursor, sourceFileFormat, sourceFileName, hash, fileCoverage);
+		free(sourceFileName);
 		free(fileCoverage);
 	}
 	
@@ -48,7 +50,7 @@ int main(int argc, char** argv){
 	return 0;
 }
 
-char* GetCoverageForFile(char* fileName){
+char* GetCoverageForFile(char* fileName, char** sourceFileNameOut){
 	FILE* fileIn = fopen(fileName, "rb");
 	if(fileIn == NULL){
 		char* dummyRet = (char*)malloc(1);
@@ -70,6 +72,7 @@ char* GetCoverageForFile(char* fileName){
 	outCursor += sprintf(outCursor, "[");
 	
 	char* cursor = buffer;
+	bool firstLine = true;
 	while(cursor != NULL && cursor - buffer < fileSize){
 		cursor += strspn(cursor, " \t\n\r");
 		
@@ -82,6 +85,19 @@ char* GetCoverageForFile(char* fileName){
 		
 		if(secondColon == NULL){
 			break;
+		}
+		
+		if(firstLine){
+			char* thirdColon = strstr(secondColon + 1, ":");
+			thirdColon++;
+			
+			int sourceFileLength = strcspn(thirdColon, " \t\r\n");
+			char* sourceFileName = (char*)malloc(sourceFileLength + 1);
+			memcpy(sourceFileName, thirdColon, sourceFileLength);
+			sourceFileName[sourceFileLength] = '\0';
+			*sourceFileNameOut = sourceFileName;
+			
+			firstLine = false;
 		}
 		
 		char* beforeSecondColon = secondColon - 1;
