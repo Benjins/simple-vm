@@ -3,6 +3,7 @@
 #include "../header/VM.h"
 
 #include <algorithm>
+#include <stdio.h>
 
 #define FIND(container, item) std::find((container).begin(), (container).end(), (item))
 
