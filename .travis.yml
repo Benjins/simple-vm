@@ -30,7 +30,8 @@ script:
   - if [ "$CXX" == "g++" ]; then make test; fi
   - if [ "$CXX" == "g++" ]; then ./simplevm-test; fi
   # - if [ "$CXX" == "g++" ]; then make check; fi
-  - if [ "$CXX" != "g++" ]; then make docs; fi
+  # - if [ "$CXX" != "g++" ]; then make docs; fi
 
 after_success:
-  - if [ "$CXX" == "g++" ]; then gcov -r src/*.cpp > coverage.txt; cd scripts; . ./coveralls.sh; fi
+  - gcov --version
+  - if [ "$CXX" == "g++" ]; then gcov --relative-only src/*.cpp > coverage.txt; cd scripts; . ./coveralls.sh; fi
