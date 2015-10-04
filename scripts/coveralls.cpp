@@ -24,6 +24,7 @@ int main(int argc, char** argv){
 		
 		char* fileName = argv[i];
 		char* hash = argv[i + 1];
+		printf("The file is named '%s'.\n", fileName);
 		
 		char sourceFileFormat[256] = "{\n\
 		  \"name\": \"%s\",\n\
