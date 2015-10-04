@@ -6,6 +6,10 @@ char* GetCoverageForFile(char* fileName);
 
 int main(int argc, char** argv){
 	
+	for(int i = 0; i < argc; i++){
+		printf("Arg %d: '%s'\n", i, argv[i]);
+	}
+	
 	char* outBuffer = (char*)malloc(1024*1024*20);
 	char* outCursor = outBuffer;
 	
@@ -18,10 +22,8 @@ int main(int argc, char** argv){
 	
 	outCursor += sprintf(outCursor, header);
   
-	printf("\nThe number of arguments is: %d\n", argc);
-  
-	for(int i = 1; i < argc - 1; i += 2){
-		if(i != 1){
+	for(int i = 2; i < argc - 1; i += 2){
+		if(i != 2){
 			outCursor += sprintf(outCursor, ",\n");
 		}
 		
@@ -55,6 +57,12 @@ int main(int argc, char** argv){
 
 char* GetCoverageForFile(char* fileName){
 	FILE* fileIn = fopen(fileName, "rb");
+	if(fileIn == NULL){
+		char* dummyRet = (char*)malloc(1);
+		dummyRet[0] = '\0';
+		return dummyRet;
+	}
+	
 	fseek(fileIn, 0, SEEK_END);
 	int fileSize = ftell(fileIn);
 	fseek(fileIn, 0, SEEK_SET);
