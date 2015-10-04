@@ -34,4 +34,4 @@ script:
   # - if [ "$CXX" != "g++" ]; then make docs; fi
 
 after_success:
-  - if [ "$CXX" == "g++" ]; then gcov src/*.cpp > coverage.txt; ls; . ./coveralls.sh; fi
+  - if [ "$CXX" == "g++" ]; then ls; . ./coveralls.sh; fi
