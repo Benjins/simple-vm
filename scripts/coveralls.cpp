@@ -11,7 +11,7 @@ int main(int argc, char** argv){
 	char header[256];
 	memset(header, 0, 256);
 	sprintf(header, "{\n\
-	\"repo_token\": \"%s\"\n\
+	\"repo_token\": \"%s\",\n\
 	\"source_files\": \n[\n", argv[1]);
 	char* footer = "\n]\n}";
 	
