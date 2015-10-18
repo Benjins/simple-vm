@@ -91,17 +91,30 @@ int mainTwo(){
 	return 0;
 }
 
-int main(){
+Vector3 MakeVec(float x, float y, float z){
+	Vector3 vec;
+	vec.x = x;
+	vec.y = y;
+	vec.z = z;
+	
+	return vec;
+}
+
+VectorTri MakeTri(int size, Vector3 pos){
 	VectorTri tri;
-	tri.pos.x = 1.2;
-	tri.pos.y = 23.1;
-	tri.pos.z = 2.6;
-	tri.scale = 19;
+	tri.pos = pos;
+	tri.scale = size;
+	
+	return tri;
+}
+
+int main(){
+	VectorTri tri = MakeTri(19, MakeVec(1.2, 23.1, 2.6));
 	
 	int retVal = PrintTri(tri);
 	
-	PRINTF(1.203);
+	PRINTF(1.0203);
 	
-	return mainTwo();
+	return 0;
 }
 

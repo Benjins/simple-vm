@@ -916,9 +916,17 @@ int Assignment::Evaluate(){
 }
 
 void Assignment::AddByteCode(VM& vm){
-	Literal(reg).AddByteCode(vm);
+
 	val->AddByteCode(vm);
-	vm.byteCodeLoaded.push_back(SAVE_REG);
+
+	for(int i = 0; i < type.sizeInWords; i++){
+		//PARAM is used because we need the register to be above the value.
+		//In other words, SAVE_REG will either be phased out, or PARAM will be renamed SAVE_REG,
+		//and the two will be merged.
+		Literal(reg+i).AddByteCode(vm);
+		vm.byteCodeLoaded.push_back(PARAM);
+	}
+	
 }
 
 int Literal::Evaluate(){

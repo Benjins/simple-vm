@@ -51,13 +51,19 @@ bool VM::CompileAndLoadCode(const string& fileName, vector<string>* dllsToLoad /
 		otherAST->GenerateByteCode(*this);
 	}
 
+	
 	/*
+	for(auto& pair : funcPointers){
+		printf("Entry point for '%s': %d\n", pair.first.c_str(), pair.second);
+	}
+
+	
 	printf("Bytecode size: %d\n", byteCodeLoaded.size());
 	for(int i = 0; i < byteCodeLoaded.size(); i++){
-		printf("|%d|\n", byteCodeLoaded[i]);
+		printf("%3d: |%3d|\n", i, byteCodeLoaded[i]);
 	}
 	*/
-
+	
 	return true;
 }
 

@@ -185,6 +185,10 @@ struct Assignment : public Value{
 		bool retVal = val->TypeCheck();
 		retVal &= (val->type.name == varType.name);
 
+		if(retVal){
+			type = val->type;
+		}
+
 		return retVal;
 	}
 };
