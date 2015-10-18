@@ -55,8 +55,6 @@ vector<string> NewTokenize(const string& code);
 
 vector<unsigned char> NewShuntingYard(vector<string> tokens, VM& vm);
 
-string MakeIntLiteral(int number);
-
 unsigned char Compile(string token);
 
 bool IsAFunctionToken(string token);

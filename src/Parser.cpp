@@ -60,24 +60,6 @@ int OperatorPrecedence(string token){
 	return -1;
 }
 
-string MakeIntLiteral(int number){
-	if(number < 255){
-		char code[3];
-		code[0] = INT_LIT;
-		code[1] = number;
-		code[2] = 0;
-		return string(code);
-	}
-	else{
-		char code[4];
-		code[0] = INT_DLIT;
-		code[1] = (number >> 8) & 0x000000ff ;
-		code[2] = number & 0x000000ff;
-		code[3] = 0;
-		return string(code);
-	}
-}
-
 //TODO: Make this return vector<char> for more complicated operations
 unsigned char Compile(string token){
 	if(token == "*"){
