@@ -23,17 +23,6 @@ static void ReadFromFile(string& readInto, string fileName){
 	fileIn.close();
 }
 
-bool IsAFunctionToken(string token){
-	for(int i = 0; i < 2; i++){
-		if(token == __functionsArr[i]){
-			return true;
-		}
-	}
-
-	return false;
-
-}
-
 int OperatorPrecedence(string token){
 	static const int operatorCount = 11;
 	int precedence[operatorCount] = {3,3,4,4,2,2,2,1,1,0,5};

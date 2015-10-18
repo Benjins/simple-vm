@@ -53,22 +53,8 @@ static void ReadFromFile(string& readnto, string fileName);
 
 vector<string> NewTokenize(const string& code);
 
-vector<unsigned char> NewShuntingYard(vector<string> tokens, VM& vm);
-
 unsigned char Compile(string token);
 
-bool IsAFunctionToken(string token);
-
 int OperatorPrecedence(string token);
-
-static string __tokensArr[] = {"PRINT","READ", "*", "-", "+", "(", ",", ")"};
-
-static string __functionsArr[] = {"PRINT","READ"};
-
-static vector<string> __tokens(&__tokensArr[0], &__tokensArr[8]);
-
-static string __operators = "*+";
-
-static string __digits = "0123456789";
 
 #endif
