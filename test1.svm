@@ -51,22 +51,6 @@ int PrintTri(VectorTri tri){
 	return PrintVector(tri.pos);
 }
 
-int main(){
-	VectorTri tri;
-	tri.pos.x = 1.2;
-	tri.pos.y = 23.1;
-	tri.pos.z = 2.6;
-	tri.scale = 19;
-	
-	int retVal = PrintTri(tri);
-	
-	PRINTF(1.203);
-	
-	return 0;
-}
-
-
-
 int mainTwo(){
 	Vector3 vec;
 	vec.x = 3.0;
@@ -105,5 +89,19 @@ int mainTwo(){
 	}
 	
 	return 0;
+}
+
+int main(){
+	VectorTri tri;
+	tri.pos.x = 1.2;
+	tri.pos.y = 23.1;
+	tri.pos.z = 2.6;
+	tri.scale = 19;
+	
+	int retVal = PrintTri(tri);
+	
+	PRINTF(1.203);
+	
+	return mainTwo();
 }
 
