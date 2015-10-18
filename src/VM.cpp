@@ -44,7 +44,12 @@ bool VM::CompileAndLoadCode(const string& fileName, vector<string>* dllsToLoad /
 
 	AST* otherAST = MakeASTFromTokens(tokens);	
 
-	otherAST->GenerateByteCode(*this);
+	if(!otherAST->TypeCheck()){
+		printf("\nError: AST was not type-correct.\n");
+	}
+	else{
+		otherAST->GenerateByteCode(*this);
+	}
 
 	/*
 	printf("Bytecode size: %d\n", byteCodeLoaded.size());
@@ -534,10 +539,25 @@ int VM::Execute(unsigned char* code, int instructionCount, int entryPoint){
 			}break;
 
 			case RETURN:{
-				VMValue value = Pop();
+				VMValue amount = Pop();
+				if(amount.type != ValueType::INT){
+					cout << "\nError: Tried to execute RETURN with non-integral size parameter.\n";
+					return -1;
+				}
+
+				vector<VMValue> retVals;
+				retVals.reserve(amount.intValue);
+				for(int i = 0; i < amount.intValue; i++){
+					retVals.push_back(Pop());
+				}
+
 				VMValue retAddr = Pop();
 				VMValue prevStackFrame = Pop();
-				Push(value);
+
+				for(int i = 0; i < amount.intValue; i++){
+					Push(retVals.back());
+					retVals.pop_back();
+				}
 
 				if(retAddr.type != ValueType::INT || prevStackFrame.type != ValueType::INT){
 					cout << "\nError: Tried to execute RETURN with non-integral values.\n";
@@ -566,11 +586,6 @@ int VM::Execute(unsigned char* code, int instructionCount, int entryPoint){
 				if(a.intValue >= 0 && a.intValue < REGISTER_COUNT){
 					registers[a.intValue + stackFrame] = b;
 				}
-			}break;
-
-			case RETURN_FINAL:{
-				VMValue a = Pop();
-				return a.intValue;
 			}break;
 
 			case FLT_LIT:{

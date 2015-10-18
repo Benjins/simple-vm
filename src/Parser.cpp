@@ -122,9 +122,6 @@ unsigned char Compile(string token){
 	if(token == "return"){
 		return RETURN;
 	}
-	if(token == "RETURN"){
-		return RETURN_FINAL;
-	}
 
 	cout << "\nError: tried to compile unfamiliar token: '" << token << "'\n";
 	return '\0';

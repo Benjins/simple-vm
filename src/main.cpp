@@ -10,6 +10,8 @@
 
 using std::cout; using std::endl;
 
+#define COMPILER 1
+
 int main(int argc, char** argv){
 
 #if TESTING
@@ -49,6 +51,8 @@ int main(int argc, char** argv){
 	VM x;
 	if(x.CompileAndLoadCode(fileName, &dllNames)){
 		x.SaveByteCode(fileName + ".svb");
+		x.LoadByteCode(fileName + ".svb");
+		x.Execute("main");
 	}
 
 

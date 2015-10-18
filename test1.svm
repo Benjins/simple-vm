@@ -75,7 +75,7 @@ int mainTwo(){
 	PRINTF(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
 	
 	float input = 1.0;
-	while(input > 0){
+	while(input > 0.0){
 		input = READF();
 		PRINTF(input/2.11);
 	}

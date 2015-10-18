@@ -117,6 +117,7 @@ struct TokenStream{
 						offset += member.offset;
 
 						const Type& fieldType = member.type;
+						varType = fieldType;
 						structDef = FindStructByName(fieldType.name);
 					}
 				}
@@ -145,6 +146,7 @@ struct TokenStream{
 		Assignment* assgn = new Assignment();
 		assgn->reg = varRegs.find(varName)->second + offset;
 		assgn->varName = varName;
+		assgn->varType = varType;
 		assgn->val = val;
 
 		scopes.Peek()->AddStatement(assgn);
@@ -274,6 +276,7 @@ struct TokenStream{
 				call->funcName = str;
 				call->varCount = stackSizeInWords;
 				FuncDef* def = definedFuncs.find(str)->second;
+				call->def = def;
 				for(int i = 0; i < def->parameters.size(); i++){
 					if(values.stackSize == 0){
 						cout << "\n\nError, function '" << str << "' takes " << def->parameters.size() << " arguments.\n";
@@ -288,7 +291,7 @@ struct TokenStream{
 				Variable* var = new Variable();
 				var->varName = str;
 				var->_reg = varRegs.find(str)->second;
-				var->varType = definedTypes.find(variables.find(str)->second.name)->second;
+				var->type = definedTypes.find(variables.find(str)->second.name)->second;
 				values.Push(var); 
 			}
 			else if(str == "."){
@@ -303,15 +306,15 @@ struct TokenStream{
 				FieldAccess* fieldAccess = new FieldAccess();
 				fieldAccess->fieldName = fieldName;
 				fieldAccess->variable = var;
-				StructDef* def = FindStructByName(var->varType.name);
+				StructDef* def = FindStructByName(var->type.name);
 				if(def == nullptr){
-					printf("\nError: Tried to use '.' operator on variable '%s' of type: '%s'\n", var->varName.c_str(), var->varType.name.c_str());
+					printf("\nError: Tried to use '.' operator on variable '%s' of type: '%s'\n", var->varName.c_str(), var->type.name.c_str());
 					break;
 				}
 				else{
 					for(auto& member : def->members){
 						if(member.name == fieldName){
-							fieldAccess->varType = member.type;
+							fieldAccess->type = member.type;
 							fieldAccess->offset = member.offset;
 							values.Push(fieldAccess);
 							break;
@@ -362,6 +365,7 @@ struct TokenStream{
 
 				Assignment* assgn = new Assignment();
 				assgn->varName = uniqueName;
+				assgn->varType = declType;
 				assgn->reg = varRegs.find(uniqueName)->second;
 				assgn->val = val;
 
@@ -813,8 +817,42 @@ void AST::GenerateByteCode(VM& vm){
 	}
 }
 
+bool AST::TypeCheck(){
+	for(FuncDef* def : defs){
+		if(!def->TypeCheck()){
+			return false;
+		}
+	}
+
+	return true;
+}
+
 int FuncCall::Evaluate(){
 	return -1;
+}
+
+bool FuncCall::TypeCheck(){
+	if(currParams == def->parameters.size()){
+		bool paramCheck = true;
+		for(int i = 0; i < currParams; i++){
+			paramCheck &= parameterVals[i]->TypeCheck();
+		}
+
+		if(paramCheck){
+			int idx = 0;
+			for(auto& pair : def->parameters){
+				paramCheck &= parameterVals[idx]->type.name == pair.second.name;
+				idx++;
+			}
+
+			if(paramCheck){
+				type = def->retType;
+				return true;
+			}
+		}
+	}
+
+	return false;
 }
 
 void FuncCall::AddByteCode(VM& vm){
@@ -864,10 +902,9 @@ void Builtin::AddByteCode(VM& vm){
 		vm.byteCodeLoaded.push_back(READF);
 	}
 	else if(funcName == "return"){
+		int size = parameterVals[0]->type.sizeInWords;
+		Literal(size).AddByteCode(vm);
 		vm.byteCodeLoaded.push_back(RETURN);
-	}
-	else if(funcName == "RETURN"){
-		vm.byteCodeLoaded.push_back(RETURN_FINAL);
 	}
 	else if(funcName == "itof"){
 		vm.byteCodeLoaded.push_back(INT_TO_FLT);
@@ -923,7 +960,7 @@ int Variable::Evaluate(){
 }
 
 void Variable::AddByteCode(VM& vm){
-	for(int i = 0; i < varType.sizeInWords; i++){
+	for(int i = 0; i < type.sizeInWords; i++){
 		int reg = GetRegister() + i;
 		Literal(reg).AddByteCode(vm);
 		vm.byteCodeLoaded.push_back(LOAD_REG);
@@ -938,6 +975,26 @@ void Operator::AddByteCode(VM& vm){
 	left->AddByteCode(vm);
 	right->AddByteCode(vm);
 	vm.byteCodeLoaded.push_back(instr);
+}
+
+bool Operator::TypeCheck(){
+	bool leftIsGood = left->TypeCheck();
+	bool rightIsGood = right->TypeCheck();
+
+	if(leftIsGood && rightIsGood){
+		if(left->type.name == right->type.name){
+			if(instr == L_THAN || instr == G_THAN || instr == COMPARE){
+				type.name = "int";
+				type.sizeInWords = 1;
+			}
+			else{
+				type = left->type;
+			}
+			return true;
+		}
+	}
+
+	return false;
 }
 
 int Scope::Evaluate(){

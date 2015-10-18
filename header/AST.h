@@ -24,17 +24,20 @@ struct AST{
 	vector<StructDef*> structDefs;
 
 	void GenerateByteCode(VM& vm);
+	bool TypeCheck();
 };
 
 struct Expression{
 	virtual int Evaluate() = 0;
 	virtual void AddByteCode(VM& vm) = 0;
+	virtual bool TypeCheck() = 0;
 };
 
 struct Statement : public Expression{
 	virtual int Evaluate() = 0;
 	virtual void AddByteCode(VM& vm) = 0;
 	virtual int NumParams() = 0;
+	virtual bool TypeCheck() = 0;
 };
 
 struct Value : public Statement{
@@ -42,20 +45,23 @@ struct Value : public Statement{
 	virtual int Evaluate() = 0;
 	virtual void AddByteCode(VM& vm) = 0;
 	virtual int NumParams() = 0;
+	virtual bool TypeCheck() = 0;
 };
 
 struct FuncCall : public Value{
 	string funcName;
 	Value** parameterVals;
+	FuncDef* def;
 	int numParams;
 	int currParams;
 	int varCount;
 
 	FuncCall(){
 		funcName = "";
-		parameterVals = NULL;
+		parameterVals = nullptr;
 		currParams = 0;
 		numParams = 0;
+		def = nullptr;
 	}
 
 	void AddParameter(Value* newVal){
@@ -73,6 +79,8 @@ struct FuncCall : public Value{
 	virtual int NumParams(){
 		return numParams;
 	}
+
+	virtual bool TypeCheck();
 };
 
 struct Builtin : public FuncCall{
@@ -114,17 +122,71 @@ struct Builtin : public FuncCall{
 			return 0;
 		}
 	}
+
+	virtual bool TypeCheck(){
+		bool retVal = true;
+		for(int i = 0; i < numParams; i++){
+			retVal &= parameterVals[i]->TypeCheck();
+		}
+
+		if(!retVal){
+			return false;
+		}
+
+		if(funcName == "PRINT"){
+			type.name = "void";
+			type.sizeInWords = 0;
+			retVal &= (numParams == 1);
+			retVal &= (parameterVals[0]->type.name == "int");
+		}
+		else if(funcName == "PRINTF"){
+			type.name = "void";
+			type.sizeInWords = 0;
+			retVal &= (numParams == 1);
+			retVal &= (parameterVals[0]->type.name == "float");
+		}
+		else if(funcName == "READ"){
+			type.name = "int";
+			type.sizeInWords = 1;
+			retVal &= (numParams == 0);
+		}
+		else if(funcName == "READF"){
+			type.name = "float";
+			type.sizeInWords = 1;
+			retVal &= (numParams == 0);
+		}
+		else if(funcName == "return"){
+			type = parameterVals[0]->type;
+			retVal &= (numParams == 1);
+		}
+		else if(funcName == "itof"){
+			type.name = "float";
+			type.sizeInWords = 1;
+			retVal &= (numParams == 1);
+			retVal &= (parameterVals[0]->type.name == "int");
+		}
+
+		return retVal;
+	}
 };
 
 struct Assignment : public Value{
 	int reg;
 	string varName;
+	Type varType;
 
 	Value* val;
 
 	virtual int Evaluate();
 	virtual void AddByteCode(VM& vm);
 	virtual int NumParams(){return 1;}
+
+	virtual bool TypeCheck(){
+		bool retVal = val->TypeCheck();
+		retVal &= (val->type.name == varType.name);
+
+		return retVal;
+	}
 };
 
 struct Literal : public Value{
@@ -138,6 +200,12 @@ struct Literal : public Value{
 	virtual void AddByteCode(VM& vm);
 	virtual int NumParams(){
 		return 0;
+	}
+
+	virtual bool TypeCheck(){
+		type.name = "int";
+		type.sizeInWords = 1;
+		return true;
 	}
 };
 
@@ -155,18 +223,27 @@ struct FloatLiteral : public Value{
 	virtual int NumParams(){
 		return 0;
 	}
+
+	virtual bool TypeCheck(){
+		type.name = "float";
+		type.sizeInWords = 1;
+		return true;
+	}
 };
 
 struct Variable : public Value{
 	int _reg;
 	string varName;
-	Type varType;
 
 	virtual int GetRegister(){return _reg;}
 	virtual int Evaluate();
 	virtual void AddByteCode(VM& vm);
 	virtual int NumParams(){
 		return 0;
+	}
+
+	virtual bool TypeCheck(){
+		return true;
 	}
 };
 
@@ -182,6 +259,10 @@ struct FieldAccess : public Variable{
 	virtual int Evaluate(){return -1;}
 	virtual int NumParams(){
 		return 0;
+	}
+
+	virtual bool TypeCheck(){
+		return variable->TypeCheck();
 	}
 };
 
@@ -202,6 +283,8 @@ struct Operator : public Value{
 	virtual int NumParams(){
 		return 2;
 	}
+
+	virtual bool TypeCheck();
 };
 
 
@@ -231,6 +314,16 @@ struct Scope : public Statement{
 	virtual void AddByteCode(VM& vm);
 	virtual int NumParams(){
 		return 0;
+	}
+
+	virtual bool TypeCheck() override{
+		bool retVal = true;
+		for(int i = 0; i < numStatements; i++){
+			retVal &= statements[i]->TypeCheck();
+			retVal &= statements[i]->TypeCheck();
+		}
+
+		return retVal;
 	}
 };
 
@@ -294,6 +387,10 @@ struct ExternFunc : public Value{
 	virtual int NumParams(){
 		return numParams;
 	}
+
+	virtual bool TypeCheck() override{
+		return true;
+	}
 };
 
 struct IfStatement : public Scope{
@@ -301,6 +398,16 @@ struct IfStatement : public Scope{
 
 	virtual int Evaluate();
 	virtual void AddByteCode(VM& vm);
+
+	virtual bool TypeCheck() override{
+		bool testCheck = test->TypeCheck();
+
+		if(testCheck && test->type.name == "int"){
+			return Scope::TypeCheck();
+		}
+
+		return false;
+	}
 };
 
 struct WhileStatement : public IfStatement{
