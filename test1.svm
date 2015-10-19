@@ -109,9 +109,9 @@ VectorTri MakeTri(int size, Vector3 pos){
 }
 
 int main(){
-	VectorTri tri = MakeTri(19, MakeVec(1.2, 23.1, 2.6));
+	VectorTri tri = MakeTri(19, MakeVec(1.0, 2.0, 3.0));
 	
-	int retVal = PrintTri(tri);
+	PRINTF(tri.pos.x);
 	
 	PRINTF(1.0203);
 	

@@ -553,14 +553,14 @@ int VM::Execute(unsigned char* code, int instructionCount, int entryPoint){
 
 				vector<VMValue> retVals;
 				retVals.reserve(amount.intValue);
-				for(int i = 0; i < amount.intValue; i++){
+				for(int j = 0; j < amount.intValue; j++){
 					retVals.push_back(Pop());
 				}
 
 				VMValue retAddr = Pop();
 				VMValue prevStackFrame = Pop();
 
-				for(int i = 0; i < amount.intValue; i++){
+				for(int j = 0; j < amount.intValue; j++){
 					Push(retVals.back());
 					retVals.pop_back();
 				}
