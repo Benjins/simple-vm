@@ -859,8 +859,8 @@ void FuncCall::AddByteCode(VM& vm){
 	vm.byteCodeLoaded.push_back(STK_FRAME); //Stack frame?
 	vm.byteCodeLoaded.push_back(INT_DLIT);
 	int retAddrIdx = vm.byteCodeLoaded.size();
-	vm.byteCodeLoaded.push_back(253); //Return Addr?
-	vm.byteCodeLoaded.push_back(253); //Return Addr?
+	vm.byteCodeLoaded.push_back(253); 
+	vm.byteCodeLoaded.push_back(253); //Return Addr, which isn't yet known
 
 	for(int i = 0; i < currParams; i++){
 		parameterVals[i]->AddByteCode(vm);
@@ -868,11 +868,8 @@ void FuncCall::AddByteCode(VM& vm){
 
 	int funcAddr = vm.funcPointers.find(funcName)->second;
 
-	vm.byteCodeLoaded.push_back(INT_LIT);
-	vm.byteCodeLoaded.push_back(varCount);
-	vm.byteCodeLoaded.push_back(INT_DLIT);
-	vm.byteCodeLoaded.push_back(funcAddr / 256);
-	vm.byteCodeLoaded.push_back(funcAddr % 256);
+	Literal(varCount).AddByteCode(vm);
+	Literal(funcAddr).AddByteCode(vm);
 	vm.byteCodeLoaded.push_back(CALL);
 
 	vm.byteCodeLoaded[retAddrIdx]   = vm.byteCodeLoaded.size() / 256;
@@ -968,7 +965,7 @@ int Variable::Evaluate(){
 }
 
 void Variable::AddByteCode(VM& vm){
-	for(int i = 0; i < type.sizeInWords; i++){
+	for(int i = type.sizeInWords - 1; i >= 0; i--){
 		int reg = GetRegister() + i;
 		Literal(reg).AddByteCode(vm);
 		vm.byteCodeLoaded.push_back(LOAD_REG);
@@ -1027,20 +1024,9 @@ void FuncDef::AddByteCode(VM& vm){
 			totalSize += pair.second.sizeInWords;
 		}
 
-		int regIdx = totalSize - 1;
-		int paramCount = 0;
-		for(auto iter = parameters.rbegin(); iter != parameters.rend(); iter++){
-			for(int offset = 0; offset < iter->second.sizeInWords; offset++){
-				vm.byteCodeLoaded.push_back(INT_LIT);
-				vm.byteCodeLoaded.push_back(regIdx);
-				vm.byteCodeLoaded.push_back(PARAM);
-				regIdx--;
-				paramCount++;
-			}
-		}
-
-		if(regIdx != -1){
-			//_CrtDbgBreak();
+		for(int regIdx = 0; regIdx < totalSize; regIdx++){
+			Literal(regIdx).AddByteCode(vm);
+			vm.byteCodeLoaded.push_back(PARAM);
 		}
 
 		for(int i = 0; i < numStatements; i++){

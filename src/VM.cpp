@@ -56,13 +56,15 @@ bool VM::CompileAndLoadCode(const string& fileName, vector<string>* dllsToLoad /
 	for(auto& pair : funcPointers){
 		printf("Entry point for '%s': %d\n", pair.first.c_str(), pair.second);
 	}
-
+	*/
 	
+	/*
 	printf("Bytecode size: %d\n", byteCodeLoaded.size());
-	for(int i = 0; i < byteCodeLoaded.size(); i++){
+	for(int i = funcPointers.find("main")->second; i < byteCodeLoaded.size(); i++){
 		printf("%3d: |%3d|\n", i, byteCodeLoaded[i]);
 	}
 	*/
+	
 	
 	return true;
 }
@@ -247,6 +249,24 @@ int VM::Execute(unsigned char* code, int instructionCount, int entryPoint){
 		unsigned char instruction = code[i];
 
 		//cout << "Exceute order " << (int)instruction << " at instruction " << i << endl;
+
+		/*
+		printf("Inst: '%d', Stack: (", instruction);
+		for(int i = 1; i <= stackSize; i++){
+			if(i > 1){
+				printf(", ");
+			}
+
+			if(stack[i].type == ValueType::INT){
+				printf("%d", stack[i].intValue);
+			}
+			else{
+				printf("%2.2f", stack[i].floatValue);
+			}
+		}
+
+		printf(")\n");
+		*/
 
 		switch (instruction){
 			case INT_ADD:{
@@ -553,9 +573,25 @@ int VM::Execute(unsigned char* code, int instructionCount, int entryPoint){
 
 				vector<VMValue> retVals;
 				retVals.reserve(amount.intValue);
+				
+				//printf("Return push: {" );
 				for(int j = 0; j < amount.intValue; j++){
 					retVals.push_back(Pop());
+					/*
+					if(j != 0){
+						printf(", ");
+					}
+					if(retVals.back().type == ValueType::INT){
+						printf("%d", retVals.back().intValue);
+					}
+					else{
+						printf("%2.2f", retVals.back().floatValue);
+					}
+					*/
 				}
+
+				//printf("}\n");
+				
 
 				VMValue retAddr = Pop();
 				VMValue prevStackFrame = Pop();
