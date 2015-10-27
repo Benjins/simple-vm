@@ -10,8 +10,6 @@
 
 using std::cout; using std::endl;
 
-#define COMPILER 1
-
 int main(int argc, char** argv){
 
 #if TESTING
