@@ -50,21 +50,6 @@ bool VM::CompileAndLoadCode(const string& fileName, vector<string>* dllsToLoad /
 	else{
 		otherAST->GenerateByteCode(*this);
 	}
-
-	
-	/*
-	for(auto& pair : funcPointers){
-		printf("Entry point for '%s': %d\n", pair.first.c_str(), pair.second);
-	}
-	*/
-	
-	/*
-	printf("Bytecode size: %d\n", byteCodeLoaded.size());
-	for(int i = funcPointers.find("main")->second; i < byteCodeLoaded.size(); i++){
-		printf("%3d: |%3d|\n", i, byteCodeLoaded[i]);
-	}
-	*/
-	
 	
 	return true;
 }
@@ -247,26 +232,6 @@ int VM::Execute(unsigned char* code, int instructionCount, int entryPoint){
 
 	for(int i = entryPoint; i < instructionCount; i++){
 		unsigned char instruction = code[i];
-
-		//cout << "Exceute order " << (int)instruction << " at instruction " << i << endl;
-
-		/*
-		printf("Inst: '%d', Stack: (", instruction);
-		for(int i = 1; i <= stackSize; i++){
-			if(i > 1){
-				printf(", ");
-			}
-
-			if(stack[i].type == ValueType::INT){
-				printf("%d", stack[i].intValue);
-			}
-			else{
-				printf("%2.2f", stack[i].floatValue);
-			}
-		}
-
-		printf(")\n");
-		*/
 
 		switch (instruction){
 			case INT_ADD:{
