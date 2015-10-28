@@ -7,22 +7,6 @@
 using std::ifstream; using std::cout; using std::endl; using std::cin;
 using std::stringstream;
 
-static void ReadFromFile(string& readInto, string fileName){
-	ifstream fileIn;
-	fileIn.open(fileName.c_str());
-
-	if(!fileIn.good()){
-		fileIn.close();
-		return;
-	}
-
-	while(!fileIn.eof()){
-		fileIn >> readInto;
-	}
-
-	fileIn.close();
-}
-
 int OperatorPrecedence(string token){
 	static const int operatorCount = 11;
 	int precedence[operatorCount] = {3,3,4,4,2,2,2,1,1,0,5};

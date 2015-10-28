@@ -612,7 +612,7 @@ int VM::Execute(unsigned char* code, int instructionCount, int entryPoint){
 				
 				VMValue f;
 				f.type = ValueType::FLOAT;
-				f.floatValue = i.intValue;
+				f.floatValue = static_cast<float>(i.intValue);
 				Push(f);
 			}break;
 

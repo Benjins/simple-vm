@@ -16,8 +16,6 @@ vector<string> JustShuntingYard(vector<string>& tokens, map<string, FuncDef*>& d
 
 	vector<string> shuntedTokens;
 
-	bool funcDef = false;
-
 	Stack<string> operatorStack;
 
 	for(int i = 0; i < tokens.size(); i++){

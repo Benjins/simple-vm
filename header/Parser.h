@@ -41,6 +41,8 @@ struct Stack{
 		}
 		else{
 			cout << "\nError: Stack underflow.\n";
+			T x;
+			return x;
 		}
 	}
 
@@ -48,8 +50,6 @@ struct Stack{
 		return values[stackSize];
 	}
 };
-
-static void ReadFromFile(string& readnto, string fileName);
 
 vector<string> NewTokenize(const string& code);
 

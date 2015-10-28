@@ -85,9 +85,9 @@ struct VM{
 
 protected:
 	VMValue stack[MAX_STACK];
-	short stackSize;
+	int stackSize;
 
-	short stackFrame;
+	int stackFrame;
 	
 	VMValue registers[REGISTER_COUNT];
 

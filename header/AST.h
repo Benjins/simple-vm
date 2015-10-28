@@ -36,7 +36,6 @@ struct Expression{
 struct Statement : public Expression{
 	virtual int Evaluate() = 0;
 	virtual void AddByteCode(VM& vm) = 0;
-	virtual int NumParams() = 0;
 	virtual bool TypeCheck() = 0;
 };
 
@@ -44,7 +43,6 @@ struct Value : public Statement{
 	Type type;
 	virtual int Evaluate() = 0;
 	virtual void AddByteCode(VM& vm) = 0;
-	virtual int NumParams() = 0;
 	virtual bool TypeCheck() = 0;
 };
 
@@ -52,7 +50,6 @@ struct FuncCall : public Value{
 	string funcName;
 	Value** parameterVals;
 	FuncDef* def;
-	int numParams;
 	int currParams;
 	int varCount;
 
@@ -60,7 +57,6 @@ struct FuncCall : public Value{
 		funcName = "";
 		parameterVals = nullptr;
 		currParams = 0;
-		numParams = 0;
 		def = nullptr;
 	}
 
@@ -76,14 +72,13 @@ struct FuncCall : public Value{
 
 	virtual int Evaluate();
 	virtual void AddByteCode(VM& vm);
-	virtual int NumParams(){
-		return numParams;
-	}
 
 	virtual bool TypeCheck();
 };
 
 struct Builtin : public FuncCall{
+
+	int numParams;
 
 	Builtin(const string& name){
 		funcName = name;
@@ -114,14 +109,6 @@ struct Builtin : public FuncCall{
 
 	virtual int Evaluate();
 	virtual void AddByteCode(VM& vm);
-	virtual int NumParams(){
-		if(funcName == "PRINT"){
-			return 1;
-		}
-		else if(funcName == "READ"){
-			return 0;
-		}
-	}
 
 	virtual bool TypeCheck(){
 		bool retVal = true;
@@ -179,7 +166,6 @@ struct Assignment : public Value{
 
 	virtual int Evaluate();
 	virtual void AddByteCode(VM& vm);
-	virtual int NumParams(){return 1;}
 
 	virtual bool TypeCheck(){
 		bool retVal = val->TypeCheck();
@@ -202,9 +188,6 @@ struct Literal : public Value{
 
 	virtual int Evaluate();
 	virtual void AddByteCode(VM& vm);
-	virtual int NumParams(){
-		return 0;
-	}
 
 	virtual bool TypeCheck(){
 		type.name = "int";
@@ -224,9 +207,6 @@ struct FloatLiteral : public Value{
 		return (int)value;
 	}
 	virtual void AddByteCode(VM& vm);
-	virtual int NumParams(){
-		return 0;
-	}
 
 	virtual bool TypeCheck(){
 		type.name = "float";
@@ -242,9 +222,6 @@ struct Variable : public Value{
 	virtual int GetRegister(){return _reg;}
 	virtual int Evaluate();
 	virtual void AddByteCode(VM& vm);
-	virtual int NumParams(){
-		return 0;
-	}
 
 	virtual bool TypeCheck(){
 		return true;
@@ -261,9 +238,6 @@ struct FieldAccess : public Variable{
 		return reg;
 	}
 	virtual int Evaluate(){return -1;}
-	virtual int NumParams(){
-		return 0;
-	}
 
 	virtual bool TypeCheck(){
 		return variable->TypeCheck();
@@ -284,9 +258,6 @@ struct Operator : public Value{
 
 	virtual int Evaluate();
 	virtual void AddByteCode(VM& vm);
-	virtual int NumParams(){
-		return 2;
-	}
 
 	virtual bool TypeCheck();
 };
@@ -316,9 +287,6 @@ struct Scope : public Statement{
 
 	virtual int Evaluate();
 	virtual void AddByteCode(VM& vm);
-	virtual int NumParams(){
-		return 0;
-	}
 
 	virtual bool TypeCheck() override{
 		bool retVal = true;
@@ -388,9 +356,6 @@ struct ExternFunc : public Value{
 
 	virtual int Evaluate();
 	virtual void AddByteCode(VM& vm);
-	virtual int NumParams(){
-		return numParams;
-	}
 
 	virtual bool TypeCheck() override{
 		return true;
