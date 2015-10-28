@@ -11,8 +11,8 @@ int main(int argc, char** argv){
 	char header[256];
 	memset(header, 0, 256);
 	sprintf(header, "{\n\
-	\\\"repo_token\\\": \\\"%s\\\",\n\
-	\\\"source_files\\\": \n[\n", argv[1]);
+	\"repo_token\": \"%s\",\n\
+	\"source_files\": \n[\n", argv[1]);
 	char* footer = "\n]\n}";
 	
 	outCursor += sprintf(outCursor, header);
@@ -27,9 +27,9 @@ int main(int argc, char** argv){
 		printf("The file is named '%s'.\n", fileName);
 		
 		char sourceFileFormat[256] = "{\n\
-		  \\\"name\\\": \\\"%s\\\",\n\
-		  \\\"source_digest\\\": \\\"%s\\\",\n\
-		  \\\"coverage\\\": %s\n\
+		  \"name\": \"%s\",\n\
+		  \"source_digest\": \"%s\",\n\
+		  \"coverage\": %s\n\
 		}";
 		
 		char* sourceFileName;

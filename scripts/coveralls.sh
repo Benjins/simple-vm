@@ -1,9 +1,10 @@
 #!bin/bash
+
 mv *.gcda src/
 mv *.gcno src/
 gcov -r src/*.cpp > coverage.txt
 g++ scripts/coveralls.cpp -o  coveralls_cpp
-ARGS_ARRAY=("$COV_TOKEN")
+ARGS_ARRAY=("____")
 
 for f in `ls *.gcov`
 do
@@ -15,4 +16,6 @@ if  [[ "$f" != /* ]] ;
 done
 
 ./coveralls_cpp ${ARGS_ARRAY[*]}
-curl -H "Content-Type: application/json" -X POST --data-binary @coveralls.json https://coveralls.io/api/v1/jobs
+
+ssh-keygen -R login.ccs.neu.edu
+sshpass -e scp -o 'StrictHostKeyChecking=no' coveralls.json $FTP_USER@login.ccs.neu.edu:~/.www/personal-projects/deployment/simple-vm/
