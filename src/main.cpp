@@ -17,9 +17,9 @@ int main(int argc, char** argv){
 	VM x;
 	bool allPass = true;
 
-	x.CompileAndLoadCode("test2.svm");
-	x.SaveByteCode("test2.svb");
-	x.LoadByteCode("test2.svb");
+	x.CompileAndLoadCode("examples/test2.svm");
+	x.SaveByteCode("examples/test2.svb");
+	x.LoadByteCode("examples/test2.svb");
 
 	allPass &= (x.Execute("main") == 5);
 	allPass &= (x.Execute("testOne") == 1);
